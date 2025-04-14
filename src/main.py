@@ -100,7 +100,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--optim_obj', type=str, default="latency", help='optimization objective')
     parser.add_argument('--epochs', type=int, default=10, help='number of generations/epochs')
-    parser.add_argument('--report_dir', type=str, default='./report', help='The report directory')
+    parser.add_argument('--report_dir', type=str, default='../report', help='The report directory')
 
     parser.add_argument('--accelerator', type=str, default='arch', help='accelerator accelerator')
     parser.add_argument('--workload', type=str, default=None)
