@@ -64,10 +64,27 @@ def generate_factors_list(m, n):
             index = random.randint(0, n-1)
             result[index] *= prime
     
-    
     return result
+
+def run_cosa(output_path='../cosa_tmp', arth_path='../SpatialAccelerators/Cosa/Simba/arch.yaml', map_path='../SpatialAccelerators/Cosa/Simba/mapspace.yaml', prob_path='../SpatialAccelerators/Cosa/Simba/problem.yaml', cwd=os.getcwd(), stdout=None, stderr=None):
+    try:
+        p = subprocess.check_call(['cosa', '-o', str(output_path), '-ap', str(arth_path), '-mp', str(map_path), '-pp', str(prob_path)], \
+                                  cwd=cwd, stdout=stdout, stderr=stderr)
+        logger.info('run_cosa> cosa -o {} -ap {} -mp {} -pp {}'.format(output_path, arth_path, map_path, prob_path))
+        return True
+    except:
+        return False
+
+def generate_problem_for_cosa(prob_path, dimension_dict):
+    dir_path = os.path.dirname(prob_path)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    with open(prob_path, 'w') as yaml_file:
+        yaml.dump(dimension_dict, yaml_file, default_flow_style=False)
+
 
 if __name__ == "__main__":
     print(get_factors(16))
     print(get_prime_factors(16).keys())
     print(generate_factors_list(15, 3))
+    print(run_cosa())
