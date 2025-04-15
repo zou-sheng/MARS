@@ -26,7 +26,12 @@ class MappingExplorer:
         self.num_buffer_level = num_buffer_levels
         self.num_pes = num_pes
 
-       
+        print(self.buffer_name_list)
+        print(self.buffer_size_list)
+        print(self.buffer_spmap_cstr)
+        print(self.buffers_with_spmap)
+        print(self.num_buffer_level)
+        print(self.num_pes)
         self.buf_energy_cost = self.get_default_buffer_energy_cost()
         
         prob_path = pathlib.Path('{}/{}/problem.yaml'.format(accelerator_dir, accelerator)).resolve()
@@ -36,10 +41,17 @@ class MappingExplorer:
         print(self.dimension_dict)
         print(self.expanded_dimension_dict)
 
+    def create_genome(self, dimension_dict):
+        pass
+    
+    def reinit_pop(self, num_population):
+        # 针对每个维度随机从扩展问题中选择一个值，然后针对这个值计算因数分解列表
+        pass
+    
     def thread_fun(self):
         pass
 
-    def run(self, epochs):
+    def run(self, epochs=10, num_population=100):
         pass
 
     def get_default_buffer_energy_cost(self):

@@ -349,6 +349,9 @@ class Prob:
     def print(self):
         print(self.__dict__)
 
+class Mapping:
+    def __init__(self, mapping_path):
+        pass
 
 if __name__ == "__main__":
     arch_path = pathlib.Path('../SpatialAccelerators/Simba/arch_v1.yaml').resolve()
