@@ -29,3 +29,8 @@
 如果把mapping看成连续的，也就是说取值可以是分数，然后评估时向上取整，这些值构成扩展的最优问题维度，以及对应的划分，能不能考虑梯度下降的方法实现呢？目前使用的遗传算法其实就是某种意义的梯度下降但并不直接。模拟退火是不是更好一些？或者马尔科夫-蒙特卡洛？或者把cosa变成连续问题建模？相当于把ilp当成梯度下降。
 
 smoothe中成本函数需要可微
+
+export LD_LIBRARY_PATH=/home/mingchuan/Desktop/zousheng/accelergy-timeloop-infrastructure/src/timeloop/lib:/home/mingchuan/Desktop/zousheng/accelergy-timeloop-infrastructure/src/timeloop/build:$LD_LIBRARY_PATH
+
+
+将Soter作为初始种群送进去，效果并没有提升，看来soter方法已经很好了，是上限不够，应该设计问题规模。
