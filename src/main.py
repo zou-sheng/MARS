@@ -13,6 +13,7 @@ def main():
     accelerator     = opt.accelerator
     mapper          = opt.mapper
     type            = opt.type
+    version         = opt.version
     workload        = opt.workload
     layer_id        = opt.layer_id
     expanded_scope  = opt.expanded_scope
@@ -90,7 +91,7 @@ def main():
     with open(os.path.join(config_dir, '{}.yaml'.format(expanded_config)), 'r') as fd:
         expanded_dict = yaml.load(fd, Loader=yaml.SafeLoader)
 
-    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, report_dir, opt.optim_obj, expanded_scope, expanded_dict)
+    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict)
     chkpt = ME.run(opt.epochs)
     os.makedirs(report_dir, exist_ok=True)
     with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
@@ -106,6 +107,7 @@ if __name__ == '__main__':
     parser.add_argument('--accelerator', type=str, default='Simba', help='accelerator accelerator')
     parser.add_argument('--mapper', type=str, default='MARS', help='mapper tool')
     parser.add_argument('--type', type=str, default='arch', help='accelerator type')
+    parser.add_argument('--version', type=str, default='v1', help='timeloop arch format version')
     parser.add_argument('--workload', type=str, default=None)
     parser.add_argument('--layer_id', type=int, default=None)
     parser.add_argument('--expanded_scope', type=float, default=1.0, help='expand the scope of the workload, range from 0 to 1')

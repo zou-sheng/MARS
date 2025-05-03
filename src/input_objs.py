@@ -5,11 +5,11 @@ import re
 import numpy as np
 
 class Arch:
-    def __init__(self, arch_path, arch_name):
+    def __init__(self, arch_path, arch_name, version):
         self.path      = arch_path.resolve()
         self.arch_dict = utils.parse_yaml(self.path)
         self.arch_name = arch_name
-        self.version   = 'v3' if '_v3' in self.path.name else 'v1'
+        self.version   = version
 
     def config_str(self):
         """Return the filename for the input yaml with postfix."""
@@ -39,7 +39,7 @@ class Arch:
         storage = arch['storage']
         num_buffer_levels = len(storage)
 
-        reg_cluster_size = 0
+
         for buffer in storage:
             buffer_name_list.append(buffer['name'])
             num_instances.append(buffer['instances'])
@@ -47,16 +47,17 @@ class Arch:
                 buffer_size_list.append(float('Inf'))
             else:
                 buffer_size_list.append(buffer['entries'])
-            if buffer['name'] == 'Registers':
-                reg_cluster_size = buffer['cluster-size']
+
         
         buffer_name_list.reverse()
         buffer_size_list.reverse()
         num_instances.reverse()
         num_instances.append(num_arithmetic)
 
-        num_pes = int(num_arithmetic / reg_cluster_size)
-        assert(num_arithmetic % reg_cluster_size == 0)
+        print(buffer_name_list, num_instances, buffer_size_list)
+
+        # num_pes = int(num_arithmetic / reg_cluster_size)
+        # assert(num_arithmetic % reg_cluster_size == 0)
         sp_cstr = []
         for i in range(len(num_instances) - 1):
             allowed_sp_size = num_instances[i + 1] // num_instances[i]
@@ -65,11 +66,12 @@ class Arch:
                 raise ValueError('Invalid Architecture File. '
                                  'Buffer hierarchy not perfectly divisible.')
 
+        print(sp_cstr)
        
         return {f'l{level}': name for level, name in zip(np.arange(num_buffer_levels, 0, -1), buffer_name_list)}, \
                {f'l{level}': name for level, name in zip(np.arange(num_buffer_levels, 0, -1), buffer_size_list)}, \
                {f'l{level}': name for level, name in zip(np.arange(num_buffer_levels, 0, -1), sp_cstr)}, \
-               num_buffer_levels, num_pes
+               num_buffer_levels
         
     def get_arch_info_v3(self):
         arch = copy.deepcopy(self.arch_dict)
@@ -303,7 +305,7 @@ class Arch:
                 instances *= (int(macc.split('..')[1].split(']')[0]) + 1)
             num_instances.append(instances)
 
-
+        print(buffer_name_list, num_instances, buffer_size_list)
 
         sp_cstr = []
         for i in range(len(num_instances) - 1):
@@ -313,10 +315,12 @@ class Arch:
                 raise ValueError('Invalid Architecture File. '
                                  'Buffer hierarchy not perfectly divisible.')
 
+        print(sp_cstr)
+
         return {f'l{level}': name for level, name in zip(np.arange(num_buffer_levels, 0, -1), buffer_name_list)}, \
                {f'l{level}': name for level, name in zip(np.arange(num_buffer_levels, 0, -1), buffer_size_list)}, \
                {f'l{level}': name for level, name in zip(np.arange(num_buffer_levels, 0, -1), sp_cstr)}, \
-               num_buffer_levels, num_pes
+               num_buffer_levels
 
 
 class Prob:
@@ -352,6 +356,29 @@ class Prob:
 class Mapping:
     def __init__(self, mapping_path):
         pass
+
+class Mapspace:
+    def __init__(self, mapspace_path):
+        mapspace_dict = utils.parse_yaml(mapspace_path)
+        self.mapspace = mapspace_dict['mapspace']
+
+        for key, value in self.mapspace.items():
+            setattr(self, key, value)
+
+        self.var_idx_dict = {'Weights': 0, 'Inputs': 1, 'Outputs': 2}
+        self.var_name_dict = {v: k for k, v in self.var_idx_dict.items()}
+        self.org_idx_dict = {'spatial': 0, 'temporal': 1}
+        self.org_name_dict = {v: k for k, v in self.org_idx_dict.items()}
+        self.config_idx_dict = {'perm': 0, 'factor': 1}
+        self.mapspace = None
+        self.bypass = None
+        self.arch = None
+        self.prob = None
+        self.factor_space = None
+        self.factor_config_tup = None
+        self.perm_space = None
+        self.spatial_space = None
+
 
 if __name__ == "__main__":
     arch_path = pathlib.Path('../SpatialAccelerators/Simba/arch_v1.yaml').resolve()

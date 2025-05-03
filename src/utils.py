@@ -82,6 +82,8 @@ def generate_problem_for_cosa(prob_path, dimension_dict):
     with open(prob_path, 'w') as yaml_file:
         yaml.dump(dimension_dict, yaml_file, default_flow_style=False)
 
+def generate_lpsolver():
+    pass
 
 if __name__ == "__main__":
     print(get_factors(16))

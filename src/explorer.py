@@ -1,12 +1,12 @@
 from datetime import datetime
 from cost_model import Timeloop
 import pathlib
-from input_objs import Arch, Prob
+from input_objs import Arch, Prob, Mapspace
 import utils
 import random
 
 class MappingExplorer:
-    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, report_dir, optim_obj, expanded_scope, expanded_dict):
+    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict):
         self.opt_obj = [optim_obj, 'latency', 'energy']
         self.timeloop_out_config_path = f'./tmp/out_config_{datetime.now().strftime("%H:%M:%S")}'
         self.operator_instance = operator_instance
@@ -16,19 +16,20 @@ class MappingExplorer:
         self.mapper = mapper
 
         arch_path = pathlib.Path('{}/{}/{}/{}.yaml'.format(accelerator_dir, mapper, accelerator, type)).resolve()
-        self.accelerator = Arch(arch_path, accelerator)
+        self.accelerator = Arch(arch_path, accelerator, version)
+        mapspace_path = pathlib.Path('{}/{}/{}/{}.yaml'.format(accelerator_dir, mapper, accelerator, 'mapspace')).resolve()
+        self.mapspace = Mapspace(mapspace_path)
 
         # self.cost_model = Timeloop(in_config_path='./SpatialAccelerators', out_config_path=self.timeloop_out_config_path,
         #                            accelerator=accelerator, opt_obj=self.opt_obj)
 
-        buffer_name_list, buffer_size_list, buffer_spmap_cstr, num_buffer_levels, num_pes = self.accelerator.get_arch_info()
+        buffer_name_list, buffer_size_list, buffer_spmap_cstr, num_buffer_levels = self.accelerator.get_arch_info()
 
         self.buffer_name_list = buffer_name_list
         self.buffer_size_list = buffer_size_list
         self.buffer_spmap_cstr = buffer_spmap_cstr
         self.buffers_with_spmap = set([key for key, value in self.buffer_spmap_cstr.items() if value > 1])
         self.num_buffer_level = num_buffer_levels
-        self.num_pes = num_pes
 
         print(operator_instance)
         print(self.buffer_name_list)
@@ -36,7 +37,6 @@ class MappingExplorer:
         print(self.buffer_spmap_cstr)
         print(self.buffers_with_spmap)
         print(self.num_buffer_level)
-        print(self.num_pes)
         self.buf_energy_cost = self.get_default_buffer_energy_cost()
         
         prob_path = pathlib.Path('{}/{}/{}/problem.yaml'.format(accelerator_dir, mapper, accelerator)).resolve()
@@ -45,6 +45,17 @@ class MappingExplorer:
         self.expanded_dimension_dict = self.get_expanded_problem()
         print(self.dimension_dict)
         print(self.expanded_dimension_dict)
+
+        # print(buffer_name_list, num_instances, buffer_size_list)
+        # sp_cstr = []
+        # for i in range(len(num_instances) - 1):
+        #     allowed_sp_size = num_instances[i + 1] // num_instances[i]
+        #     sp_cstr.append(allowed_sp_size)
+        #     if num_instances[i + 1] % num_instances[i] != 0:
+        #         raise ValueError('Invalid Architecture File. '
+        #                          'Buffer hierarchy not perfectly divisible.')
+
+        # print(sp_cstr)
 
     def create_genome(self, dimension_dict):
         if self.mapper == "Random":
@@ -69,7 +80,7 @@ class MappingExplorer:
         elif self.mapper == "Soter":
             
             pass
-        elif self.mapper == "Mars":
+        elif self.mapper == "MARS":
             
             pass
         else:
@@ -112,3 +123,4 @@ class MappingExplorer:
                     expanded_list = list(range(expanded_value))
                 expanded_dict[k] = [num + self.dimension_dict[k] for num in expanded_list] if expanded_list else [self.dimension_dict[k]]
         return expanded_dict
+
