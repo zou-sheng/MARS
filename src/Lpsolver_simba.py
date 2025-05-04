@@ -45,10 +45,10 @@ matrix[1][2] + matrix[1][3] + matrix[1][5] + matrix[1][6] + matrix[1][7] + \
 matrix[2][2] + matrix[2][3] + matrix[2][5] + matrix[2][6] + matrix[2][7] <= math.log2(3072)
 
 # WeightBuffer, 存储容量32768，保存weight, weight涉及R, S, C, K, H并且需要乘上前面所有级的值, spatial跟temporal一样处理
-prob += matrix[0][0] + matrix[0][1] + matrix[0][4] + matrix[0][5] + matrix[0][7] + \
-matrix[1][0] + matrix[1][1] + matrix[1][4] + matrix[1][5] + matrix[1][7] + \
-matrix[2][0] + matrix[2][1] + matrix[2][4] + matrix[2][5] + matrix[2][7] + \
-matrix[3][0] + matrix[3][1] + matrix[3][4] + matrix[3][5] + matrix[3][7] <= math.log2(32768)
+prob += matrix[0][0] + matrix[0][1] + matrix[0][4] + matrix[0][5] + matrix[0][6] + \
+matrix[1][0] + matrix[1][1] + matrix[1][4] + matrix[1][5] + matrix[1][6] + \
+matrix[2][0] + matrix[2][1] + matrix[2][4] + matrix[2][5] + matrix[2][6] + \
+matrix[3][0] + matrix[3][1] + matrix[3][4] + matrix[3][5] + matrix[3][6] <= math.log2(32768)
 
 # InputBuffer, 存储容量8192，保存Input, Input涉及R, S, P, Q, C, K, H, N并且需要乘上前面所有级的值, spatial跟temporal一样处理
 prob += matrix[0][0] + matrix[0][1] + matrix[0][2] + matrix[0][3] + matrix[0][4] + matrix[0][6] + matrix[0][7] + \
@@ -94,11 +94,11 @@ prob += matrix[1][0] + matrix[1][1] + matrix[1][2] + matrix[1][3] + matrix[1][4]
 prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(16)
 
 # 列约束：维度大小
-col_upper_bounds = [0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
+col_upper_bounds = [math.log2(11), math.log2(11), math.log2(55), math.log2(55), math.log2(3), math.log2(64), math.log2(1), math.log2(1)]#[0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
 for j in range(cols):
     col_sum = sum(matrix[i][j] for i in range(rows))
     prob += col_upper_bounds[j] == col_sum
-
+print(prob)
 # 求解问题并找到k个解
 k = 3  # 你可以修改为你想要的解的数量
 solutions = []

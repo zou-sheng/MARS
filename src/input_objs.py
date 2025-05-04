@@ -329,7 +329,32 @@ class Prob:
         self.problem = utils.parse_yaml(self.path)
         self.density = {'Inputs': 0.5, 'Weights': 1, 'Outputs': 1}
         self.dim2note = {0: 'R', 1: 'S', 2: 'P', 3: 'Q', 4: 'C', 5: 'K', 6: 'H', 7: 'N'}
+        self.note2dim = {'R': 0, 'S': 1, 'P': 2, 'Q': 3, 'C': 4, 'K': 5, 'H': 6, 'N': 7}
 
+    def get_tensor_dimensions(self):
+        tensor_dimensions = {}
+
+        # 遍历数据空间
+        for data_space in self.problem['problem']['shape']['data_spaces']:
+            tensor_name = data_space['name']
+            projection = data_space['projection']
+            involved_dimensions = []
+
+            # 递归函数用于提取维度
+            def extract_dimensions(proj):
+                if isinstance(proj, list):
+                    for item in proj:
+                        extract_dimensions(item)
+                elif isinstance(proj, str) and proj in self.dim2note.values():
+                    involved_dimensions.append(self.note2dim[proj])
+
+            extract_dimensions(projection)
+            # 去除重复维度
+            unique_dimensions = list(set(involved_dimensions))
+            tensor_dimensions[tensor_name] = unique_dimensions
+
+        return tensor_dimensions
+    
     def get_problem_info(self):
         problem = copy.deepcopy(self.problem)
         dimension = []
@@ -354,30 +379,111 @@ class Prob:
         print(self.__dict__)
 
 class Mapping:
-    def __init__(self, mapping_path):
-        pass
+    def __init__(self, mapping_data):
+        if isinstance(mapping_data, str):
+            # 如果输入是字符串，认为是文件路径，解析 YAML 文件
+            mapping_dict = utils.parse_yaml(mapping_data)
+        elif isinstance(mapping_data, dict):
+            # 如果输入是字典，直接使用
+            mapping_dict = mapping_data
+        else:
+            raise ValueError("输入必须是文件路径（字符串）或字典。")
+        self.mapping = mapping_dict['mapping']
+        self.items   = [
+                            item for item in self.mapping
+                            if all(key in item for key in ['factors', 'permutation', 'target', 'type'])
+                        ]
+        
+        # 按target分组
+        self.target_groups = {}
+        for item in self.items:
+            target = item['target']
+            if target not in self.target_groups:
+                self.target_groups[target] = []
+            self.target_groups[target].append(item)
+        # 对每个target组内的元素按照type排序，spatial在前，temporal在后
+        for target in self.target_groups:
+            self.target_groups[target].sort(key=lambda x: 0 if x['type'] == 'spatial' else 1)
+
+        self.factor_dict = self.get_factors()
+        self.permutation_list = self.get_permutation()
+        self.target_list = self.get_target()
+        self.type_list = self.get_type()
+        self.bypass_list = [
+                            item for item in self.mapping
+                            if all(key in item for key in ['bypass', 'keep', 'target', 'type'])
+                        ]
+
+    def get_factors(self):
+        factors_dict = {'R': [], 'S': [], 'P': [], 'Q': [], 'C': [], 'K': [], 'N': [], 'H': []}
+        
+        for group in self.target_groups.values():
+            for item in group:
+                factors_str = item['factors']
+                # 分割字符串并提取 R 的值
+                for factor in factors_str.split():
+                    if factor.startswith('R='):
+                        r_value = factor.split('=')[1]  # 获取 R 的值
+                        factors_dict['R'].append(int(r_value))  # 转换为整数并添加到列表中
+                    elif factor.startswith('S='):
+                        s_value = factor.split('=')[1]  
+                        factors_dict['S'].append(int(s_value)) 
+                    elif factor.startswith('P='):
+                        p_value = factor.split('=')[1]  
+                        factors_dict['P'].append(int(p_value)) 
+                    elif factor.startswith('Q='):
+                        q_value = factor.split('=')[1]  
+                        factors_dict['Q'].append(int(q_value)) 
+                    elif factor.startswith('C='):
+                        c_value = factor.split('=')[1]  
+                        factors_dict['C'].append(int(c_value)) 
+                    elif factor.startswith('K='):
+                        k_value = factor.split('=')[1]  
+                        factors_dict['K'].append(int(k_value))
+                    elif factor.startswith('N='):
+                        n_value = factor.split('=')[1]  
+                        factors_dict['N'].append(int(n_value))  
+                    elif factor.startswith('H='):
+                        n_value = factor.split('=')[1]  
+                        factors_dict['H'].append(int(n_value))  
+            
+        return factors_dict
+
+    def get_permutation(self):
+        permutation_list = [item['permutation'] for group in self.target_groups.values() for item in group]
+        return permutation_list
+    
+    def get_target(self):
+        target_list = [item['target'] for group in self.target_groups.values() for item in group]
+        return target_list
+
+    def get_type(self):
+        type_list = [item['type'] for group in self.target_groups.values() for item in group]
+        return type_list
 
 class Mapspace:
     def __init__(self, mapspace_path):
         mapspace_dict = utils.parse_yaml(mapspace_path)
-        self.mapspace = mapspace_dict['mapspace']
 
-        for key, value in self.mapspace.items():
-            setattr(self, key, value)
-
-        self.var_idx_dict = {'Weights': 0, 'Inputs': 1, 'Outputs': 2}
-        self.var_name_dict = {v: k for k, v in self.var_idx_dict.items()}
-        self.org_idx_dict = {'spatial': 0, 'temporal': 1}
-        self.org_name_dict = {v: k for k, v in self.org_idx_dict.items()}
-        self.config_idx_dict = {'perm': 0, 'factor': 1}
-        self.mapspace = None
-        self.bypass = None
-        self.arch = None
-        self.prob = None
-        self.factor_space = None
-        self.factor_config_tup = None
-        self.perm_space = None
-        self.spatial_space = None
+        buffer_tensor_dict = {}
+        bypass_data = []
+        # 分析每个存储层次保存的张量
+        for constraint in mapspace_dict['mapspace']['constraints']:
+            target = constraint['target']
+            keep_tensors = constraint['keep']
+            buffer_tensor_dict[target] = keep_tensors
+            # 过滤掉目标为 'DRAM' 的约束
+            if constraint['target'] != 'DRAM':
+                item = {
+                    'bypass': constraint['bypass'],
+                    'keep': constraint['keep'],
+                    'target': constraint['target'],
+                    'type': constraint['type']
+                }
+                bypass_data.append(item)
+            
+        self.buffer_tensor_dict = buffer_tensor_dict
+        self.bypass = bypass_data
 
 
 if __name__ == "__main__":
