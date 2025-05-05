@@ -6,6 +6,7 @@ from functools import reduce
 from collections import defaultdict, OrderedDict
 import subprocess
 import random
+import numpy as np
 
 logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
             datefmt='%Y-%m-%d:%H:%M:%S',
@@ -25,6 +26,10 @@ def parse_yaml(yaml_path):
     with open(yaml_path, 'r') as f:
         data = yaml.full_load(f)
     return data
+
+def store_yaml(yaml_path, data):
+    with open(yaml_path, 'w') as f:
+        yaml.dump(data, f)
 
 def get_factors(n):
     return list(reduce(list.__add__,

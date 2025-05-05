@@ -92,7 +92,7 @@ def main():
         expanded_dict = yaml.load(fd, Loader=yaml.SafeLoader)
 
     ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict)
-    chkpt = ME.run(opt.epochs)
+    chkpt = ME.run(num_generations=opt.epochs)
     os.makedirs(report_dir, exist_ok=True)
     with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
         pickle.dump(chkpt, fd)

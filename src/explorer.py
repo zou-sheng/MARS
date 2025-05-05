@@ -6,10 +6,18 @@ import utils
 import random
 from pulp import LpMaximize, LpProblem, LpVariable, PULP_CBC_CMD
 import math
+import copy
+from multiprocessing.pool import Pool
+from multiprocessing import cpu_count
+import uuid
+import os
+import shutil
+import numpy as np
 
 class MappingExplorer:
     def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict):
-        self.opt_obj = [optim_obj, 'latency', 'energy']
+        if optim_obj == 'latency':
+            self.fitness_obj = ['cycles']
         self.timeloop_out_config_path = f'./tmp/out_config_{datetime.now().strftime("%H:%M:%S")}'
         self.operator_instance = operator_instance
         self.report_dir = report_dir 
@@ -104,12 +112,127 @@ class MappingExplorer:
         mapping = Mapping(mapping_dict)
         print(self.is_mapping_valid(mapping))
 
+    def shuffle_factor_order(self, mapping, alpha=0.5):
+        if random.random() < alpha:
+            org_mapping = copy.deepcopy(mapping)
+            # 随机选择一个列表的键
+            random_key = random.choice(list(mapping.factor_dict.keys()))
 
+            # 获取随机选择的列表
+            list_to_shuffle = mapping.factor_dict[random_key]
+
+            # 打乱列表
+            random.shuffle(list_to_shuffle) 
+            if not self.is_mapping_valid(mapping):
+                print('not valid')
+                mapping = org_mapping
+            else:
+                print('valid')
+
+
+
+    def mutate_factor(self, mapping, alpha=0.5):
+        if random.random() < alpha:
+            org_mapping = copy.deepcopy(mapping)
+            # 随机选择一个列表的键
+            random_key1, random_key2 = random.sample(list(mapping.factor_dict.keys()), 2)
+
+            # 获取随机选择的列表
+            list_to_modify1 = mapping.factor_dict[random_key1]
+            list_to_modify2 = mapping.factor_dict[random_key2]
+
+            # 随机选择两个不同的索引
+            index1, index2 = random.sample(range(len(list_to_modify1)), 2)
+
+            # 选择这两个数字
+            num1 = list_to_modify1[index1]
+            num2 = list_to_modify1[index2]
+            num3 = list_to_modify2[index1]
+            num4 = list_to_modify2[index2]
+
+            # 计算第一个数字的因子
+            factors = [i for i in range(1, num1 + 1) if num1 % i == 0]
+
+            # 随机选择一个因子
+            random_factor = random.choice(factors)
+
+            # 将因子乘到第二个数字上
+            modified_num2 = num2 * random_factor
+            modified_num1 = int(num1 / random_factor)
+            list_to_modify1[index1] = modified_num1
+            list_to_modify1[index2] = modified_num2
+            if int(num4 / random_factor) == 0:
+                pass
+            else:
+                list_to_modify2[index1] = num3 * random_factor
+                list_to_modify2[index2] = int(num4 / random_factor)
+            
+            if not self.is_mapping_valid(mapping):
+                print('not valid')
+                mapping = org_mapping
+            else:
+                print('valid')
+
+
+    def mutate_permutation(self, mapping, alpha=0.5):
+        if random.random() < alpha:
+            candidate_permutation = ['RSPQCKNH',    # 循环顺序是内->外
+                                    'PQNRSCKH',
+                                    'QPNRSCKH',
+                                    'SRCPQKNH',
+                                    'RSCPQKNH',
+                                    'KQRSPCNH',
+                                    'KPRSQCNH',
+                                    'KSRPQCNH',
+                                    'KRSPQCNH',
+                                    'HRSPQCKN',
+                                    'HPQNRSCK',
+                                    'HQPNRSCK',
+                                    'HSRCPQKN',
+                                    'HRSCPQKN',
+                                    'HKQRSPCN',
+                                    'HKPRSQCN',
+                                    'HKSRPQCN',
+                                    'HKRSPQCN',
+                                    ]
+            # 随机选择一个当前列表中的索引
+            index_to_replace = random.randint(0, len(mapping.permutation_list) - 1)
+
+            # 从候选列表中随机选择一个新的 permutation
+            new_permutation = random.choice(candidate_permutation)
+
+            # 替换选择的 permutation
+            mapping.permutation_list[index_to_replace] = new_permutation
+
+    # 随机选择一个维度的扩展
+    def mutate_dimemsion(self, mapping, alpha=0.5):
+        if random.random() < alpha:
+            org_mapping = copy.deepcopy(mapping)
+            for k in mapping.factor_dict.keys():
+                if random.random() < alpha:
+                    try:
+                        new_dim = random.choice(self.expanded_dimension_dict[k])
+                      
+                        # 跟mapping中factor的个数有关
+                        new_fator = utils.generate_similar_factor_list(mapping.factor_dict[k], new_dim)
+                        product = 1
+                        for num in new_fator:
+                            product *= num
+                        if product < self.problem[k]:
+                            pass
+                        else:
+                            mapping.factor_dict[k] = new_fator
+                    except:
+                        pass   
+            if not self.is_mapping_valid(mapping):
+                print('not valid')
+                mapping = org_mapping
+            else:
+                print('valid')
 
 
     def generate_mapping(self, dimension):
         sol = self.lpsolver(dimension)
-        print(sol)
         mapping_dict, dimension_dict = utils.generate_mapping_for_lpsolver(sol, dimension, self.targets, self.type, self.bypass)
 
         return mapping_dict, dimension_dict
@@ -172,7 +295,7 @@ class MappingExplorer:
         return solution
 
     def is_mapping_valid(self, mapping):
-        factors = mapping.get_factors()
+        factors = mapping.factor_dict
         key_order = 'RSPQCKHN'
         matrix = []
 
@@ -198,7 +321,7 @@ class MappingExplorer:
                     for dim in self.tensor_dimensions[tensor]:
                         tmp *= matrix[l][dim]
                 buffer_capacity += tmp
-            print("buffer_capacity: ", buffer_capacity)
+            print('buffer_capacity: ', buffer_capacity)
             if buffer_capacity > self.buffer_size_list[buffer_key]:
                 return False
             
@@ -207,24 +330,15 @@ class MappingExplorer:
             sp_level = self.spatial_level[spatial_name] 
             for c in range(8):
                 spatial_capacity *= matrix[sp_level][c]
-            print("spatial_capacity: ", spatial_capacity)
+            print('spatial_capacity: ', spatial_capacity)
             if spatial_capacity > self.spatial_size_list[spatial_name]:
                 return False
             
         return True
 
-    def create_genome(self, dimension_dict):
+    def create_genome(self, num_population):
+        mapping_list = []
         if self.mapper == "Cosa":
-            new_operator_instance = {}
-            for key, value in self.operator_instance.items():
-                if key == 'H':
-                    pass 
-                elif key in dimension_dict:
-                    new_operator_instance[key] = dimension_dict[key]
-                else:
-                    new_operator_instance[key] = value
-
-            print(new_operator_instance)
             prob_path = '../tmp/Cosa/problem.yaml'
             new_problem = {'problem': new_operator_instance}
             utils.generate_problem_for_cosa(prob_path, new_problem)
@@ -234,26 +348,212 @@ class MappingExplorer:
             
             pass
         elif self.mapper == "MARS":
-            
-            pass
+            prob_list = [copy.deepcopy(self.dimension_dict)]
+            for i in range(num_population):
+                new_prob = copy.deepcopy(self.dimension_dict)
+                for key in new_prob.keys():
+                    new_prob[key] = random.choice(self.expanded_dimension_dict[key])
+                prob_list.append(new_prob)
+
+            for i in range(len(prob_list)):
+                print(prob_list[i])
+                dimension = [prob_list[i]['R'], prob_list[i]['S'], prob_list[i]['P'], prob_list[i]['Q'], prob_list[i]['C'], prob_list[i]['K'], prob_list[i]['H'], prob_list[i]['N']]
+                mapping, dimension_dict = self.generate_mapping(dimension)
+                for key in prob_list[i].keys():
+                    if key in dimension_dict:
+                        prob_list[i][key] = dimension_dict[key]
+                mapping_list.append(Mapping(mapping))
         else:
             print("无效的选项，请选择 'cosa'、'soter' 或 'MARS'。")
-    
-    def reinit_pop(self, num_population):
-        for i in range(num_population):
-            expanded_wokload = {}
-            for key, values in self.expanded_dimension_dict.items():
-                random_value = random.choice(values)
-                expanded_wokload[key] = random_value
-            self.create_genome(expanded_wokload, )
-        pass
-    
-    def thread_fun(self):
-        pass
+        return mapping_list
 
-    def run(self, epochs=10, num_population=20):
-        self.reinit_pop(num_population)
-        pass
+    def select_parents(self, pop, fitness, num_parents, num_population, stage_idx=0, first_stage_value=None):
+        # 选择在当前代中表现最好的个体作为下一代后代的父母
+        if stage_idx==0:
+            idx = np.argsort(fitness[:,0])[::-1]
+            print(idx)
+            new_pop = [pop[i] for i in idx][:num_population]
+            new_fitness = fitness[idx][:num_population]
+            parents = copy.deepcopy(new_pop[:num_parents])
+        else:
+            elite_pop = [pop[i] for i in range(len(pop)) if all([fitness[i][kk]>=first_stage_value[kk] for kk in range(len(first_stage_value))])]
+            elite_fitness = fitness
+            for kk in range(len(first_stage_value)):
+                elite_fitness = elite_fitness[(elite_fitness[:, kk] >= first_stage_value[kk])]
+            idx = np.argsort(elite_fitness[:, stage_idx])[::-1]
+            elite_pop = [elite_pop[i] for i in idx][:num_population]
+            parents = copy.deepcopy(elite_pop[:num_parents])  if len(elite_pop)>0 else copy.deepcopy(pop[:num_parents])
+            new_pop = pop[:num_population]
+            new_fitness = fitness[:num_population]
+
+        return new_pop, new_fitness, parents
+
+    def crossover_tile(self, parents, pop, alpha=0.5):
+
+        if len(parents) ==1:
+            for idx in range(len(pop)):
+                pop[idx] = copy.deepcopy(parents[0])
+        else:
+            for idx in range(0,len(pop),2):
+                dad, mom = parents[random.randint(0, len(parents)-1)], parents[random.randint(0, len(parents)-1)]
+                dad = copy.deepcopy(dad)
+                mom = copy.deepcopy(mom)
+                # 为了保证交叉之后的正确性，目前只交换循环顺序，后面可以扩展交换factor
+                for i in range(len(dad.permutation_list)):
+                    if random.random() < alpha:
+                        tmp = dad.permutation_list[i]
+                        dad.permutation_list[i] = mom.permutation_list[i]
+                        mom.permutation_list[i] = tmp
+                for k in dad.factor_dict.keys():
+                    if random.random() < alpha:
+                        tmp = dad.factor_dict[k]
+                        dad.factor_dict[k] = mom.factor_dict[k]
+                        mom.factor_dict[k] = tmp
+                pop[idx] = dad
+                if idx + 1 < len(pop):
+                    pop[idx+1] = mom
+
+    def judge(self):
+        try:
+            values = []
+            for term in self.fitness_obj:
+                if term == "cycles":
+                    reward = -self.observation['cycles']
+                elif term == "energy":
+                    reward = -self.observation['energy']
+                elif term == "utilization":
+                    reward = self.observation['utilization']
+                elif term == "EDP":
+                    reward = -self.observation['EDP']
+                elif term == "GFLOPs":
+                    reward = self.observation['GFLOPs']
+                else:
+                    raise NameError('Undefined fitness type')
+                values.append(reward)
+            return values
+        except:
+            return None
+    
+    
+    def thread_fun(self, mapping):
+        original_dir = os.getcwd()
+        # 创建一个唯一的临时文件夹
+        temp_dir = f'{original_dir}/mars_tmp/temp_{uuid.uuid4()}'
+        os.makedirs(temp_dir)
+
+        # try:
+        remainders = {}
+        for d in mapping.factor_dict.keys():
+            T = self.dimension_dict[d]
+            F = mapping.factor_dict[d]
+            remainders[d] = utils.find_remainders(F[::-1], T)
+            
+        
+        temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders)
+        
+        output_stats_path = os.path.join(temp_dir, 'timeloop-model.stats.txt')
+        utils.store_yaml(f'{temp_dir}/temp.yaml', temp_mapping)
+        utils.store_yaml(f'{temp_dir}/temp_prob.yaml', self.problem.problem)
+        utils.store_yaml(f'{temp_dir}/temp_arch.yaml', self.accelerator.arch_dict)
+        utils.run_timeloop(f'{temp_dir}/temp_arch.yaml', f'{temp_dir}/temp_prob.yaml', f'{temp_dir}/temp.yaml', cwd=temp_dir)
+        try:
+            self.observation = utils.parse_timeloop_output(output_stats_path)
+        except:
+            pass
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+        return self.judge()
+
+    def run(self, stage_idx=0, prev_stage_value=0, expanded_scope=0, num_population=10, num_generations=100, elite_ratio=0.05,
+                       parents_ratio=0.15, ratio_decay=1, num_finetune=1):
+        num_generations = num_generations
+        num_population = num_population
+        num_elite = int(num_population * elite_ratio)
+        pool = Pool(min(num_population + num_elite, cpu_count()))
+        best_reward_list = []
+        best_reward = [-float("Inf") for _ in range( len(self.fitness_obj))]
+        best_sol = None
+
+        population = self.create_genome(num_population)
+        print("population: ", population)
+
+        fitness = np.ones((num_population, len(self.fitness_obj)), float)
+        num_parents = num_population
+
+        for g in range(num_generations):
+            finetine_iter = 1 if g < num_generations // 2 else num_finetune
+            for f in range(finetine_iter):
+                gen_best = -float("Inf")
+                gen_best_idx = 0
+                count_non_valid = 0
+                if num_parents < 1:  # restart
+                    print("restart!")
+                    return 
+                population, fitness, parents = self.select_parents(population, fitness, num_parents, num_population,
+                                                                  stage_idx, first_stage_value=prev_stage_value)
+                elite = copy.deepcopy(parents[:num_elite])
+                elite_fitness = copy.deepcopy(fitness[:(len(elite))])
+
+                self.crossover_tile(parents, population, alpha=0.57)
+             
+                # 变异
+                for pop in population:
+                    self.shuffle_factor_order(pop, alpha=0.5)
+                    self.mutate_factor(pop, alpha=0.5)
+                    self.mutate_permutation(pop, alpha=0.5)
+                    self.mutate_dimemsion(pop, alpha=0.5)
+
+                population = elite + population
+                fitness = np.concatenate((elite_fitness, fitness))
+                
+                reward_list = pool.map(self.thread_fun, population)
+                for i in range(len(population)):
+                    reward =reward_list[i]
+                    if reward is None or any(np.array(reward) >= 0):
+                        reward = [float("-Inf") for _ in range(len(best_reward))]
+                        count_non_valid += 1
+                    elif stage_idx > 0:
+                        if any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
+                            reward = [float("-Inf") for _ in range(len(best_reward))]
+                            count_non_valid += 1
+                    judging_reward = reward[stage_idx]
+                    fitness[i] = reward
+                    if gen_best < judging_reward:
+                        gen_best = judging_reward
+                        gen_best_idx = i
+                judging_best_reward = best_reward[stage_idx]
+                if judging_best_reward < gen_best:
+                    best_reward = copy.deepcopy(fitness[gen_best_idx])
+                    best_sol = copy.deepcopy(population[gen_best_idx])
+
+                num_parents = int(num_population * parents_ratio)
+                num_parents = min(num_parents, len(population) - count_non_valid)
+                parents_ratio *= ratio_decay
+                best_reward_list.append(best_reward)
+                chkpt = {
+                    "best_reward": best_reward,
+                    "best_reward_list": best_reward_list,
+                    "best_sol": best_sol,
+                    "num_population": num_population,
+                    "num_generations": num_generations,
+                    "fitness_use": self.fitness_obj
+                }
+                
+                print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
+        
+        remainders = {}
+        for d in best_sol.factor_dict.keys():
+            T = self.problem[d]
+            F = best_sol.factor_dict[d]
+            remainders[d] = utils.find_remainders(F[::-1], T)
+        best_mapping = utils.generate_mapping(best_sol.factor_dict, best_sol.permutation_list, best_sol.target_list, best_sol.type_list, best_sol.bypass_list, remainders)
+        path = f'{self.report_dir}/map.yaml'
+        utils.store_yaml(path, best_mapping)
+        utils.run_timeloop(f'{self.report_dir}/arch.yaml', f'{self.report_dir}/problem.yaml', path)
+
+        pool.close()
+        return chkpt
+        
 
     def get_default_buffer_energy_cost(self):
         buf_energy_cost = {'DRAM': 200,
