@@ -463,12 +463,12 @@ class Mapping:
 
 class Mapspace:
     def __init__(self, mapspace_path):
-        mapspace_dict = utils.parse_yaml(mapspace_path)
+        self.mapspace_dict = utils.parse_yaml(mapspace_path)
 
         buffer_tensor_dict = {}
         bypass_data = []
         # 分析每个存储层次保存的张量
-        for constraint in mapspace_dict['mapspace']['constraints']:
+        for constraint in self.mapspace_dict['mapspace']['constraints']:
             target = constraint['target']
             keep_tensors = constraint['keep']
             buffer_tensor_dict[target] = keep_tensors

@@ -12,12 +12,24 @@ logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)
             datefmt='%Y-%m-%d:%H:%M:%S',
                 level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
 
 def run_timeloop(arch, prob, mapp, cwd=os.getcwd(), stdout=None, stderr=None):
     try:
-        p = subprocess.check_call(['/home/mingchuan/Desktop/zousheng/accelergy-timeloop-infrastructure/src/timeloop/build/timeloop-model', str(arch), str(prob), str(mapp)], \
-                                  cwd=cwd, stdout=stdout, stderr=stderr)
-        logger.info('run_timeloop> timeloop-model {} {} {}'.format(arch, prob, mapp))
+        # p = subprocess.check_call(['/home/mingchuan/Desktop/zousheng/accelergy-timeloop-infrastructure/src/timeloop/build/timeloop-model', str(arch), str(prob), str(mapp)], \
+        #                             cwd=cwd, stdout=stdout, stderr=stderr)
+        p = subprocess.check_call(['timeloop-model', str(arch), str(prob), str(mapp)], \
+                                    cwd=cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        logger.info('run_timeloop> timeloop-model {} {} {} in {}'.format(arch, prob, mapp, cwd))
+        return True
+    except:
+        return False
+
+def run_cosa(output_path, arch_path, map_path, prob_path, cwd=os.getcwd(), stdout=None, stderr=None):
+    try:
+        p = subprocess.check_call(['cosa', '-o', str(output_path), '-ap', str(arch_path), '-mp', str(map_path), '-pp', str(prob_path)], \
+                                    cwd=cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        logger.info('run_cosa> cosa -o {} -ap {} -mp {} -pp {}'.format(output_path, arch_path, map_path, prob_path))
         return True
     except:
         return False

@@ -1,4 +1,4 @@
-from pulp import LpMaximize, LpProblem, LpVariable
+from pulp import LpMaximize, LpProblem, LpVariable, LpInteger
 import math
 
 # 为了解决变量之间存在乘法的问题，所有变量都是取log2之后的值
@@ -10,7 +10,7 @@ cols = 8 # 问题维度R, S, P, Q, C, K, H, N
 prob = LpProblem("Matrix_Mapping_Problem", LpMaximize)
 
 # 创建矩阵变量，每个元素是一个非负的连续变量
-matrix = [[LpVariable(f"x_{i}_{j}", lowBound=0) for j in range(cols)] for i in range(rows)]
+matrix = [[LpVariable(f"x_{i}_{j}", lowBound=0, cat=LpInteger) for j in range(cols)] for i in range(rows)]
 
 
 
@@ -94,48 +94,31 @@ prob += matrix[1][0] + matrix[1][1] + matrix[1][2] + matrix[1][3] + matrix[1][4]
 prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(16)
 
 # 列约束：维度大小
-col_upper_bounds = [math.log2(11), math.log2(11), math.log2(55), math.log2(55), math.log2(3), math.log2(64), math.log2(1), math.log2(1)]#[0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
+# col_upper_bounds = [math.log2(11), math.log2(11), math.log2(55), math.log2(55), math.log2(3), math.log2(64), math.log2(1), math.log2(1)]#[0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
+col_upper_bounds = [4, 4, 6, 6, 2, 6, 0, 0]#[0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
 for j in range(cols):
     col_sum = sum(matrix[i][j] for i in range(rows))
     prob += col_upper_bounds[j] == col_sum
 print(prob)
-# 求解问题并找到k个解
-k = 3  # 你可以修改为你想要的解的数量
-solutions = []
-for _ in range(k):
-    prob.solve()
-    if prob.status == 1:
-        solution = [[matrix[i][j].value() for j in range(cols)] for i in range(rows)]
-        solutions.append(solution)
-        # 添加约束以排除当前解
-        new_constraint = None
-        for i in range(rows):
-            for j in range(cols):
-                current_constraint = matrix[i][j] != solution[i][j]
-                if new_constraint is None:
-                    new_constraint = current_constraint
-                else:
-                    new_constraint = new_constraint | current_constraint
-        prob += new_constraint
-    else:
-        break
+
+prob.solve()
+solution = [[matrix[i][j].value() for j in range(cols)] for i in range(rows)]
+
+
 
 # 输出结果
-for idx, solution in enumerate(solutions):
-    print(f"Solution {idx + 1}:")
-    print("Status:", prob.status)
-    print("Optimal value:", prob.objective.value())
-    for i in range(rows):
-        for j in range(cols):
-            print(f"x_{i}_{j} =", solution[i][j])
-    for i in range(rows):
-        row_values = []
-        for j in range(cols):
-            # 对矩阵元素取以 2 为底的指数
-            exp_value = 2 ** solution[i][j]
-            row_values.append(f"{exp_value:.2f}")  # 保留两位小数
-        # 按行输出
-        print(" ".join(row_values))
+
+for i in range(rows):
+    for j in range(cols):
+        print(f"x_{i}_{j} =", solution[i][j])
+for i in range(rows):
+    row_values = []
+    for j in range(cols):
+        # 对矩阵元素取以 2 为底的指数
+        exp_value = 2 ** solution[i][j]
+        row_values.append(f"{exp_value:.2f}")  # 保留两位小数
+    # 按行输出
+    print(" ".join(row_values))
 
 
 # 实现一个从解到合法映射的算法，核心是确定如何让比规模小的因数列表扩展到该规模。

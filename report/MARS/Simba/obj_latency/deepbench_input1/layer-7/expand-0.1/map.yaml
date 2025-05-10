@@ -1,0 +1,68 @@
+mapping:
+- factors: H=1 K=1 Q=1 R=1 S=1 P=1 C=1 N=1
+  permutation: HKQRSPCN
+  target: Registers
+  type: temporal
+- factors: R=2,1 S=1 C=11,7 P=1 Q=1 K=1 N=1 H=1
+  permutation: RSCPQKNH
+  target: AccumulationBuffer
+  type: spatial
+- factors: Q=1 P=7 N=1 R=1 S=1 C=3 K=1 H=1
+  permutation: QPNRSCKH
+  target: AccumulationBuffer
+  type: temporal
+- factors: K=1 S=2,1 R=2 P=1 Q=1 C=1 N=1 H=1
+  permutation: KSRPQCNH
+  target: WeightBuffer
+  type: temporal
+- factors: R=1 S=1 P=1 Q=1 C=1 K=1 N=1 H=1
+  permutation: RSPQCKNH
+  target: InputBuffer
+  type: temporal
+- factors: H=1 P=2 Q=1 N=1 R=1 S=1 C=1 K=2
+  permutation: HPQNRSCK
+  target: GlobalBuffer
+  type: spatial
+- factors: R=1 S=1 P=1 Q=7 C=1 K=128 H=1 N=1
+  permutation: RSPQCKHN
+  target: GlobalBuffer
+  type: temporal
+- factors: R=1 S=2 C=4 P=1 Q=2 K=1 N=1 H=1
+  permutation: RSCPQKNH
+  target: DRAM
+  type: temporal
+- bypass:
+  - Inputs
+  - Outputs
+  keep:
+  - Weights
+  target: Registers
+  type: datatype
+- bypass:
+  - Weights
+  - Inputs
+  keep:
+  - Outputs
+  target: AccumulationBuffer
+  type: datatype
+- bypass:
+  - Inputs
+  - Outputs
+  keep:
+  - Weights
+  target: WeightBuffer
+  type: datatype
+- bypass:
+  - Weights
+  - Outputs
+  keep:
+  - Inputs
+  target: InputBuffer
+  type: datatype
+- bypass:
+  - Weights
+  keep:
+  - Inputs
+  - Outputs
+  target: GlobalBuffer
+  type: datatype

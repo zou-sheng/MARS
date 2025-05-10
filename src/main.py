@@ -27,7 +27,7 @@ def main():
     
     report_dir = os.path.join(opt.report_dir, '{}'.format(mapper), '{}'.format(accelerator),'obj_{}'.format(opt.optim_obj),
                               '{}_input{}'.format(workload, batch_size), 'layer-{}'.format(layer_id), 'expand-{}'.format(expanded_scope))
-   
+    os.makedirs(report_dir, exist_ok=True)
     with open(os.path.join(benchmark_dir, '{}_workload/{}.yaml'.format(workload, layer)), 'r') as fd:
         layer_problem = yaml.load(fd, Loader=yaml.SafeLoader)
         problem = {'problem': {
@@ -92,8 +92,8 @@ def main():
         expanded_dict = yaml.load(fd, Loader=yaml.SafeLoader)
 
     ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict)
-    chkpt = ME.run(num_generations=opt.epochs)
-    os.makedirs(report_dir, exist_ok=True)
+    chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
+    
     with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
         pickle.dump(chkpt, fd)
 
@@ -102,6 +102,7 @@ def main():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--optim_obj', type=str, default="latency", help='optimization objective')
+    parser.add_argument('--population', type=int, default=20, help='number of population')
     parser.add_argument('--epochs', type=int, default=10, help='number of generations/epochs')
     parser.add_argument('--report_dir', type=str, default='../report', help='The report directory')
     parser.add_argument('--accelerator', type=str, default='Simba', help='accelerator accelerator')

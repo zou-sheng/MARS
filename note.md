@@ -34,3 +34,6 @@ export LD_LIBRARY_PATH=/home/mingchuan/Desktop/zousheng/accelergy-timeloop-infra
 
 
 将Soter作为初始种群送进去，效果并没有提升，看来soter方法已经很好了，是上限不够，应该设计问题规模。
+
+
+Soter是生成一组解，然后让transformer学习这组解好的为什么好，然后给出调整策略，不断迭代，但是限制非常多，只能做一或两级的并行，更高的并行度无法生成，并且修改了对应的并行度，效果并不好，值在给的架构上效果好。
