@@ -10,7 +10,7 @@ cols = 8 # 问题维度R, S, P, Q, C, K, H, N
 prob = LpProblem("Matrix_Mapping_Problem", LpMaximize)
 
 # 创建矩阵变量，每个元素是一个非负的连续变量
-matrix = [[LpVariable(f"x_{i}_{j}", lowBound=0, cat=LpInteger) for j in range(cols)] for i in range(rows)]
+matrix = [[LpVariable(f"x_{i}_{j}", lowBound=0) for j in range(cols)] for i in range(rows)]
 
 
 
@@ -81,21 +81,12 @@ matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matri
 
 # 并行度不能超过前面每一级的instance数
 # 不能超过register
-prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(1024)
-# 不能超过AccumulationBuffer
-prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(16)
-# 不能超过WeightBuffer
-prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(16)
-# InputBuffer
-prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(16)
-
 # 应该是
-prob += matrix[1][0] + matrix[1][1] + matrix[1][2] + matrix[1][3] + matrix[1][4] + matrix[1][5] + matrix[1][6] + matrix[1][7] <= math.log2(64)
-prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(16)
+prob += matrix[1][0] + matrix[1][1] + matrix[1][2] + matrix[1][3] + matrix[1][4] + matrix[1][5] + matrix[1][6] + matrix[1][7] <= math.log2(32)
+prob += matrix[5][0] + matrix[5][1] + matrix[5][2] + matrix[5][3] + matrix[5][4] + matrix[5][5] + matrix[5][6] + matrix[5][7] <= math.log2(32)
 
 # 列约束：维度大小
-# col_upper_bounds = [math.log2(11), math.log2(11), math.log2(55), math.log2(55), math.log2(3), math.log2(64), math.log2(1), math.log2(1)]#[0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
-col_upper_bounds = [4, 4, 6, 6, 2, 6, 0, 0]#[0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
+col_upper_bounds = [math.log2(5), math.log2(5), math.log2(36), math.log2(36), math.log2(64), math.log2(192), math.log2(1), math.log2(1)]#[0, 0, math.log2(14), math.log2(14), math.log2(1024), math.log2(512), 0, 0] # 维度值
 for j in range(cols):
     col_sum = sum(matrix[i][j] for i in range(rows))
     prob += col_upper_bounds[j] == col_sum
