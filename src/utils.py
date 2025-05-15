@@ -131,9 +131,10 @@ def generate_problem_for_cosa(prob_path, dimension_dict):
         yaml.dump(dimension_dict, yaml_file, default_flow_style=False)
 
 def find_remainders(A, T):
+    A = A.copy()
     n = len(A) - 1  # n is the number of b's
     # Calculate constant part
-   
+    
     constant_part = (A[0] - 1) * np.prod(A[1:])  # 计算常量部分
     while  T - constant_part <= 0:
         A[0] = A[0] - 1
@@ -141,7 +142,7 @@ def find_remainders(A, T):
 
     required_sum = T - constant_part  # 需要的和
     results = []
-
+    outermost_idx = -1
     # 使用递归穷举 b1, b2, ..., bn
     def backtrack(index, current_b):
         if index == n:  # 已经填充完 b1 到 bn
@@ -160,7 +161,16 @@ def find_remainders(A, T):
 
     # 开始回溯
     backtrack(0, [0] * n)
-    return results
+    if not results:
+        print(f"Warning: No valid combination found for A={A}, T={T}, required_sum={required_sum}")
+        return [], -1
+    lst = results[0]
+    for i in range(len(lst)):
+        if lst[i] != 1:
+            # 检查当前索引之后的所有元素是否都为1
+            if all(x == 1 for x in lst[i+1:]):
+                outermost_idx = i
+    return results, outermost_idx
 
 def expand_factors(factors, target):
 
@@ -264,7 +274,39 @@ def generate_mapping_for_lpsolver(solution, dimension, targets, types, bypass_da
 
     return mapping, dimension_dict
 
-def generate_mapping(factors, permutations, targets, types, bypass_data, remainders={}):
+def generate_mapping_for_lpsolver2(solution, targets, types, bypass_data):
+    permutations = ['RSPQCKHN'] * len(targets)
+    
+    rounded_array = [[math.floor(num) for num in row] for row in solution]
+    
+    # 按列提取出来
+    extracted_columns = [list(col) for col in zip(*rounded_array)]
+
+    factors_dict = {}
+    factors_dict['R'] = extracted_columns[0]
+    factors_dict['S'] = extracted_columns[1]
+    factors_dict['P'] = extracted_columns[2]
+    factors_dict['Q'] = extracted_columns[3]
+    factors_dict['C'] = extracted_columns[4]
+    factors_dict['K'] = extracted_columns[5]
+    factors_dict['H'] = extracted_columns[6]
+    factors_dict['N'] = extracted_columns[7]
+    dimension_dict = {}
+    dimension_dict['R'] = np.prod(factors_dict['R'])
+    dimension_dict['S'] = np.prod(factors_dict['S'])
+    dimension_dict['P'] = np.prod(factors_dict['P'])
+    dimension_dict['Q'] = np.prod(factors_dict['Q'])
+    dimension_dict['C'] = np.prod(factors_dict['C'])
+    dimension_dict['K'] = np.prod(factors_dict['K'])
+    dimension_dict['H'] = np.prod(factors_dict['H'])
+    dimension_dict['N'] = np.prod(factors_dict['N'])
+
+    mapping = generate_mapping(factors_dict, permutations, targets, types, bypass_data)
+    
+
+    return mapping, dimension_dict
+
+def generate_mapping(factors, permutations, targets, types, bypass_data, remainders={}, outermost_idx={}):
     # 构建结果列表
     mapping = {'mapping': []}
     # 遍历将因数、排列、目标和类型组合成字典
@@ -283,8 +325,11 @@ def generate_mapping(factors, permutations, targets, types, bypass_data, remaind
         factors_str_parts = []  # 使用列表来暂存每个部分
         for key in factors_values:
             if key in remainders  and remainders[key] != [] and remainders[key][0][i] != factors_values[key]:
-                # 添加格式化字符串到列表
-                factors_str_parts.append(f'{key}={factors_values[key]},{remainders[key][0][i]}')
+                if i == outermost_idx[key]:
+                    factors_str_parts.append(f'{key}={remainders[key][0][i]}')
+                else:
+                    # 添加格式化字符串到列表
+                    factors_str_parts.append(f'{key}={factors_values[key]},{remainders[key][0][i]}')
             else:
                 factors_str_parts.append(f'{key}={factors_values[key]}')
 
@@ -342,7 +387,4 @@ def parse_timeloop_output(file_path):
 
 
 if __name__ == "__main__":
-    print(get_factors(16))
-    print(get_prime_factors(16).keys())
-    print(generate_factors_list(15, 3))
-    print(run_cosa())
+    print(find_remainders([1, 1, 1, 6, 1], 5))

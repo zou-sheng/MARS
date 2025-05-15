@@ -1,0 +1,33 @@
+arch:
+  arithmetic:
+    instances: 4096
+    word-bits: 8
+  storage:
+  - name: RegisterIn
+    entries: 16
+    instances: 4096
+    word-bits: 8
+    cluster-size: 64
+    num-ports: 2
+  - name: SynapsesBuffer
+    entries: 32768
+    instances: 1
+    word-bits: 8
+    block-size: 8
+    bandwidth: 16
+    num-ports: 2
+    network-word-bits: 8
+  - name: NeuronsBuffer
+    entries: 32768
+    instances: 1
+    word-bits: 8
+    block-size: 8
+    bandwidth: 16
+    num-ports: 2
+  - name: DRAM
+    technology: DRAM
+    instances: 1
+    word-bits: 8
+    block-size: 8
+    bandwidth: 17.9
+    num-ports: 2

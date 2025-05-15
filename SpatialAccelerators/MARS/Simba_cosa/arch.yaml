@@ -11,25 +11,25 @@ arch:
     num-ports: 2
     num-banks: 8
   - name: AccumulationBuffer
-    entries: 3072
+    entries: 64
     instances: 32
     word-bits: 24
-    cluster-size: 1
+    cluster-size: 8
     network-word-bits: 16
     num-ports: 2
     num-banks: 2
   - name: WeightBuffer
-    entries: 32768
+    entries: 16384
     instances: 32
     word-bits: 8
-    block-size: 4
+    block-size: 8
     num-ports: 1
     num-banks: 8
   - name: InputBuffer
-    entries: 8192
+    entries: 4096 
     instances: 32
     word-bits: 8
-    block-size: 4
+    block-size: 8
     num-ports: 2
     num-banks: 1
   - name: GlobalBuffer
@@ -44,4 +44,5 @@ arch:
     instances: 1
     word-bits: 8
     block-size: 64
-    bandwidth: 1    
+    bandwidth: 20.0
+

@@ -1,0 +1,32 @@
+mapspace:
+  constraints:
+  - target: RegisterIn
+    type: datatype
+    keep:
+      - Inputs
+    bypass:
+      - Outputs
+      - Weights
+  - target: SynapsesBuffer
+    type: datatype
+    keep:
+    - Weights
+    bypass:
+    - Inputs
+    - Outputs
+  - target: NeuronsBuffer
+    type: datatype
+    keep:
+    - Inputs
+    - Outputs
+    bypass:
+    - Weights
+  - target: DRAM
+    type: datatype
+    keep:
+      - Inputs
+      - Outputs
+      - Weights
+
+
+

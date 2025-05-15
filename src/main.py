@@ -6,19 +6,20 @@ import pickle
 from explorer import MappingExplorer
 
 def main():
-    opt             = parser.parse_args()
-    benchmark_dir   = '../Benchmarks'
-    accelerator_dir = '../SpatialAccelerators'
-    config_dir      = '../config'
-    accelerator     = opt.accelerator
-    mapper          = opt.mapper
-    type            = opt.type
-    version         = opt.version
-    workload        = opt.workload
-    layer_id        = opt.layer_id
-    expanded_scope  = opt.expanded_scope
-    expanded_config = opt.expanded_config
-    batch_size      = opt.batch_size
+    opt                        = parser.parse_args()
+    benchmark_dir              = '../Benchmarks'
+    accelerator_dir            = '../SpatialAccelerators'
+    config_dir                 = '../config'
+    accelerator                = opt.accelerator
+    mapper                     = opt.mapper
+    type                       = opt.type
+    version                    = opt.version
+    workload                   = opt.workload
+    layer_id                   = opt.layer_id
+    expanded_scope             = opt.expanded_scope
+    expanded_config            = opt.expanded_config
+    batch_size                 = opt.batch_size
+    parameter_dimension        = opt.parameter_dimension
     
     with open(os.path.join(benchmark_dir, '{}_workload/layers.yaml'.format(workload)), 'r') as fd:
         layers = yaml.load(fd, Loader=yaml.SafeLoader)
@@ -91,7 +92,7 @@ def main():
     with open(os.path.join(config_dir, '{}.yaml'.format(expanded_config)), 'r') as fd:
         expanded_dict = yaml.load(fd, Loader=yaml.SafeLoader)
 
-    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict)
+    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension)
     chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
     
     with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
@@ -114,5 +115,6 @@ if __name__ == '__main__':
     parser.add_argument('--expanded_scope', type=float, default=1.0, help='expand the scope of the workload, range from 0 to 1')
     parser.add_argument('--expanded_config', type=str, default='expanded_config', help='The configuration file for the expansion of the workload')
     parser.add_argument('--batch_size', type=int, default=1)
+    parser.add_argument('--parameter_dimension', type=int, default=2)
 
     main()

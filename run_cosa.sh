@@ -21,7 +21,7 @@ cd ./src
 # done
 for layer_id in {1..1}
 do
-    python main.py --optim_obj latency --population 50 --epochs 50 --accelerator Simba_cosa --mapper Cosa --type arch --version v1 --workload alexnet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj latency --population 50 --epochs 20 --accelerator Simba_cosa --mapper Cosa --type arch --version v1 --workload alexnet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 done
 # for layer_id in {0..5}
 # do
