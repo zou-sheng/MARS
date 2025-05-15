@@ -322,172 +322,468 @@ class MappingExplorer:
         print("time2: ", time.time()-start_time)
         return solution
     
-
-    # --------------------- 优化后的maximize_row_with_constraint ---------------------
-    def _maximize_row_with_constraint(self, data_np, row, constraint_func, target, objective_func, fixed_rows):
-        """直接操作NumPy数组，避免数据格式转换"""
-        row_data = data_np[row]
-        # 找出原始值不为1的列（向量化筛选）
-        non_one_mask = row_data != 1
-        columns_to_process = np.flatnonzero(non_one_mask).astype(int)  # 直接获取列索引
-        
-        if columns_to_process.size == 0:
-            return data_np.copy()  # 无列可处理，返回拷贝
-        
-        # 按值降序排列列索引（向量化排序）
-        col_values = row_data[columns_to_process]
-        sorted_indices = np.argsort(-col_values)
-        columns_to_process = columns_to_process[sorted_indices]
-        
-        best_data = data_np.copy()
-        best_objective = 0.0
-        
-        def bfs(col_index):
-            nonlocal best_objective
-            stack = [(0, best_data[row].copy())]  # (列索引, 当前行)
+    def _integerize_with_staged_optimization1(self, solution):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """
+            计算在固定行确定后，各个存储层次的剩余容量
             
-            while stack:
-                col_index, current_row = stack.pop()
+            参数:
+            data: 当前的数据矩阵
+            fixed_rows: 已固定的行索引列表
+            
+            返回:
+            一个字典，包含每个存储层次的总容量、已占容量和剩余容量
+            """
+            result = {}
+                     
+            # 处理buffer约束
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
                 
-                # 检查约束条件
-                if constraint_func() <= target and self._remaining_capacity_constraint(best_data, fixed_rows):
-                    current_obj = objective_func()
-                    if current_obj > best_objective:
-                        best_objective = current_obj
-                        best_data[:] = data_np
-                
-                if col_index >= len(columns_to_process):
+                # 跳过DRAM
+                if buffer_name == 'DRAM':
                     continue
+
+                # 获取该buffer约束涉及的所有行
+                all_involved_rows = list(range(buffer_level + 1))
+                
+                # 计算buffer约束的已占容量
+                used_capacity = 0
+                tensors_list = self.buffer_tensor_dict[buffer_name]
+                
+                for tensor in tensors_list:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            # 如果行已固定，使用其值；否则假设为1
+                            if l in fixed_rows:
+                                tensor_capacity *= data[l][dim]
+                            else:
+                                tensor_capacity *= 1  # 假设值为1
                     
+                    used_capacity += tensor_capacity
+                
+                result[buffer_name] = used_capacity            
+            return result
+
+        def remaining_capacity_constraint(data, fixed_rows):
+            """
+            检查在固定行确定后，指定存储层次的剩余容量约束是否满足
+            
+            参数:
+            data: 当前的数据矩阵
+            fixed_rows: 已固定的行索引列表
+            storage_name: 存储层次名称
+            
+            返回:
+            True如果约束满足，False否则
+            """
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            
+            # 检查指定存储层次的剩余容量是否非负
+            for buffer_key in sorted(self.buffer_name_list.keys()):                
+                buffer_capacity = self.buffer_size_list[buffer_key]
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > buffer_capacity:
+                    return False
+            
+            return True 
+
+               
+        def maximize_row_with_constraint(data, row, constraint_func, target, objective_func, fixed_rows):
+            """
+            递归DFS版本：最大化指定行，同时满足特定约束，只处理原始值不为1的列
+            """
+            # 找出原始值为1的位置
+            fixed_positions = np.where(data[row] == 1)[0]
+            # 确定需要处理的列（原始值不为1的列）
+            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
+
+            # 按原始值降序排序（关键修改点）
+            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
+
+            best_data = data.copy()
+            best_objective = 0
+            iterations = [0]
+
+            def bfs(current_data, col_index):
+                iterations[0] += 1
+                nonlocal best_data, best_objective
+                # 检查约束条件
+                if constraint_func(current_data) <= target:
+                    # 检查所有剩余容量约束
+                    if remaining_capacity_constraint(current_data, fixed_rows + [row]):
+                        current_objective = objective_func(current_data)
+                        if current_objective > best_objective:
+                            best_data = current_data.copy()
+                            best_objective = current_objective
+                            # print(f"找到更好的解，目标函数值: {best_objective}")
+                        return True
+
+                if col_index >= len(columns_to_process):
+                    return False
+
+                # 获取当前要处理的列索引
                 actual_col = columns_to_process[col_index]
-                original_value = current_row[actual_col]
-                
-                # 从大到小尝试值
+                original_value = data[row][actual_col]
+
+                # 从大到小尝试值，找到第一个满足条件的值后停止
                 for value in range(original_value, 0, -1):
-                    new_row = current_row.copy()
-                    new_row[actual_col] = value
-                    data_np[row] = new_row
-                    stack.append((col_index + 1, new_row.copy()))
-            
-            # 恢复原始行数据
-            data_np[row] = best_data[row]
+                    new_data = current_data.copy()
+                    new_data[row][actual_col] = value
 
+                    # # 检查是否满足基本条件
+                    # if np.all(new_data > 0):
+                    #     # 检查约束条件
+                    #     if constraint_func(new_data) > target:
+                    #         continue
+                    #     print("new_data2", new_data)
+                    # 递归处理下一列
+                    flag = bfs(new_data, col_index + 1)
+
+                    if flag:
+                        break
+
+            # 从第一列开始DFS
+            bfs(data.copy(), 0)
+
+            # print(f"第{row}行最大化完成，目标函数值: {best_objective}，共执行 {iterations[0]} 次迭代")
+            return best_data
         
-        bfs(0)
-        return best_data
+        # 已固定的行列表
+        fixed_rows = []
 
+        data = np.ceil(solution).astype(int)
+        for spatial_name in self.spatial_level:
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            sp_level = self.spatial_level[spatial_name] 
+            data = maximize_row_with_constraint(data, sp_level, lambda x: np.prod(x[sp_level]), spatial_capacity, lambda x: np.prod(x[sp_level]), fixed_rows)
+            fixed_rows.append(sp_level)
 
-    # --------------------- 约束检查函数（复用向量化逻辑）---------------------
-    def _remaining_capacity_constraint(self, data_np, fixed_rows_set):
-        """使用集合进行固定行检查"""
-        for buffer_key in sorted(self.buffer_name_list.keys()):
-            buffer_name = self.buffer_name_list[buffer_key]
-            if buffer_name == 'DRAM':
-                continue
+        def create_buffer_constraint(buffer_name):
+            """创建用于maximize_row_with_constraint的约束函数"""
+            def constraint_func(data):
+                buffer_level = self.temporal_level[buffer_name]
+                tensors_list = self.buffer_tensor_dict[buffer_name]
+                buffer_capacity = 0
                 
-            capacity = self._calculate_remaining_capacity_for_buffer(data_np, fixed_rows_set, buffer_name)
-            if capacity > self.buffer_size_list[buffer_key]:
-                return False
-        
-        return True
-    
-    def _calculate_remaining_capacity_for_buffer(self, data_np, fixed_rows_set, buffer_name):
-        """计算单个buffer的容量"""
-        buffer_level = self.temporal_level[buffer_name]
-        tensors_list = self.buffer_tensor_dict[buffer_name]
-        total_cap = 0
-        
-        for tensor in tensors_list:
-            dims = self.tensor_dimensions[tensor]
-            involved_rows = np.arange(buffer_level + 1)
-            rows_mask = np.isin(involved_rows, list(fixed_rows_set))
-            rows_data = np.where(rows_mask[:, None], data_np[involved_rows[:, None], dims], 1)
-            total_cap += np.prod(rows_data, axis=(0, 1))
-        
-        return total_cap
+                for tensor in tensors_list:
+                    tmp = 1
+                    for l in range(buffer_level+1):
+                        for dim in self.tensor_dimensions[tensor]:
+                            tmp *= data[l][dim]
+                    buffer_capacity += tmp
+                return buffer_capacity 
 
-    def _integerize_with_staged_optimization(self, solution):
-        data_np = np.ceil(solution).astype(int)
-        fixed_rows = set()  # 用集合加速查询
-        # 缓存类属性
-        buffer_name_list = self.buffer_name_list
-        temporal_level = self.temporal_level
-        buffer_tensor_dict = self.buffer_tensor_dict
-        spatial_level = self.spatial_level
-        spatial_size_list = self.spatial_size_list
-        dimension = self.dimension
-
-        # 预计算所有张量的维度信息
-        tensor_dimensions_cache = {
-            buffer_name: [self.tensor_dimensions[tensor] for tensor in tensors]
-            for buffer_name, tensors in self.buffer_tensor_dict.items()
-        }
-
-        # --------------------- 空间层处理 ---------------------
-        for spatial_name in spatial_level:
-            sp_level = spatial_level[spatial_name]
-            spatial_capacity = spatial_size_list[spatial_name]
-            
-            # 定义无参约束函数，直接捕获 data_np
-            constraint_func = lambda: np.prod(data_np[sp_level])
-            objective_func = lambda: np.prod(data_np[sp_level])
-            
-            data_np = self._maximize_row_with_constraint(
-                data_np, sp_level,
-                constraint_func=constraint_func,  # 无参函数
-                target=spatial_capacity,
-                objective_func=objective_func,  # 无参函数
-                fixed_rows=fixed_rows
-            )
-            fixed_rows.add(sp_level)
-
-        # --------------------- 缓冲层处理 ---------------------
-        def vectorized_constraint(buffer_level, tensor_dims, fixed_rows_set):
-            """向量化约束计算（闭包捕获fixed_rows_set）"""
-            involved_rows = np.arange(buffer_level + 1)
-            rows_mask = np.isin(involved_rows, list(fixed_rows_set))  # 转换为列表进行向量化判断
-            rows_data = np.where(rows_mask[:, None], data_np[involved_rows[:, None], tensor_dims], 1)
-            return np.sum(np.prod(rows_data, axis=(0, 1)))
+            return constraint_func
         
-        for buffer_key in sorted(buffer_name_list.keys()):
-            buffer_name = buffer_name_list[buffer_key]
+        
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            buffer_name = self.buffer_name_list[buffer_key]
+            buffer_level = self.temporal_level[buffer_name]
             if buffer_name == 'DRAM':
                 break
-            buffer_level = temporal_level[buffer_name]
-            buffer_capacity = self.buffer_size_list[buffer_key]
-            tensor_dims_list = tensor_dimensions_cache[buffer_name]
-            
-            def constraint_func(buffer_level=buffer_level, tensor_dims_list=tensor_dims_list):
-                return sum(
-                    vectorized_constraint(buffer_level, dims, fixed_rows)
-                    for dims in tensor_dims_list
-                )
+            constraint_func = create_buffer_constraint(buffer_name)  
+            data = maximize_row_with_constraint(data, buffer_level, constraint_func, buffer_capacity, constraint_func, fixed_rows)
+            fixed_rows.append(buffer_level)
 
+        def compute_last_row(data):
+            """计算最后一行的值，每一列等于对应的target除以这一列前几行的乘积向上取整"""
+            # 计算前n-1行的乘积
+            product = np.prod(data[:len(data)-2], axis=0)
             
-            # 调用优化后的maximize_row_with_constraint
-            data_np = self._maximize_row_with_constraint(
-                data_np, buffer_level,
-                constraint_func=lambda: constraint_func(),  # 包装为无参函数
-                target=buffer_capacity,
-                objective_func=constraint_func,  # 目标函数可复用约束函数（若目标为最小化约束）
-                fixed_rows=fixed_rows
+            # 获取对应的target值
+            targets = np.array(self.dimension)
+            
+            # 计算最后一行的值：target除以乘积，然后向上取整
+            last_row = np.ceil(targets / product).astype(int)
+            
+            # 确保最后一行的每个元素至少为1
+            last_row = np.maximum(last_row, 1)
+            
+            # 更新数据
+            new_data = data.copy()
+            new_data[len(data)-1] = last_row
+            
+            # print("最后一行计算完成")
+            return new_data
+
+        solution = compute_last_row(data)
+        return solution
+    
+    def _integerize_with_staged_optimization2(self, solution):
+        # 已固定的行列表
+        fixed_rows = set()
+
+        data = np.ceil(solution).astype(np.int64)
+        
+        # 处理空间层
+        for spatial_name in self.spatial_level:
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            sp_level = self.spatial_level[spatial_name]
+            data = maximize_row_with_constraint(
+                self.buffer_info,
+                data,
+                sp_level,
+                lambda x: np.prod(x[sp_level]),
+                spatial_capacity,
+                lambda x: np.prod(x[sp_level]),
+                fixed_rows
+            )
+            fixed_rows.add(sp_level)
+        
+        # 处理缓冲层
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            buffer_name = self.buffer_name_list[buffer_key]
+            buffer_level = self.temporal_level[buffer_name]
+            
+            if buffer_name == 'DRAM':
+                break
+            
+            def constraint_func(data):
+                buffer_level = self.temporal_level[buffer_name]
+                tensors_list = self.buffer_tensor_dict[buffer_name]
+                buffer_capacity = 0
+                
+                for tensor in tensors_list:
+                    tmp = 1
+                    for l in range(buffer_level + 1):
+                        for dim in self.tensor_dimensions[tensor]:
+                            tmp *= data[l, dim]
+                    buffer_capacity += tmp
+                return buffer_capacity
+            
+            data = maximize_row_with_constraint(
+                self.buffer_info,
+                data,
+                buffer_level,
+                constraint_func,
+                buffer_capacity,
+                constraint_func,
+                fixed_rows
             )
             fixed_rows.add(buffer_level)
         
-        # --------------------- 计算最后一行 ---------------------
-        def compute_last_row():
-            """原位计算最后一行（避免拷贝）"""
-            if len(data_np) < 2:
-                return data_np.tolist()
-            # 计算前n-1行的乘积（跳过值为1的行，避免无效计算）
-            product = np.prod(data_np[:-1], axis=0, where=data_np[:-1] != 1, initial=1)
-            last_row = np.ceil(np.array(dimension) / product).astype(int)
-            last_row = np.maximum(last_row, 1)
-            data_np[-1] = last_row  # 原位修改
-            return data_np.tolist()
-        
-        return compute_last_row()
+        # 计算最后一行
+        solution = compute_last_row(data, self.dimension)
+        return solution
 
+    def _integerize_with_staged_optimization(self, solution):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """
+            计算在固定行确定后，各个存储层次的剩余容量
+            
+            参数:
+            data: 当前的数据矩阵
+            fixed_rows: 已固定的行索引列表
+            
+            返回:
+            一个字典，包含每个存储层次的总容量、已占容量和剩余容量
+            """
+            result = {}
+                    
+            # 处理buffer约束
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
+                
+                # 跳过DRAM
+                if buffer_name == 'DRAM':
+                    continue
+
+                # 获取该buffer约束涉及的所有行
+                all_involved_rows = list(range(buffer_level + 1))
+                
+                # 计算buffer约束的已占容量
+                used_capacity = 0
+                tensors_list = self.buffer_tensor_dict[buffer_name]
+                
+                for tensor in tensors_list:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            # 如果行已固定，使用其值；否则假设为1
+                            if l in fixed_rows:
+                                tensor_capacity *= data[l][dim]
+                            else:
+                                tensor_capacity *= 1  # 假设值为1
+                    
+                    used_capacity += tensor_capacity
+                
+                result[buffer_name] = used_capacity            
+            return result
+
+        def remaining_capacity_constraint(data, fixed_rows):
+            """
+            检查在固定行确定后，指定存储层次的剩余容量约束是否满足
+            
+            参数:
+            data: 当前的数据矩阵
+            fixed_rows: 已固定的行索引列表
+            
+            返回:
+            True如果约束满足，False否则
+            """
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            
+            # 检查指定存储层次的剩余容量是否非负
+            for buffer_key in sorted(self.buffer_name_list.keys()):                
+                buffer_capacity = self.buffer_size_list[buffer_key]
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > buffer_capacity:
+                    return False
+            
+            return True 
+
+        def compute_column_upper_bound(data, row, col, fixed_rows, constraint_func, target):
+            """
+            计算指定列在满足约束条件下的最大可能值
+            """
+            # 获取原始值作为初始上界
+            original_value = data[row][col]
+            
+            # 尝试二分查找确定上界
+            low, high = 1, original_value
+            best_valid = 1
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_data = data.copy()
+                test_data[row][col] = mid
+                
+                # 检查约束条件
+                if constraint_func(test_data) <= target and remaining_capacity_constraint(test_data, fixed_rows + [row]):
+                    best_valid = mid
+                    low = mid + 1  # 尝试更大的值
+                else:
+                    high = mid - 1  # 尝试更小的值
+            
+            return best_valid
+
+        def maximize_row_with_constraint(data, row, constraint_func, target, objective_func, fixed_rows):
+            """
+            递归DFS版本：最大化指定行，同时满足特定约束，只处理原始值不为1的列
+            """
+            # 找出原始值为1的位置
+            fixed_positions = np.where(data[row] == 1)[0]
+            # 确定需要处理的列（原始值不为1的列）
+            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
+
+            # 按原始值降序排序（关键修改点）
+            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
+
+            best_data = data.copy()
+            best_objective = 0
+            iterations = [0]
+
+            def bfs(current_data, col_index):
+                iterations[0] += 1
+                nonlocal best_data, best_objective
+                # 检查约束条件
+                if constraint_func(current_data) <= target:
+                    # 检查所有剩余容量约束
+                    if remaining_capacity_constraint(current_data, fixed_rows + [row]):
+                        current_objective = objective_func(current_data)
+                        if current_objective > best_objective:
+                            best_data = current_data.copy()
+                            best_objective = current_objective
+                            # print(f"找到更好的解，目标函数值: {best_objective}")
+                        return True
+
+                if col_index >= len(columns_to_process):
+                    return False
+
+                # 获取当前要处理的列索引
+                actual_col = columns_to_process[col_index]
+                original_value = data[row][actual_col]
+
+                # 计算当前列的上界
+                upper_bound = compute_column_upper_bound(current_data, row, actual_col, fixed_rows, constraint_func, target)
+                
+                # 只尝试有效范围内的值
+                for value in range(upper_bound, 0, -1):
+                    new_data = current_data.copy()
+                    new_data[row][actual_col] = value
+
+                    # 递归处理下一列
+                    flag = bfs(new_data, col_index + 1)
+
+                    if flag:
+                        break
+
+            # 从第一列开始DFS
+            bfs(data.copy(), 0)
+
+            # print(f"第{row}行最大化完成，目标函数值: {best_objective}，共执行 {iterations[0]} 次迭代")
+            return best_data
+        
+        # 已固定的行列表
+        fixed_rows = []
+
+        data = np.ceil(solution).astype(int)
+        for spatial_name in self.spatial_level:
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            sp_level = self.spatial_level[spatial_name] 
+            data = maximize_row_with_constraint(data, sp_level, lambda x: np.prod(x[sp_level]), spatial_capacity, lambda x: np.prod(x[sp_level]), fixed_rows)
+            fixed_rows.append(sp_level)
+
+        def create_buffer_constraint(buffer_name):
+            """创建用于maximize_row_with_constraint的约束函数"""
+            def constraint_func(data):
+                buffer_level = self.temporal_level[buffer_name]
+                tensors_list = self.buffer_tensor_dict[buffer_name]
+                buffer_capacity = 0
+                
+                for tensor in tensors_list:
+                    tmp = 1
+                    for l in range(buffer_level+1):
+                        for dim in self.tensor_dimensions[tensor]:
+                            tmp *= data[l][dim]
+                    buffer_capacity += tmp
+                return buffer_capacity 
+
+            return constraint_func
+        
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            buffer_name = self.buffer_name_list[buffer_key]
+            buffer_level = self.temporal_level[buffer_name]
+            if buffer_name == 'DRAM':
+                break
+            constraint_func = create_buffer_constraint(buffer_name)  
+            data = maximize_row_with_constraint(data, buffer_level, constraint_func, buffer_capacity, constraint_func, fixed_rows)
+            fixed_rows.append(buffer_level)
+
+        def compute_last_row(data):
+            """计算最后一行的值，每一列等于对应的target除以这一列前几行的乘积向上取整"""
+            # 计算前n-1行的乘积
+            product = np.prod(data[:len(data)-2], axis=0)
+            
+            # 获取对应的target值
+            targets = np.array(self.dimension)
+            
+            # 计算最后一行的值：target除以乘积，然后向上取整
+            last_row = np.ceil(targets / product).astype(int)
+            
+            # 确保最后一行的每个元素至少为1
+            last_row = np.maximum(last_row, 1)
+            
+            # 更新数据
+            new_data = data.copy()
+            new_data[len(data)-1] = last_row
+            
+            # print("最后一行计算完成")
+            return new_data
+
+        solution = compute_last_row(data)
+        return solution
 
     def is_mapping_valid(self, mapping):
         factors = mapping.factor_dict
@@ -1087,7 +1383,6 @@ class MappingExplorer:
         # exit()
         fitness = np.ones((num_population, len(self.fitness_obj)), float)
         num_parents = num_population
-
         for g in range(num_generations):
             finetine_iter = 1 if g < num_generations // 2 else num_finetune
             for f in range(finetine_iter):
@@ -1150,7 +1445,6 @@ class MappingExplorer:
                 }
                 
                 print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
-        
         pool.close()
 
         remainders = {}

@@ -19,9 +19,9 @@ cd ./src
 # for layer_id in {0..0}
 # do
 #     printf "网络: gpt1, 层数: %d\n" $layer_id 
-#     python main.py --optim_obj latency --population 2 --epochs 1 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj latency --population 50 --epochs 30 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 # done
-for layer_id in {0..0}
+for layer_id in {0..7}
 do
     printf "网络: alexnet, 层数: %d\n" $layer_id 
     python main.py --optim_obj latency --population 50 --epochs 20 --accelerator Simba --mapper MARS --type arch --version v1 --workload alexnet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
