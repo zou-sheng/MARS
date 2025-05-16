@@ -315,11 +315,13 @@ class MappingExplorer:
         # print(prob)
         
         # 记录开始时间
-        start_time = time.time()
+        # start_time = time.time()
         solution = [[2**matrix[i][j].value() for j in range(cols)] for i in range(rows)]
-        print("time1: ", time.time()-start_time)
-        solution = self._integerize_with_staged_optimization(solution)
-        print("time2: ", time.time()-start_time)
+        # print(solution)
+        # print("time1: ", time.time()-start_time)
+        solution = self._integerize_with_staged_optimization(solution, p)
+        # print(solution)
+        # print("time2: ", time.time()-start_time)
         return solution
     
     def _integerize_with_staged_optimization1(self, solution):
@@ -573,7 +575,7 @@ class MappingExplorer:
         solution = compute_last_row(data, self.dimension)
         return solution
 
-    def _integerize_with_staged_optimization(self, solution):
+    def _integerize_with_staged_optimization3(self, solution):
         def calculate_remaining_capacity(data, fixed_rows):
             """
             计算在固定行确定后，各个存储层次的剩余容量
@@ -785,6 +787,294 @@ class MappingExplorer:
         solution = compute_last_row(data)
         return solution
 
+    def _integerize_with_staged_optimization4(self, solution):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """计算存储层次剩余容量"""
+            result = {}
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
+                if buffer_name == 'DRAM':
+                    continue
+                all_involved_rows = list(range(buffer_level + 1))
+                used_capacity = 0
+                for tensor in self.buffer_tensor_dict[buffer_name]:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            tensor_capacity *= data[l][dim] if l in fixed_rows else 1
+                    used_capacity += tensor_capacity
+                result[buffer_name] = used_capacity
+            return result
+
+        def remaining_capacity_constraint(data, fixed_rows):
+            """检查容量约束"""
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > self.buffer_size_list[buffer_key]:
+                    return False
+            return True
+
+        def compute_column_upper_bound(data, row, col, fixed_rows, columns_processed, constraint_func, target):
+            """计算列的有效上界（不超过原始值，且未处理列设为1）"""
+            original_value = data[row][col]
+            test_data = data.copy()
+            
+            # 未处理的列设为1（包括当前列未处理时，但当前列会被单独设置）
+            for c in range(len(data[row])):
+                if c != col and c not in columns_processed:
+                    test_data[row][c] = 1
+            
+            low, high = 1, original_value
+            best_valid = 1
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_data[row][col] = mid  # 设置当前列的值
+                
+                if constraint_func(test_data) <= target and remaining_capacity_constraint(test_data, fixed_rows + [row]):
+                    best_valid = mid
+                    low = mid + 1  # 尝试更大的值，但不超过original_value
+                else:
+                    high = mid - 1
+            
+            # 确保上界不超过原始值
+            return min(best_valid, original_value)
+
+        def maximize_row_with_constraint(data, row, constraint_func, target, objective_func, fixed_rows):
+            """带约束的行最大化（DFS+上界优化）"""
+            fixed_positions = np.where(data[row] == 1)[0]
+            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
+            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
+            best_data = data.copy()
+            best_objective = 0
+            iterations = [0]
+
+            def bfs(current_data, col_index, columns_processed):
+                iterations[0] += 1
+                nonlocal best_data, best_objective
+                
+                if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
+                    current_objective = objective_func(current_data)
+                    if current_objective > best_objective:
+                        best_data = current_data.copy()
+                        best_objective = current_objective
+                    return True
+
+                if col_index >= len(columns_to_process):
+                    return False
+
+                actual_col = columns_to_process[col_index]
+                original_value = data[row][actual_col]
+                columns_processed_current = columns_processed.union({actual_col})
+                
+                # 计算上界并限制不超过原始值
+                upper_bound = compute_column_upper_bound(
+                    current_data, row, actual_col, fixed_rows, columns_processed, constraint_func, target
+                )
+                
+                for value in range(upper_bound, 0, -1):
+                    new_data = current_data.copy()
+                    new_data[row][actual_col] = value
+                    if bfs(new_data, col_index + 1, columns_processed_current):
+                        return True  # 找到最优解后提前终止
+            
+            bfs(data.copy(), 0, set())
+            return best_data
+        
+        # 固定行优化流程
+        fixed_rows = []
+        data = np.ceil(solution).astype(int)
+        
+        # 空间层次优化
+        for spatial_name in self.spatial_level:
+            sp_level = self.spatial_level[spatial_name]
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            data = maximize_row_with_constraint(
+                data, sp_level, 
+                lambda x: np.prod(x[sp_level]), spatial_capacity, 
+                lambda x: np.prod(x[sp_level]), fixed_rows
+            )
+            fixed_rows.append(sp_level)
+        
+        # 存储层次优化
+        def create_buffer_constraint(buffer_name):
+            return lambda x: sum(
+                np.prod(x[self.temporal_level[buffer_name]][self.tensor_dimensions[tensor]]) 
+                for tensor in self.buffer_tensor_dict[buffer_name]
+            )
+                
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                continue
+            buffer_level = self.temporal_level[buffer_name]
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            constraint_func = create_buffer_constraint(buffer_name)
+            data = maximize_row_with_constraint(
+                data, buffer_level, constraint_func, buffer_capacity, constraint_func, fixed_rows
+            )
+            fixed_rows.append(buffer_level)
+        
+        # 计算最后一行
+        def compute_last_row(data):
+            product = np.prod(data[:-1], axis=0, dtype=np.float64)
+            last_row = np.ceil(np.array(self.dimension) / product).astype(int)
+            return np.vstack([data[:-1], np.maximum(last_row, 1)])
+        
+        return compute_last_row(data)
+
+    def _integerize_with_staged_optimization(self, solution, p):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """计算存储层次剩余容量"""
+            result = {}
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
+                if buffer_name == 'DRAM':
+                    continue
+                all_involved_rows = list(range(buffer_level + 1))
+                used_capacity = 0
+                for tensor in self.buffer_tensor_dict[buffer_name]:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            tensor_capacity *= data[l][dim] if l in fixed_rows else 1
+                    used_capacity += tensor_capacity
+                result[buffer_name] = used_capacity
+            return result
+
+        def remaining_capacity_constraint(data, fixed_rows):
+            """检查容量约束"""
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > self.buffer_size_list[buffer_key]:
+                    return False
+            return True
+
+        def compute_column_upper_bound(data, row, col, fixed_rows, columns_processed, constraint_func, target):
+            """计算列的有效上界（不超过原始值，且未处理列设为1）"""
+            original_value = data[row][col]
+            test_data = data.copy()
+            
+            # 未处理的列设为1（包括当前列未处理时，但当前列会被单独设置）
+            for c in range(len(data[row])):
+                if c != col and c not in columns_processed:
+                    test_data[row][c] = 1
+            
+            low, high = 1, original_value
+            best_valid = 1
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_data[row][col] = mid  # 设置当前列的值
+                
+                if constraint_func(test_data) <= target and remaining_capacity_constraint(test_data, fixed_rows + [row]):
+                    best_valid = mid
+                    low = mid + 1  # 尝试更大的值，但不超过original_value
+                else:
+                    high = mid - 1
+            
+            # 确保上界不超过原始值
+            return min(best_valid, original_value)
+
+        def maximize_row_with_constraint(data, row, constraint_func, target, fixed_rows, p_row):
+            """带约束的行最大化（DFS+上界优化）"""
+            fixed_positions = np.where(data[row] == 1)[0]
+            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
+            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
+            best_data = data.copy()
+            best_objective = 0
+            iterations = [0]
+
+            def bfs(current_data, col_index, columns_processed):
+                iterations[0] += 1
+                nonlocal best_data, best_objective
+                
+                if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
+                    current_objective = np.sum(p_row * current_data[row])
+                    if current_objective > best_objective:
+                        best_data = current_data.copy()
+                        best_objective = current_objective
+                    return True
+
+                if col_index >= len(columns_to_process):
+                    return False
+
+                actual_col = columns_to_process[col_index]
+                original_value = data[row][actual_col]
+                columns_processed_current = columns_processed.union({actual_col})
+                
+                # 计算上界并限制不超过原始值
+                upper_bound = compute_column_upper_bound(
+                    current_data, row, actual_col, fixed_rows, columns_processed, constraint_func, target
+                )
+                
+                for value in range(upper_bound, 0, -1):
+                    new_data = current_data.copy()
+                    new_data[row][actual_col] = value
+                    if bfs(new_data, col_index + 1, columns_processed_current):
+                        return True  # 找到最优解后提前终止
+            
+            bfs(data.copy(), 0, set())
+            return best_data
+        
+        # 固定行优化流程
+        fixed_rows = []
+        data = np.ceil(solution).astype(int)
+        
+        # 空间层次优化
+        for spatial_name in self.spatial_level:
+            sp_level = self.spatial_level[spatial_name]
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            p_row = p[sp_level]  # 获取当前行的权重
+            data = maximize_row_with_constraint(
+                data, sp_level, 
+                lambda x: np.prod(x[sp_level]), 
+                spatial_capacity, 
+                fixed_rows,
+                p_row
+            )
+            fixed_rows.append(sp_level)
+        
+        # 存储层次优化
+        def create_buffer_constraint(buffer_name):
+            return lambda x: sum(
+                np.prod(x[self.temporal_level[buffer_name]][self.tensor_dimensions[tensor]]) 
+                for tensor in self.buffer_tensor_dict[buffer_name]
+            )
+                
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                continue
+            buffer_level = self.temporal_level[buffer_name]
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            p_row = p[buffer_level]  # 获取当前行的权重
+            constraint_func = create_buffer_constraint(buffer_name)
+            data = maximize_row_with_constraint(
+                data, buffer_level, 
+                constraint_func, 
+                buffer_capacity, 
+                fixed_rows,
+                p_row
+            )
+            fixed_rows.append(buffer_level)
+        
+        # 计算最后一行
+        def compute_last_row(data):
+            product = np.prod(data[:-1], axis=0, dtype=np.float64)
+            last_row = np.ceil(np.array(self.dimension) / product).astype(int)
+            return np.vstack([data[:-1], np.maximum(last_row, 1)])
+        
+        return compute_last_row(data)
+
     def is_mapping_valid(self, mapping):
         factors = mapping.factor_dict
         key_order = 'RSPQCKHN'
@@ -864,7 +1154,9 @@ class MappingExplorer:
             
             pass
         elif self.mapper == "MARS":
+            start_time = time.time()
             mapping = self.run_parameters(num_population=num_population, num_generations=num_generations)
+            print("耗时: ", time.time() - start_time)
             exit()
             for i in range(num_population):
                 mapping_list.append(copy.deepcopy(mapping))
@@ -885,7 +1177,9 @@ class MappingExplorer:
             elif self.para_dim == 2:
                 row = len(self.temporal_level) + len(self.spatial_level)
                 col = 8
-                para_list.append(np.random.randint(3, 4, size=(row, col)).astype(float))
+                # para_list.append(np.random.randint(1, 11, size=(row, col)).astype(float))
+                
+                para_list.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
             else:
                 print("无效的参数维度，请选择 1 或 2。")
 
@@ -1285,19 +1579,75 @@ class MappingExplorer:
                 for idx in range(len(pop)):
                     pop[idx] = copy.deepcopy(parents[0])
             else:
-                for idx in range(0,len(pop),2):
-                    dad, mom = parents[random.randint(0, len(parents)-1)], parents[random.randint(0, len(parents)-1)]
-                    dad = copy.deepcopy(dad)
-                    mom = copy.deepcopy(mom)
-                    # 为了保证交叉之后的正确性，目前只交换循环顺序，后面可以扩展交换factor
-                    for i in range(len(dad)):
+                for idx in range(0, len(pop), 2):
+                    dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
+                    mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
+                    
+                    # 随机选择交叉策略
+                    crossover_type = random.choice(['row_column', 'multi_point', 'arithmetic'])
+                    
+                    if crossover_type == 'row_column':
+                        # 行/列交叉（原始实现）
                         if random.random() < alpha:
-                            tmp = dad[i]
-                            dad[i] = mom[i]
-                            mom[i] = tmp
+                            if dad.ndim == 2 and random.random() < 0.5:
+                                # 行交叉
+                                row_cutoff = random.randint(1, dad.shape[0]-1)
+                                dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
+                            else:
+                                # 列交叉
+                                if dad.ndim == 1:
+                                    col_cutoff = random.randint(1, len(dad)-1)
+                                else:
+                                    col_cutoff = random.randint(1, dad.shape[1]-1)
+                                dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
+                    
+                    elif crossover_type == 'multi_point':
+                        # 多点交叉
+                        if dad.ndim == 2:
+                            rows, cols = dad.shape
+                            for i in range(rows):
+                                if random.random() < alpha:
+                                    # 随机选择多个交叉点
+                                    num_points = random.randint(1, cols//2)
+                                    points = sorted(random.sample(range(1, cols), num_points))
+                                    for j in range(len(points)):
+                                        if j % 2 == 0:  # 交替交换片段
+                                            start = points[j]
+                                            end = points[j+1] if j+1 < len(points) else cols
+                                            dad[i, start:end], mom[i, start:end] = mom[i, start:end], dad[i, start:end]
+                        else:
+                            if random.random() < alpha:
+                                num_points = random.randint(1, len(dad)//2)
+                                points = sorted(random.sample(range(1, len(dad)), num_points))
+                                for j in range(len(points)):
+                                    if j % 2 == 0:
+                                        start = points[j]
+                                        end = points[j+1] if j+1 < len(points) else len(dad)
+                                        dad[start:end], mom[start:end] = mom[start:end], dad[start:end]
+                    
+                    elif crossover_type == 'arithmetic':
+                        # 算术交叉：生成介于父代之间的子代
+                        if dad.ndim == 2:
+                            rows, cols = dad.shape
+                            for i in range(rows):
+                                for j in range(cols):
+                                    if random.random() < alpha:
+                                        beta = random.uniform(0.3, 0.7)  # 控制混合比例
+                                        tmp = beta * dad[i, j] + (1-beta) * mom[i, j]
+                                        mom[i, j] = beta * mom[i, j] + (1-beta) * dad[i, j]
+                                        dad[i, j] = tmp
+                        else:
+                            for i in range(len(dad)):
+                                if random.random() < alpha:
+                                    beta = random.uniform(0.3, 0.7)
+                                    tmp = beta * dad[i] + (1-beta) * mom[i]
+                                    mom[i] = beta * mom[i] + (1-beta) * dad[i]
+                                    dad[i] = tmp
+                    
                     pop[idx] = dad
                     if idx + 1 < len(pop):
                         pop[idx+1] = mom
+
         
         def shuffle_order(arr, alpha=0.5):
             if arr.ndim == 1:
@@ -1314,7 +1664,7 @@ class MappingExplorer:
             else:
                 raise ValueError("输入数组必须是一维或二维")
             
-        def mutate_factor(arr, alpha=0.5):
+        def mutate_factor1(arr, alpha=0.5):
             if arr.ndim == 1:
                 # 一维数组处理
                 for i in range(len(arr)):
@@ -1330,12 +1680,75 @@ class MappingExplorer:
                     for j in range(cols):
                         if random.random() < alpha:
                             if random.random() < alpha:
-                                arr[i] *= 2
+                                arr[i][j] *= 2
                             else:
-                                arr[i] *= 0.5
+                                arr[i][j] *= 0.5
             else:
                 raise ValueError("输入数组必须是一维或二维")
+
+        def mutate_factor(arr, alpha=0.5, generation=0, max_generations=100):
+            """带自适应幅度的因子变异"""
+            # 变异幅度随代数衰减（早期探索，后期开发）
+            decay_factor = 1.0 - (generation / max_generations) * 0.7
             
+            if arr.ndim == 2:
+                rows, cols = arr.shape
+                for i in range(rows):
+                    for j in range(cols):
+                        if random.random() < alpha:
+                            # 随机选择变异方向（增大或减小）
+                            if random.random() < 0.5:
+                                # 增大因子（但幅度随迭代减小）
+                                arr[i, j] *= (1 + 0.5 * decay_factor)
+                            else:
+                                # 减小因子
+                                arr[i, j] *= (1 - 0.3 * decay_factor)
+            else:
+                for i in range(len(arr)):
+                    if random.random() < alpha:
+                        if random.random() < 0.5:
+                            arr[i] *= (1 + 0.5 * decay_factor)
+                        else:
+                            arr[i] *= (1 - 0.3 * decay_factor)
+            
+            return arr
+ 
+        def gaussian_mutation(arr, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
+            """
+            带自适应步长的高斯变异算子
+            
+            参数:
+            - arr: 待变异的参数矩阵 (numpy array)
+            - alpha: 变异概率 (0.0-1.0)
+            - generation: 当前迭代代数
+            - max_generations: 总迭代代数
+            - sigma_base: 基础标准差，控制变异步长
+            
+            返回:
+            - 变异后的参数矩阵
+            """
+            # 自适应标准差：随迭代进行减小步长（早期探索，后期开发）
+            decay_factor = 1.0 - (generation / max_generations) * 0.7
+            sigma = sigma_base * decay_factor
+            
+            if arr.ndim == 2:
+                rows, cols = arr.shape
+                for i in range(rows):
+                    for j in range(cols):
+                        if random.random() < alpha:  # 以alpha概率进行变异
+                            # 添加高斯噪声
+                            arr[i, j] += np.random.normal(0, sigma)
+                            
+                            # 可选：限制参数范围（根据实际需求调整）
+                            # arr[i, j] = np.clip(arr[i, j], 0, 1)  # 例如限制在[0,1]
+            else:  # 一维数组处理
+                for i in range(len(arr)):
+                    if random.random() < alpha:
+                        arr[i] += np.random.normal(0, sigma)
+                        # arr[i] = np.clip(arr[i], 0, 1)
+            
+            return arr
+
         def reverse_sign(arr, alpha=0.5):
             if arr.ndim == 1:
                 # 一维数组处理
@@ -1370,6 +1783,120 @@ class MappingExplorer:
                 for i in range(len(arr)):
                     arr[i] = new_arr[i]
 
+        def adaptive_crossover_rate(generation, max_generations, initial_rate=0.8):
+            """自适应交叉率：随迭代减少探索"""
+            progress = generation / max_generations
+            return initial_rate * (1 - progress * 0.4)  # 从0.8降至0.4
+
+        def adaptive_mutation_rate(generation, max_generations, initial_rate=0.5):
+            """自适应变异率：随迭代增加开发"""
+            progress = generation / max_generations
+            return initial_rate * (0.5 + progress * 0.5)  # 从0.5降至0.25
+
+
+        def adaptive_parameters(g, max_generations, initial_alpha=0.5):
+            """根据迭代代数自适应调整参数"""
+            # 在进化后期减少探索，增加开发
+            progress = g / max_generations
+            alpha = initial_alpha * (1 - progress * 0.5)  # 从0.5逐渐降低到0.25
+            return alpha
+
+        def check_convergence1(best_reward_list, window_size=10, threshold=1e-3):
+            """检查是否收敛"""
+            if len(best_reward_list) < window_size * 2:
+                return False
+            
+            recent = np.array(best_reward_list[-window_size:])
+            older = np.array(best_reward_list[-window_size*2:-window_size])
+            
+            # 计算相对变化
+            relative_change = np.abs((np.mean(recent) - np.mean(older)) / np.mean(older))
+            
+            return relative_change < threshold
+
+        def calculate_population_diversity(pop):
+            """计算种群多样性（基于欧氏距离）"""
+            if len(pop) <= 1:
+                return 0
+            diversity = 0
+            for i in range(len(pop)):
+                for j in range(i+1, len(pop)):
+                    diversity += np.linalg.norm(pop[i].flatten() - pop[j].flatten())
+            return diversity / (len(pop) * (len(pop) - 1) / 2)
+        
+        def check_convergence(best_reward_list, window_size=10, threshold=1e-3):
+            """改进的收敛检测"""
+            if len(best_reward_list) < window_size * 2:
+                return False
+            recent = np.array([r[0] for r in best_reward_list[-window_size:]])
+            older = np.array([r[0] for r in best_reward_list[-window_size*2:-window_size]])
+            improvement = (np.mean(recent) - np.mean(older)) / (abs(np.mean(older)) + 1e-10)
+            return improvement < threshold
+        
+        def simulated_annealing(solution, evaluate_func, para_dim, max_iter=100, initial_temp=100.0, cooling_rate=0.95):
+            """
+            模拟退火局部搜索函数
+            
+            参数:
+            - solution: 当前解（参数矩阵）
+            - evaluate_func: 评估函数，返回适应度值（单值，如stage_idx对应的奖励）
+            - para_dim: 参数矩阵维度（1或2）
+            - max_iter: 最大迭代次数
+            - initial_temp: 初始温度
+            - cooling_rate: 降温速率
+            
+            返回:
+            - 优化后的解
+            """
+            current_sol = solution.copy()
+            current_fitness = evaluate_func(current_sol)
+            best_sol = current_sol.copy()
+            best_fitness = current_fitness
+            
+            temp = initial_temp
+            
+            for t in range(max_iter):
+                # 生成邻域解（根据维度选择变异方式）
+                if para_dim == 1:
+                    neighbor_sol = current_sol.copy()
+                    idx = np.random.randint(len(neighbor_sol))
+                    neighbor_sol[idx] += np.random.normal(0, 0.1)  # 高斯变异生成邻域解
+                    neighbor_sol[idx] = np.clip(neighbor_sol[idx], 0.0, 1.0)  # 限制参数范围
+                else:
+                    neighbor_sol = current_sol.copy()
+                    i, j = np.random.randint(0, neighbor_sol.shape[0]), np.random.randint(0, neighbor_sol.shape[1])
+                    neighbor_sol[i, j] += np.random.normal(0, 0.1)
+                    neighbor_sol[i, j] = np.clip(neighbor_sol[i, j], 0.0, 1.0)
+                
+                # 评估邻域解
+                neighbor_fitness = evaluate_func(neighbor_sol)
+                
+                # 计算接受概率
+                delta = neighbor_fitness - current_fitness
+                if delta > 0 or np.random.rand() < math.exp(delta / temp):
+                    current_sol = neighbor_sol
+                    current_fitness = neighbor_fitness
+                    
+                    # 更新最优解
+                    if current_fitness > best_fitness:
+                        best_sol = current_sol.copy()
+                        best_fitness = current_fitness
+                
+                # 降温
+                temp *= cooling_rate
+            
+            return best_sol
+
+        
+        def evaluate_solution(solution):
+            """辅助评估函数：返回当前解的适应度（单值）"""
+            reward = self.thread_fun_p(solution)
+            if reward is None or any(np.array(reward) >= 0):
+                return -float("Inf")
+            if stage_idx > 0 and any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
+                return -float("Inf")
+            return reward[stage_idx]
+    
         num_generations = num_generations
         num_population = num_population
         num_elite = int(num_population * elite_ratio)
@@ -1384,6 +1911,13 @@ class MappingExplorer:
         fitness = np.ones((num_population, len(self.fitness_obj)), float)
         num_parents = num_population
         for g in range(num_generations):
+            # alpha = adaptive_parameters(g, num_generations)
+            
+            # 计算自适应参数
+            diversity = calculate_population_diversity(population)
+            crossover_alpha = adaptive_crossover_rate(g, num_generations)
+            mutation_alpha = adaptive_mutation_rate(g, num_generations)
+
             finetine_iter = 1 if g < num_generations // 2 else num_finetune
             for f in range(finetine_iter):
                 gen_best = -float("Inf")
@@ -1397,20 +1931,30 @@ class MappingExplorer:
                 elite = copy.deepcopy(parents[:num_elite])
                 elite_fitness = copy.deepcopy(fitness[:(len(elite))])
 
-                crossover_tile(parents, population, alpha=0.57)
+                crossover_tile(parents, population, alpha=crossover_alpha)
              
                 # 变异
-                for pop in population:
-                    shuffle_order(pop, alpha=0.5)
-                    mutate_factor(pop, alpha=0.5)
-                    reverse_sign(pop, alpha=0.5)
+                for pop in population[num_elite:]:
+                    # 选择一种主要变异策略
+                    if random.random() < 0.7:  # 70%概率使用高斯变异
+                        gaussian_mutation(pop, alpha=mutation_alpha, generation=g, max_generations=num_generations)
+                    else:  # 30%概率使用因子变异
+                        mutate_factor(pop, alpha=mutation_alpha, generation=g, max_generations=num_generations)
+                    shuffle_order(pop, alpha=0.1)
+                    # reverse_sign(pop, alpha=0.2)
                     if self.para_dim == 2:
-                        shuffle_row(pop, alpha=0.5)
-                        shuffle_col(pop, alpha=0.5)
+                        shuffle_row(pop, alpha=0.1)
+                        shuffle_col(pop, alpha=0.1)
 
-                population = elite + population
-                fitness = np.concatenate((elite_fitness, fitness))
-                
+                # 1. 更新种群（参数矩阵）
+                population = elite + population[num_elite:]  # 合并精英和变异后的个体
+
+                # 2. 更新适应度数组
+                # 假设elite_fitness的长度是num_elite，population的长度是num_population
+                # 需要确保新的fitness数组与population长度一致
+                fitness = np.zeros((num_population, len(self.fitness_obj)))
+                fitness[:num_elite] = elite_fitness  # 前num_elite个位置填充精英的适应度
+
                 reward_list = pool.map(self.thread_fun_p, population)
                 for i in range(len(population)):
                     reward =reward_list[i]
@@ -1445,6 +1989,37 @@ class MappingExplorer:
                 }
                 
                 print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
+                # 检查收敛
+                if check_convergence(best_reward_list):
+                    print("Converged at generation", g)
+                    break
+            
+            # # 在迭代后期（如后半程）应用模拟退火
+            # if g >= num_generations // 2:
+            #     # 对当前最优解进行模拟退火优化
+            #     if best_sol is not None:
+            #         print(f"Generation {g}: 应用模拟退火优化最优解")
+            #         best_sol = simulated_annealing(
+            #             best_sol,
+            #             evaluate_solution,
+            #             para_dim=self.para_dim,
+            #             max_iter=50,
+            #             initial_temp=50.0,
+            #             cooling_rate=0.98
+            #         )
+            #         # 重新评估优化后的解
+            #         best_reward = [evaluate_solution(best_sol)] + [-float("Inf")] * (len(self.fitness_obj)-1)
+            #         best_reward[stage_idx] = evaluate_solution(best_sol)
+            
+            # 每5代检查并恢复多样性
+            if g % 5 == 0 and diversity < 0.2:
+                print(f"Generation {g}: 种群多样性低，注入新个体")
+                replace_count = max(5, int(num_population * 0.1))
+                for i in range(replace_count):
+                    worst_idx = np.argmin(fitness[:, stage_idx])
+                    population[worst_idx] = self.create_genome_for_parameters(1)[0]
+                    fitness[worst_idx] = [float("-Inf")] * len(best_reward)
+
         pool.close()
 
         remainders = {}
