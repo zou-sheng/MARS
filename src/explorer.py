@@ -295,7 +295,8 @@ class MappingExplorer:
                     for dim in self.tensor_dimensions[tensor]:
                         buffer_capacity += matrix[l][dim]
             # print("buffer_capacity: ", buffer_capacity)
-            prob += buffer_capacity <= len(tensors_list)*math.log2(self.buffer_size_list[buffer_key]/len(tensors_list))
+            if len(tensors_list) > 0:
+                prob += buffer_capacity <= len(tensors_list)*math.log2(self.buffer_size_list[buffer_key]/len(tensors_list))
         
         # 并行容量约束
         for spatial_name in self.spatial_level:
@@ -342,7 +343,7 @@ class MappingExplorer:
             for buffer_key in sorted(self.buffer_name_list.keys()):
                 buffer_name = self.buffer_name_list[buffer_key]
                 buffer_level = self.temporal_level[buffer_name]
-                
+                constraint['keep']
                 # 跳过DRAM
                 if buffer_name == 'DRAM':
                     continue
@@ -968,6 +969,7 @@ class MappingExplorer:
                 if c != col and c not in columns_processed:
                     test_data[row][c] = 1
             
+            # low, high = 1, math.floor(original_value * 1.1)
             low, high = 1, original_value
             best_valid = 1
             
@@ -1771,17 +1773,15 @@ class MappingExplorer:
             if random.random() < alpha:
                 rows = list(range(arr.shape[0]))
                 random.shuffle(rows)
-                new_arr = arr[rows]
-                for i in range(len(arr)):
-                    arr[i] = new_arr[i]
+                arr[:] = arr[rows]
         
         def shuffle_col(arr, alpha=0.5):
             if random.random() < alpha:
+                print(arr.shape)
                 cols = list(range(arr.shape[1]))
+                print(cols)
                 random.shuffle(cols)
-                new_arr = arr[cols]
-                for i in range(len(arr)):
-                    arr[i] = new_arr[i]
+                arr[:] = arr[:, cols]
 
         def adaptive_crossover_rate(generation, max_generations, initial_rate=0.8):
             """自适应交叉率：随迭代减少探索"""
@@ -2024,6 +2024,7 @@ class MappingExplorer:
 
         remainders = {}
         outermost_idx = {}
+        print(best_sol)
         best_map, _ = self.generate_mapping(self.dimension, best_sol)
         best_map = Mapping(best_map)
         for d in best_map.factor_dict.keys():

@@ -470,13 +470,15 @@ class Mapspace:
         # 分析每个存储层次保存的张量
         for constraint in self.mapspace_dict['mapspace']['constraints']:
             target = constraint['target']
-            keep_tensors = constraint['keep']
+            keep_tensors = constraint.get('keep', [])
+            if keep_tensors is None:  # 处理 keep: - 解析为 None 的情况
+                keep_tensors = []
             buffer_tensor_dict[target] = keep_tensors
             # 过滤掉目标为 'DRAM' 的约束
             if constraint['target'] != 'DRAM':
                 item = {
                     'bypass': constraint['bypass'],
-                    'keep': constraint['keep'],
+                    'keep': keep_tensors,
                     'target': constraint['target'],
                     'type': constraint['type']
                 }
