@@ -1,18 +1,18 @@
 problem:
   instance:
-    C: 64
+    C: 256
     H: 1
     Hdilation: 1
-    Hstride: 2
-    K: 64
-    N: 64
-    P: 64
-    Q: 64
-    R: 64
-    S: 64
+    Hstride: 1
+    K: 256
+    N: 2
+    P: 14
+    Q: 14
+    R: 3
+    S: 3
     Wdilation: 1
-    Wstride: 2
-    type: T2D
+    Wstride: 1
+    type: C2D
   shape:
     coefficients:
     - default: 1
@@ -31,11 +31,11 @@ problem:
       - - - K
       - - - R
       - - - S
-    - name: Outputs
+    - name: Inputs
       projection:
       - - - N
       - - - H
-      - - - K
+      - - - C
       - - - R
           - Wdilation
         - - P
@@ -44,14 +44,14 @@ problem:
           - Hdilation
         - - Q
           - Hstride
-      read_write: true
-    - name: Inputs
+    - name: Outputs
       projection:
       - - - N
       - - - H
-      - - - C
+      - - - K
       - - - Q
       - - - P
+      read_write: true
     dimensions:
     - H
     - C
