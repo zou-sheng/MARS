@@ -21,6 +21,8 @@ class MappingExplorer:
     def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict, parameter_dimension=2):
         if optim_obj == 'latency':
             self.fitness_obj = ['cycles']
+        else:
+            self.fitness_obj = [optim_obj]
         self.timeloop_out_config_path = f'./tmp/out_config_{datetime.now().strftime("%H:%M:%S")}'
         self.operator_instance = operator_instance
         

@@ -1,9 +1,23 @@
+# cd ./src
+# start_time=$(date +%s.%N)  # 获取开始时间（纳秒级时间戳，如：1689023456.123456789）
+# for layer_id in {56..56}
+# do
+#     printf "网络: deepbench, 层数: %d\n" $layer_id 
+#     python main.py --optim_obj latency --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+# done
+# end_time=$(date +%s.%N)    # 获取结束时间
+# elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)  # 计算差值，保留3位小数（秒）
+
+# echo "执行时间：${elapsed_time} 秒"
+
+# start_time=$(date +%s.%N)  # 获取开始时间（纳秒级时间戳，如：1689023456.123456789）
+
 cd ./src
 start_time=$(date +%s.%N)  # 获取开始时间（纳秒级时间戳，如：1689023456.123456789）
-for layer_id in {56..56}
+for layer_id in {0..75}
 do
     printf "网络: deepbench, 层数: %d\n" $layer_id 
-    python main.py --optim_obj latency --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj energy --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 done
 end_time=$(date +%s.%N)    # 获取结束时间
 elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)  # 计算差值，保留3位小数（秒）
@@ -11,6 +25,16 @@ elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)  # 计算差值，�
 echo "执行时间：${elapsed_time} 秒"
 
 start_time=$(date +%s.%N)  # 获取开始时间（纳秒级时间戳，如：1689023456.123456789）
+for layer_id in {0..75}
+do
+    printf "网络: deepbench, 层数: %d\n" $layer_id 
+    python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+done
+end_time=$(date +%s.%N)    # 获取结束时间
+elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)  # 计算差值，保留3位小数（秒）
+
+echo "执行时间：${elapsed_time} 秒"
+
 # for layer_id in {0..511}
 # do
 #     printf "网络: conv, 层数: %d\n" $layer_id 
