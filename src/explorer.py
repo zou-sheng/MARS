@@ -1158,7 +1158,7 @@ class MappingExplorer:
         elif self.mapper == "MARS":
             start_time = time.time()
             mapping = self.run_parameters(num_population=num_population, num_generations=num_generations)
-            print("耗时: ", time.time() - start_time)
+            # print("耗时: ", time.time() - start_time)
             exit()
             for i in range(num_population):
                 mapping_list.append(copy.deepcopy(mapping))
@@ -1777,9 +1777,9 @@ class MappingExplorer:
         
         def shuffle_col(arr, alpha=0.5):
             if random.random() < alpha:
-                print(arr.shape)
+                # print(arr.shape)
                 cols = list(range(arr.shape[1]))
-                print(cols)
+                # print(cols)
                 random.shuffle(cols)
                 arr[:] = arr[:, cols]
 
@@ -2013,7 +2013,7 @@ class MappingExplorer:
             
             # 每5代检查并恢复多样性
             if g % 5 == 0 and diversity < 0.2:
-                print(f"Generation {g}: 种群多样性低，注入新个体")
+                # print(f"Generation {g}: 种群多样性低，注入新个体")
                 replace_count = max(5, int(num_population * 0.1))
                 for i in range(replace_count):
                     worst_idx = np.argmin(fitness[:, stage_idx])
@@ -2024,7 +2024,7 @@ class MappingExplorer:
 
         remainders = {}
         outermost_idx = {}
-        print(best_sol)
+        # print(best_sol)
         best_map, _ = self.generate_mapping(self.dimension, best_sol)
         best_map = Mapping(best_map)
         for d in best_map.factor_dict.keys():
