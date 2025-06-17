@@ -225,8 +225,9 @@ class MappingExplorer:
 
     
     def generate_mapping(self, dimension, p):
-        sol = self.lpsolver(dimension, p)
-        mapping_dict, dimension_dict = utils.generate_mapping_for_lpsolver2(sol, self.targets, self.type, self.bypass)
+        row = len(self.temporal_level) + len(self.spatial_level)
+        sol = self.lpsolver(dimension, p[:row])
+        mapping_dict, dimension_dict = utils.generate_mapping_for_lpsolver2(sol, self.targets, self.type, self.bypass, p[row:])
         
         prob = copy.deepcopy(self.problem.problem)       
         for key in dimension_dict.keys():
@@ -1182,8 +1183,9 @@ class MappingExplorer:
                 row = len(self.temporal_level) + len(self.spatial_level)
                 col = 8
                 # para_list.append(np.random.randint(1, 11, size=(row, col)).astype(float))
-                
-                para_list.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+                weight_mat = np.random.uniform(low=1.0, high=100.0, size=(row, col))
+                order_mat = np.stack([np.random.permutation(8) for _ in range(row)])
+                para_list.append(np.vstack([weight_mat, order_mat]))
             else:
                 print("无效的参数维度，请选择 1 或 2。")
 
@@ -1578,7 +1580,10 @@ class MappingExplorer:
 
     def run_parameters(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
-        def crossover_tile(parents, pop, alpha=0.5):
+        row = len(self.temporal_level) + len(self.spatial_level)
+        col = 8
+
+        def crossover_tile(parents, pop, row, alpha=0.5):
             if len(parents) ==1:
                 for idx in range(len(pop)):
                     pop[idx] = copy.deepcopy(parents[0])
@@ -1595,21 +1600,21 @@ class MappingExplorer:
                         if random.random() < alpha:
                             if dad.ndim == 2 and random.random() < 0.5:
                                 # 行交叉
-                                row_cutoff = random.randint(1, dad.shape[0]-1)
-                                dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
+                                row_cutoff = random.randint(1, min(row, dad.shape[0])-1)
+                                dad[row_cutoff:row], mom[row_cutoff:row] = mom[row_cutoff:row], dad[row_cutoff:row]
                             else:
                                 # 列交叉
                                 if dad.ndim == 1:
                                     col_cutoff = random.randint(1, len(dad)-1)
                                 else:
                                     col_cutoff = random.randint(1, dad.shape[1]-1)
-                                dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
+                                dad[:row, col_cutoff:], mom[:row, col_cutoff:] = mom[:row, col_cutoff:], dad[:row, col_cutoff:]
                     
                     elif crossover_type == 'multi_point':
                         # 多点交叉
                         if dad.ndim == 2:
-                            rows, cols = dad.shape
-                            for i in range(rows):
+                            cols = dad.shape[1]
+                            for i in range(min(row, dad.shape[0])):
                                 if random.random() < alpha:
                                     # 随机选择多个交叉点
                                     num_points = random.randint(1, cols//2)
@@ -1632,8 +1637,8 @@ class MappingExplorer:
                     elif crossover_type == 'arithmetic':
                         # 算术交叉：生成介于父代之间的子代
                         if dad.ndim == 2:
-                            rows, cols = dad.shape
-                            for i in range(rows):
+                            cols = dad.shape[1]
+                            for i in range(min(row, dad.shape[0])):
                                 for j in range(cols):
                                     if random.random() < alpha:
                                         beta = random.uniform(0.3, 0.7)  # 控制混合比例
@@ -1648,6 +1653,17 @@ class MappingExplorer:
                                     mom[i] = beta * mom[i] + (1-beta) * dad[i]
                                     dad[i] = tmp
                     
+                    # 后row行交叉（仅行交叉）
+                    if random.random() < alpha:
+                        if dad.ndim == 2 and row < dad.shape[0]:  # 确保有后row行
+                            # 行交叉（后row行）
+                            start_row = row
+                            end_row = min(2*row, dad.shape[0])
+                            if end_row > start_row + 1:  # 确保有足够的行进行交叉
+                                row_cutoff = random.randint(start_row + 1, end_row - 1)
+                                dad[row_cutoff:end_row], mom[row_cutoff:end_row] = mom[row_cutoff:end_row], dad[row_cutoff:end_row]
+            
+
                     pop[idx] = dad
                     if idx + 1 < len(pop):
                         pop[idx+1] = mom
@@ -1668,36 +1684,15 @@ class MappingExplorer:
             else:
                 raise ValueError("输入数组必须是一维或二维")
             
-        def mutate_factor1(arr, alpha=0.5):
-            if arr.ndim == 1:
-                # 一维数组处理
-                for i in range(len(arr)):
-                    if random.random() < alpha:
-                        if random.random() < alpha:
-                            arr[i] *= 2
-                        else:
-                            arr[i] *= 0.5
-            elif arr.ndim == 2:
-                # 二维数组处理
-                rows, cols = arr.shape
-                for i in range(rows):
-                    for j in range(cols):
-                        if random.random() < alpha:
-                            if random.random() < alpha:
-                                arr[i][j] *= 2
-                            else:
-                                arr[i][j] *= 0.5
-            else:
-                raise ValueError("输入数组必须是一维或二维")
-
-        def mutate_factor(arr, alpha=0.5, generation=0, max_generations=100):
+        def mutate_factor(arr, row, alpha=0.5, generation=0, max_generations=100):
             """带自适应幅度的因子变异"""
             # 变异幅度随代数衰减（早期探索，后期开发）
             decay_factor = 1.0 - (generation / max_generations) * 0.7
             
             if arr.ndim == 2:
                 rows, cols = arr.shape
-                for i in range(rows):
+                # 仅处理前row行
+                for i in range(min(row, rows)):
                     for j in range(cols):
                         if random.random() < alpha:
                             # 随机选择变异方向（增大或减小）
@@ -1717,7 +1712,7 @@ class MappingExplorer:
             
             return arr
  
-        def gaussian_mutation(arr, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
+        def gaussian_mutation(arr, row, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
             """
             带自适应步长的高斯变异算子
             
@@ -1736,15 +1731,13 @@ class MappingExplorer:
             sigma = sigma_base * decay_factor
             
             if arr.ndim == 2:
-                rows, cols = arr.shape
-                for i in range(rows):
-                    for j in range(cols):
-                        if random.random() < alpha:  # 以alpha概率进行变异
-                            # 添加高斯噪声
+                # 只遍历前row行（使用min确保不越界）
+                for i in range(min(row, arr.shape[0])):
+                    for j in range(arr.shape[1]):
+                        if random.random() < alpha:
                             arr[i, j] += np.random.normal(0, sigma)
-                            
-                            # 可选：限制参数范围（根据实际需求调整）
-                            # arr[i, j] = np.clip(arr[i, j], 0, 1)  # 例如限制在[0,1]
+                            # 可选：限制参数范围
+                            # arr[i, j] = np.clip(arr[i, j], 0, 1)
             else:  # 一维数组处理
                 for i in range(len(arr)):
                     if random.random() < alpha:
@@ -1771,11 +1764,22 @@ class MappingExplorer:
             else:
                 raise ValueError("输入数组必须是一维或二维")
         
-        def shuffle_row(arr, alpha=0.5):
-            if random.random() < alpha:
-                rows = list(range(arr.shape[0]))
-                random.shuffle(rows)
-                arr[:] = arr[rows]
+        def shuffle_row(arr, row, alpha=0.5):
+            total_rows = arr.shape[0]
+        
+            # 打乱前row行（如果存在）
+            if row > 1 and row <= total_rows:
+                front_indices = list(range(row))
+                random.shuffle(front_indices)
+                arr[:row] = arr[front_indices]
+            
+            # 打乱后面的行（如果存在且行数>1）
+            remaining_rows = total_rows - row
+            if remaining_rows > 1 and row < total_rows:
+                back_start = row
+                back_indices = list(range(back_start, total_rows))
+                random.shuffle(back_indices)
+                arr[back_start:total_rows] = arr[back_indices]
         
         def shuffle_col(arr, alpha=0.5):
             if random.random() < alpha:
@@ -1898,7 +1902,7 @@ class MappingExplorer:
             if stage_idx > 0 and any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
                 return -float("Inf")
             return reward[stage_idx]
-    
+
         num_generations = num_generations
         num_population = num_population
         num_elite = int(num_population * elite_ratio)
@@ -1933,19 +1937,19 @@ class MappingExplorer:
                 elite = copy.deepcopy(parents[:num_elite])
                 elite_fitness = copy.deepcopy(fitness[:(len(elite))])
 
-                crossover_tile(parents, population, alpha=crossover_alpha)
+                crossover_tile(parents, population, row, alpha=crossover_alpha)
              
                 # 变异
                 for pop in population[num_elite:]:
                     # 选择一种主要变异策略
                     if random.random() < 0.7:  # 70%概率使用高斯变异
-                        gaussian_mutation(pop, alpha=mutation_alpha, generation=g, max_generations=num_generations)
+                        gaussian_mutation(pop, row, alpha=mutation_alpha, generation=g, max_generations=num_generations)
                     else:  # 30%概率使用因子变异
-                        mutate_factor(pop, alpha=mutation_alpha, generation=g, max_generations=num_generations)
+                        mutate_factor(pop, row, alpha=mutation_alpha, generation=g, max_generations=num_generations)
                     shuffle_order(pop, alpha=0.1)
                     # reverse_sign(pop, alpha=0.2)
                     if self.para_dim == 2:
-                        shuffle_row(pop, alpha=0.1)
+                        shuffle_row(pop, row, alpha=0.1)
                         shuffle_col(pop, alpha=0.1)
 
                 # 1. 更新种群（参数矩阵）

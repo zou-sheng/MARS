@@ -274,8 +274,18 @@ def generate_mapping_for_lpsolver(solution, dimension, targets, types, bypass_da
 
     return mapping, dimension_dict
 
-def generate_mapping_for_lpsolver2(solution, targets, types, bypass_data):
-    permutations = ['RSPQCKHN'] * len(targets)
+def generate_mapping_for_lpsolver2(solution, targets, types, bypass_data, order):
+    # permutations = ['RSPQCKHN'] * len(targets)
+
+    chars = list('RSPQCKHN')
+
+    # 根据targets矩阵的每行动态生成permutations
+    permutations = []
+    for row in order:
+        int_row = row.astype(int)
+        # 将行中的每个索引映射到chars中的字符
+        permuted_chars = [chars[i] for i in int_row]
+        permutations.append(''.join(permuted_chars))
     
     rounded_array = [[math.floor(num) for num in row] for row in solution]
     
@@ -310,7 +320,6 @@ def generate_mapping(factors, permutations, targets, types, bypass_data, remaind
     # 构建结果列表
     mapping = {'mapping': []}
     # 遍历将因数、排列、目标和类型组合成字典
-    
     for i in range(len(permutations)):
         # 获取当前的因数组合
         current_permutation = permutations[i]
