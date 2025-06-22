@@ -1990,11 +1990,11 @@ class MappingExplorer:
                     "fitness_use": self.fitness_obj
                 }
                 
-                print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
-                # 检查收敛
-                if check_convergence(best_reward_list):
-                    print("Converged at generation", g)
-                    break
+                # print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
+                # # 检查收敛
+                # if check_convergence(best_reward_list):
+                #     print("Converged at generation", g)
+                #     break
             
             # # 在迭代后期（如后半程）应用模拟退火
             # if g >= num_generations // 2:
