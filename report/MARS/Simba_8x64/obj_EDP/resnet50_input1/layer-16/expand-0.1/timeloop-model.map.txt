@@ -11,14 +11,16 @@ GlobalBuffer [ Inputs:3328 (3328) Outputs:29792 (29792) ]
 
 InputBuffer [ Inputs:2912 (2912) ] 
 WeightBuffer [ Weights:156 (156) ] 
+----------------------------------
+|           for R in [0:3)
+
 AccumulationBuffer [ Outputs:784 (784) ] 
 ----------------------------------------
-|           for R in [0:3)
-|             for K in [0:4) (Spatial-X)
-|               for C in [0:13,9) (Spatial-X)
+|             for Q in [0:14)
+|               for P in [0:14)
+|                 for K in [0:4) (Spatial-X)
+|                   for C in [0:13,9) (Spatial-X)
 
 Registers [ Weights:1 (1) ] 
 ---------------------------
-|                 for Q in [0:14)
-|                   for P in [0:14)
 |                     << Compute >>
