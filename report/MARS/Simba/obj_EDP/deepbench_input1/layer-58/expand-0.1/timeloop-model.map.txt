@@ -10,14 +10,14 @@ InputBuffer [ Inputs:3136 (3136) ]
 WeightBuffer [ Weights:64 (64) ] 
 --------------------------------
 |     for N in [0:2)
+|       for P in [0:7)
 
-AccumulationBuffer [ Outputs:98 (98) ] 
+AccumulationBuffer [ Outputs:14 (14) ] 
 --------------------------------------
-|       for K in [0:2) (Spatial-X)
-|         for C in [0:32) (Spatial-X)
+|         for Q in [0:7)
+|           for K in [0:2) (Spatial-X)
+|             for C in [0:32) (Spatial-X)
 
 Registers [ Weights:1 (1) ] 
 ---------------------------
-|           for Q in [0:7)
-|             for P in [0:7)
 |               << Compute >>

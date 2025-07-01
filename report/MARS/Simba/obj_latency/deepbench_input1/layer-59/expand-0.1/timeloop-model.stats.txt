@@ -49,7 +49,7 @@ Level 1
     Cycles               : 100352
     Bandwidth throttling : 1.00
     Weights:
-        Partition size                           : 2048
+        Partition size                           : 1024
         Utilized capacity                        : 1
         Utilized instances (max)                 : 1024
         Utilized clusters (max)                  : 16
@@ -105,28 +105,28 @@ Level 2
     Bandwidth throttling : 1.00
     Outputs:
         Partition size                           : 50176
-        Utilized capacity                        : 1024
+        Utilized capacity                        : 1
         Utilized instances (max)                 : 16
         Utilized clusters (max)                  : 16
-        Scalar reads (per-instance)              : 150528
+        Scalar reads (per-instance)              : 50176
         Scalar fills (per-instance)              : 50176
-        Scalar updates (per-instance)            : 200704
-        Temporal reductions (per-instance)       : 150528
-        Address generations (per-cluster)        : 250880
+        Scalar updates (per-instance)            : 100352
+        Temporal reductions (per-instance)       : 50176
+        Address generations (per-cluster)        : 150528
         Energy (per-scalar-access)               : 2.14 pJ
-        Energy (per-instance)                    : 859295.52 pJ
-        Energy (total)                           : 13748728.28 pJ
+        Energy (per-instance)                    : 429647.76 pJ
+        Energy (total)                           : 6874364.14 pJ
         Temporal Reduction Energy (per-instance) : 0.00 pJ
         Temporal Reduction Energy (total)        : 0.00 pJ
         Address Generation Energy (per-cluster)  : 0.00 pJ
         Address Generation Energy (total)        : 0.00 pJ
         Bandwidth Consumption Scale              : 1.00
-        Shared Bandwidth (per-instance)          : 4.00 words/cycle
-        Shared Bandwidth (total)                 : 64.00 words/cycle
-        Read Bandwidth (per-instance)            : 1.50 words/cycle
-        Read Bandwidth (total)                   : 24.00 words/cycle
-        Write Bandwidth (per-instance)           : 2.50 words/cycle
-        Write Bandwidth (total)                  : 40.00 words/cycle
+        Shared Bandwidth (per-instance)          : 2.00 words/cycle
+        Shared Bandwidth (total)                 : 32.00 words/cycle
+        Read Bandwidth (per-instance)            : 0.50 words/cycle
+        Read Bandwidth (total)                   : 8.00 words/cycle
+        Write Bandwidth (per-instance)           : 1.50 words/cycle
+        Write Bandwidth (total)                  : 24.00 words/cycle
 
 Level 3
 -------
@@ -163,23 +163,23 @@ Level 3
         Utilized capacity                        : 32768
         Utilized instances (max)                 : 16
         Utilized clusters (max)                  : 16
-        Scalar reads (per-instance)              : 3211264
+        Scalar reads (per-instance)              : 6422528
         Scalar fills (per-instance)              : 65536
         Scalar updates (per-instance)            : 0
         Temporal reductions (per-instance)       : 0
-        Address generations (per-cluster)        : 3276800
+        Address generations (per-cluster)        : 6488064
         Energy (per-scalar-access)               : 1.29 pJ
-        Energy (per-instance)                    : 4231847.24 pJ
-        Energy (total)                           : 67709555.78 pJ
+        Energy (per-instance)                    : 8379057.53 pJ
+        Energy (total)                           : 134064920.44 pJ
         Temporal Reduction Energy (per-instance) : 0.00 pJ
         Temporal Reduction Energy (total)        : 0.00 pJ
         Address Generation Energy (per-cluster)  : 0.00 pJ
         Address Generation Energy (total)        : 0.00 pJ
         Bandwidth Consumption Scale              : 1.00
-        Shared Bandwidth (per-instance)          : 32.65 words/cycle
-        Shared Bandwidth (total)                 : 522.45 words/cycle
-        Read Bandwidth (per-instance)            : 32.00 words/cycle
-        Read Bandwidth (total)                   : 512.00 words/cycle
+        Shared Bandwidth (per-instance)          : 64.65 words/cycle
+        Shared Bandwidth (total)                 : 1034.45 words/cycle
+        Read Bandwidth (per-instance)            : 64.00 words/cycle
+        Read Bandwidth (total)                   : 1024.00 words/cycle
         Write Bandwidth (per-instance)           : 0.65 words/cycle
         Write Bandwidth (total)                  : 10.45 words/cycle
 
@@ -435,11 +435,11 @@ Operational Intensity Stats
     Total scalar accesses                   : 205520896
     Op per Byte                             : 1.00
 === AccumulationBuffer ===
-    Total scalar accesses                   : 6422528
-    Op per Byte                             : 10.66
+    Total scalar accesses                   : 3211264
+    Op per Byte                             : 21.33
 === WeightBuffer ===
-    Total scalar accesses                   : 52428800
-    Op per Byte                             : 3.92
+    Total scalar accesses                   : 103809024
+    Op per Byte                             : 1.98
 === InputBuffer ===
     Total scalar accesses                   : 102961152
     Op per Byte                             : 2.00
@@ -456,18 +456,18 @@ Summary Stats
 GFLOPs (@1GHz): 79.06
 Utilization: 3.86%
 Cycles: 2598912
-Energy: 320.84 uJ
-EDP(J*cycle): 8.34e+02
+Energy: 380.33 uJ
+EDP(J*cycle): 9.88e+02
 Area: 0.00 mm^2
 
 Computes = 102760448
 fJ/Compute
     __ARITH__                            = 250.00
     Registers                            = 15.28
-    AccumulationBuffer                   = 133.79
-    WeightBuffer                         = 658.91
+    AccumulationBuffer                   = 66.90
+    WeightBuffer                         = 1304.64
     InputBuffer                          = 689.79
     GlobalBuffer                         = 12.28
     DRAM                                 = 1362.21
-    Total                                = 3122.25
+    Total                                = 3701.08
 

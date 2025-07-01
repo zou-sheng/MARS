@@ -4,8 +4,12 @@ import os
 import pickle
 
 from explorer import MappingExplorer
+from datetime import datetime
+import json
 
 def main():
+    # current_time = datetime.now()
+    # print("当前时间：", current_time)  # 输出示例：2023-06-15 14:30:25.123456
     opt                        = parser.parse_args()
     benchmark_dir              = '../Benchmarks'
     accelerator_dir            = '../SpatialAccelerators'
@@ -20,6 +24,7 @@ def main():
     expanded_config            = opt.expanded_config
     batch_size                 = opt.batch_size
     parameter_dimension        = opt.parameter_dimension
+    weight_matrix_config       = opt.weight_matrix_config
     
     with open(os.path.join(benchmark_dir, '{}_workload/layers.yaml'.format(workload)), 'r') as fd:
         layers = yaml.load(fd, Loader=yaml.SafeLoader)
@@ -92,11 +97,19 @@ def main():
     with open(os.path.join(config_dir, '{}.yaml'.format(expanded_config)), 'r') as fd:
         expanded_dict = yaml.load(fd, Loader=yaml.SafeLoader)
 
+
     ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension)
-    chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
+    if weight_matrix_config:
+        with open(os.path.join(config_dir, '{}.json'.format(weight_matrix_config)), 'r') as fd:
+            data = json.load(fd)
+        weight = data['weight']
+        print(weight)
+        ME.generate_mapping_with_weight(weight)
+    else:
+        chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
     
-    with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
-        pickle.dump(chkpt, fd)
+    # with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
+    #     pickle.dump(chkpt, fd)
 
 
 
@@ -116,5 +129,6 @@ if __name__ == '__main__':
     parser.add_argument('--expanded_config', type=str, default='expanded_config', help='The configuration file for the expansion of the workload')
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--parameter_dimension', type=int, default=2)
+    parser.add_argument('--weight_matrix_config', type=str, default=None)
 
     main()

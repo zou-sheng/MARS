@@ -25,11 +25,13 @@ cd ./src
 # echo "执行时间：${elapsed_time} 秒"
 
 # start_time=$(date +%s.%N)  # 获取开始时间（纳秒级时间戳，如：1689023456.123456789）
-for layer_id in {35..37}
+for layer_id in {22..75}
 do
-#     printf "网络: deepbench, 层数: %d\n" $layer_id 
-    python main.py --optim_obj EDP --population 100 --epochs 300 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-    python main.py --optim_obj energy --population 100 --epochs 300 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    printf "网络: deepbench, 层数: %d\n" $layer_id 
+#     python main.py --optim_obj all --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 done
 # end_time=$(date +%s.%N)    # 获取结束时间
 # elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)  # 计算差值，保留3位小数（秒）
@@ -65,13 +67,14 @@ done
 #     printf "网络: operators, 层数: %d\n" $layer_id 
 #     python main.py --optim_obj latency --population 50 --epochs 20 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload operators --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 # done
-# for layer_id in {6..6}
+# for layer_id in {0..0}
 # do
 #     printf "网络: mobilenet, 层数: %d\n" $layer_id
 #     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
     # python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-#     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-    # python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    # python main.py --optim_obj energy --population 10 --epochs 10 --accelerator Simba --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    # python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    # python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 # done

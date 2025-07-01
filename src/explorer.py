@@ -21,6 +21,8 @@ class MappingExplorer:
     def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict, parameter_dimension=2):
         if optim_obj == 'latency':
             self.fitness_obj = ['cycles']
+        elif optim_obj == 'all':
+            self.fitness_obj = ['EDP', 'energy', 'cycles']
         else:
             self.fitness_obj = [optim_obj]
         self.timeloop_out_config_path = f'./tmp/out_config_{datetime.now().strftime("%H:%M:%S")}'
@@ -1159,7 +1161,7 @@ class MappingExplorer:
             pass
         elif self.mapper == "MARS":
             start_time = time.time()
-            mapping = self.run_parameters(num_population=num_population, num_generations=num_generations)
+            mapping = self.run_parameters2(num_population=num_population, num_generations=num_generations)
             # print("耗时: ", time.time() - start_time)
             exit()
             for i in range(num_population):
@@ -1990,7 +1992,7 @@ class MappingExplorer:
                     "fitness_use": self.fitness_obj
                 }
                 
-                # print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
+                print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
                 # # 检查收敛
                 # if check_convergence(best_reward_list):
                 #     print("Converged at generation", g)
@@ -2046,3 +2048,472 @@ class MappingExplorer:
 
         return best_map        
 
+    def run_parameters2(self, num_population=10, num_generations=100, elite_ratio=0.05,
+                   parents_ratio=0.15, ratio_decay=1, num_finetune=1):
+        def crossover_tile(parents, pop, alpha=0.5):
+            if len(parents) ==1:
+                for idx in range(len(pop)):
+                    pop[idx] = copy.deepcopy(parents[0])
+            else:
+                for idx in range(0, len(pop), 2):
+                    dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
+                    mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
+                    
+                    # 随机选择交叉策略
+                    crossover_type = random.choice(['row_column', 'multi_point', 'arithmetic'])
+                    
+                    if crossover_type == 'row_column':
+                        # 行/列交叉（原始实现）
+                        if random.random() < alpha:
+                            if dad.ndim == 2 and random.random() < 0.5:
+                                # 行交叉
+                                row_cutoff = random.randint(1, dad.shape[0]-1)
+                                dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
+                            else:
+                                # 列交叉
+                                if dad.ndim == 1:
+                                    col_cutoff = random.randint(1, len(dad)-1)
+                                else:
+                                    col_cutoff = random.randint(1, dad.shape[1]-1)
+                                dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
+                    
+                    elif crossover_type == 'multi_point':
+                        # 多点交叉
+                        if dad.ndim == 2:
+                            rows, cols = dad.shape
+                            for i in range(rows):
+                                if random.random() < alpha:
+                                    # 随机选择多个交叉点
+                                    num_points = random.randint(1, cols//2)
+                                    points = sorted(random.sample(range(1, cols), num_points))
+                                    for j in range(len(points)):
+                                        if j % 2 == 0:  # 交替交换片段
+                                            start = points[j]
+                                            end = points[j+1] if j+1 < len(points) else cols
+                                            dad[i, start:end], mom[i, start:end] = mom[i, start:end], dad[i, start:end]
+                        else:
+                            if random.random() < alpha:
+                                num_points = random.randint(1, len(dad)//2)
+                                points = sorted(random.sample(range(1, len(dad)), num_points))
+                                for j in range(len(points)):
+                                    if j % 2 == 0:
+                                        start = points[j]
+                                        end = points[j+1] if j+1 < len(points) else len(dad)
+                                        dad[start:end], mom[start:end] = mom[start:end], dad[start:end]
+                    
+                    elif crossover_type == 'arithmetic':
+                        # 算术交叉：生成介于父代之间的子代
+                        if dad.ndim == 2:
+                            rows, cols = dad.shape
+                            for i in range(rows):
+                                for j in range(cols):
+                                    if random.random() < alpha:
+                                        beta = random.uniform(0.3, 0.7)  # 控制混合比例
+                                        tmp = beta * dad[i, j] + (1-beta) * mom[i, j]
+                                        mom[i, j] = beta * mom[i, j] + (1-beta) * dad[i, j]
+                                        dad[i, j] = tmp
+                        else:
+                            for i in range(len(dad)):
+                                if random.random() < alpha:
+                                    beta = random.uniform(0.3, 0.7)
+                                    tmp = beta * dad[i] + (1-beta) * mom[i]
+                                    mom[i] = beta * mom[i] + (1-beta) * dad[i]
+                                    dad[i] = tmp
+                    
+                    pop[idx] = dad
+                    if idx + 1 < len(pop):
+                        pop[idx+1] = mom
+
+        def shuffle_order(arr, alpha=0.5):
+            if arr.ndim == 1:
+                if random.random() < alpha:
+                    np.random.shuffle(arr)
+            elif arr.ndim == 2:
+                for row in arr:
+                    if random.random() < alpha:
+                        np.random.shuffle(row)
+            else:
+                raise ValueError("输入数组必须是一维或二维")
+
+        def mutate_factor1(arr, alpha=0.5):
+            if arr.ndim == 1:
+                for i in range(len(arr)):
+                    if random.random() < alpha:
+                        arr[i] *= 2 if random.random() < alpha else 0.5
+            elif arr.ndim == 2:
+                rows, cols = arr.shape
+                for i in range(rows):
+                    for j in range(cols):
+                        if random.random() < alpha:
+                            arr[i][j] *= 2 if random.random() < alpha else 0.5
+            else:
+                raise ValueError("输入数组必须是一维或二维")
+
+        def mutate_factor(arr, alpha=0.5, generation=0, max_generations=100):
+            decay_factor = 1.0 - (generation / max_generations) * 0.7
+            if arr.ndim == 2:
+                rows, cols = arr.shape
+                for i in range(rows):
+                    for j in range(cols):
+                        if random.random() < alpha:
+                            if random.random() < 0.5:
+                                arr[i, j] *= (1 + 0.5 * decay_factor)
+                            else:
+                                arr[i, j] *= (1 - 0.3 * decay_factor)
+            else:
+                for i in range(len(arr)):
+                    if random.random() < alpha:
+                        if random.random() < 0.5:
+                            arr[i] *= (1 + 0.5 * decay_factor)
+                        else:
+                            arr[i] *= (1 - 0.3 * decay_factor)
+            return arr
+
+        def gaussian_mutation(arr, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
+            decay_factor = 1.0 - (generation / max_generations) * 0.7
+            sigma = sigma_base * decay_factor
+            if arr.ndim == 2:
+                rows, cols = arr.shape
+                for i in range(rows):
+                    for j in range(cols):
+                        if random.random() < alpha:
+                            arr[i, j] += np.random.normal(0, sigma)
+            else:
+                for i in range(len(arr)):
+                    if random.random() < alpha:
+                        arr[i] += np.random.normal(0, sigma)
+            return arr
+
+        def reverse_sign(arr, alpha=0.5):
+            if arr.ndim == 1:
+                for i in range(len(arr)):
+                    if random.random() < alpha:
+                        arr[i] *= -1
+                return arr
+            elif arr.ndim == 2:
+                rows, cols = arr.shape
+                for i in range(rows):
+                    for j in range(cols):
+                        if random.random() < alpha:
+                            arr[i, j] *= -1
+                return arr
+            else:
+                raise ValueError("输入数组必须是一维或二维")
+        
+        def shuffle_row(arr, alpha=0.5):
+            if random.random() < alpha:
+                rows = list(range(arr.shape[0]))
+                random.shuffle(rows)
+                arr[:] = arr[rows]
+
+        def shuffle_col(arr, alpha=0.5):
+            if random.random() < alpha:
+                cols = list(range(arr.shape[1]))
+                random.shuffle(cols)
+                arr[:] = arr[:, cols]
+
+        def adaptive_crossover_rate(generation, max_generations, initial_rate=0.8):
+            progress = generation / max_generations
+            return initial_rate * (1 - progress * 0.4)  # 从0.8降至0.4
+
+        def adaptive_mutation_rate(generation, max_generations, initial_rate=0.5):
+            progress = generation / max_generations
+            return initial_rate * (0.5 + progress * 0.5)  # 变异率随代数调整
+
+        # 以下两个函数用于多目标非支配排序及拥挤距离计算
+        def non_dominated_sort(fitness):
+            """
+            计算非支配排序，返回若干个front，每个front为个体索引列表
+            假设目标为均最大化。
+            """
+            population_size = fitness.shape[0]
+            S = [set() for _ in range(population_size)]  # 每个个体支配的个体集合
+            domination_count = [0] * population_size   # 每个个体被支配的次数
+            fronts = [[]]
+
+            for p in range(population_size):
+                for q in range(population_size):
+                    if p == q:
+                        continue
+                    # 如果p在所有目标上都不逊于q且至少在一个目标上更好，则认为p支配q
+                    if all(fitness[p] >= fitness[q]) and any(fitness[p] > fitness[q]):
+                        S[p].add(q)
+                    elif all(fitness[q] >= fitness[p]) and any(fitness[q] > fitness[p]):
+                        domination_count[p] += 1
+                if domination_count[p] == 0:
+                    fronts[0].append(p)
+
+            i = 0
+            while fronts[i]:
+                next_front = []
+                for p in fronts[i]:
+                    for q in S[p]:
+                        domination_count[q] -= 1
+                        if domination_count[q] == 0:
+                            next_front.append(q)
+                i += 1
+                fronts.append(next_front)
+            fronts.pop()  # 最后一个为空
+            return fronts
+
+        def compute_crowding_distance(fitness, front):
+            """
+            计算指定front中每个个体的拥挤距离，返回一个字典：索引->距离
+            """
+            distance = {i: 0 for i in front}
+            num_objectives = fitness.shape[1]
+            for m in range(num_objectives):
+                objs = [fitness[i, m] for i in front]
+                sorted_indices = sorted(front, key=lambda i: fitness[i, m])
+                f_min = fitness[sorted_indices[0], m]
+                f_max = fitness[sorted_indices[-1], m]
+                distance[sorted_indices[0]] = float('inf')
+                distance[sorted_indices[-1]] = float('inf')
+                if f_max - f_min == 0:
+                    continue
+                for k in range(1, len(sorted_indices)-1):
+                    i = sorted_indices[k]
+                    distance[i] += (fitness[sorted_indices[k+1], m] - fitness[sorted_indices[k-1], m]) / (f_max - f_min)
+            return distance
+
+        def select_parents_multi(population, fitness, num_parents):
+            fronts = non_dominated_sort(fitness)
+            selected = []
+            for front in fronts:
+                if len(selected) + len(front) <= num_parents:
+                    selected.extend(front)
+                else:
+                    distances = compute_crowding_distance(fitness, front)
+                    # 按拥挤度降序排列（拥挤度大的个体具有较好的多样性）
+                    sorted_front = sorted(front, key=lambda i: distances[i], reverse=True)
+                    selected.extend(sorted_front[:num_parents - len(selected)])
+                    break
+            # 返回父代个体及其索引（后续可用于更新种群）
+            selected_population = [population[i] for i in selected]
+            return selected_population, selected
+
+        # 模拟退火用于局部搜索
+        def simulated_annealing(solution, evaluate_func, para_dim, max_iter=100, initial_temp=100.0, cooling_rate=0.95):
+            current_sol = solution.copy()
+            current_fitness = evaluate_func(current_sol)
+            best_sol = current_sol.copy()
+            best_fitness = current_fitness
+            
+            temp = initial_temp
+            for t in range(max_iter):
+                if para_dim == 1:
+                    neighbor_sol = current_sol.copy()
+                    idx = np.random.randint(len(neighbor_sol))
+                    neighbor_sol[idx] += np.random.normal(0, 0.1)
+                    neighbor_sol[idx] = np.clip(neighbor_sol[idx], 0.0, 1.0)
+                else:
+                    neighbor_sol = current_sol.copy()
+                    i, j = np.random.randint(0, neighbor_sol.shape[0]), np.random.randint(0, neighbor_sol.shape[1])
+                    neighbor_sol[i, j] += np.random.normal(0, 0.1)
+                    neighbor_sol[i, j] = np.clip(neighbor_sol[i, j], 0.0, 1.0)
+                neighbor_fitness = evaluate_func(neighbor_sol)
+                # 若目标均为最大化，则delta为各目标差值之和（也可使用其他多目标聚合方式）
+                delta = sum([n - c for n, c in zip(neighbor_fitness, current_fitness)])
+                if delta > 0 or np.random.rand() < math.exp(delta / temp):
+                    current_sol = neighbor_sol
+                    current_fitness = neighbor_fitness
+                    if sum(current_fitness) > sum(best_fitness):
+                        best_sol = current_sol.copy()
+                        best_fitness = current_fitness
+                temp *= cooling_rate
+            return best_sol
+
+        # 多目标评估函数：直接返回目标向量
+        def evaluate_solution(solution):
+            reward = self.thread_fun_p(solution)
+            # 若reward无效，则返回极差值（假设目标为最大化）
+            if reward is None or any(np.array(reward) >= 0):
+                return [float("-Inf") for _ in range(len(self.fitness_obj))]
+            return reward
+
+        # ----------------------------
+        # 初始化种群和其他参数
+        num_elite = int(num_population * elite_ratio)
+        pool = Pool(min(num_population + num_elite, cpu_count()))
+        # 用于归档非支配解，格式为：(solution, fitness)
+        archive = []
+        population = self.create_genome_for_parameters(num_population)
+        fitness = np.ones((num_population, len(self.fitness_obj)), float)
+        num_parents = num_population
+
+        for g in range(num_generations):
+            start_time = time.time()   # 记录本轮迭代开始时间
+
+            # 自适应参数
+            diversity = 0
+            # 计算种群多样性（基于欧氏距离），避免过早收敛
+            if len(population) > 1:
+                div_sum = 0
+                count = 0
+                for i in range(len(population)):
+                    for j in range(i+1, len(population)):
+                        div_sum += np.linalg.norm(population[i].flatten() - population[j].flatten())
+                        count += 1
+                diversity = div_sum / count
+            crossover_alpha = adaptive_crossover_rate(g, num_generations)
+            mutation_alpha = adaptive_mutation_rate(g, num_generations)
+            finetune_iter = 1 if g < num_generations // 2 else num_finetune
+
+            for f in range(finetune_iter):
+                # 使用多目标选择父代
+                parents, parent_indices = select_parents_multi(population, fitness, int(num_population * parents_ratio))
+                if len(parents) < 1:
+                    print("父代数量不足，重启")
+                    return
+                elite = copy.deepcopy(parents[:min(num_elite, len(parents))])
+                # 对父代进行深复制保存适应度
+                elite_fitness = [fitness[i].copy() for i in parent_indices[:min(num_elite, len(parents))]]
+
+                # 交叉产生子代
+                crossover_tile(parents, population, alpha=crossover_alpha)
+
+                # 变异操作
+                for pop_ind in population[num_elite:]:
+                    if random.random() < 0.7:
+                        gaussian_mutation(pop_ind, alpha=mutation_alpha, generation=g, max_generations=num_generations)
+                    else:
+                        mutate_factor(pop_ind, alpha=mutation_alpha, generation=g, max_generations=num_generations)
+                    shuffle_order(pop_ind, alpha=0.1)
+                    if self.para_dim == 2:
+                        shuffle_row(pop_ind, alpha=0.1)
+                        shuffle_col(pop_ind, alpha=0.1)
+
+                # 合并精英与变异后的个体构成新种群
+                population = elite + population[num_elite:]
+                # 更新适应度
+                fitness = np.zeros((num_population, len(self.fitness_obj)))
+                # 精英的适应度复用
+                for idx in range(len(elite)):
+                    fitness[idx] = elite_fitness[idx]
+                # 并行评估剩余个体
+                reward_list = pool.map(self.thread_fun_p, population)
+                for i in range(len(population)):
+                    reward = reward_list[i]
+                    if reward is None or any(np.array(reward) >= 0):
+                        reward = [float("-Inf")] * len(self.fitness_obj)
+                    fitness[i] = reward
+
+                # 更新归档：结合历史归档和当前种群，取非支配前沿
+                combined_solutions = [sol for sol, fit in archive] + population
+                combined_fitness = np.concatenate([np.array([fit for sol, fit in archive]), fitness], axis=0) if archive else fitness
+
+                fronts = non_dominated_sort(combined_fitness)
+
+                # -----------------------------------------------------
+                # # 选取第一前沿作为归档
+                # archive = []
+                # if fronts:
+                #     for idx in fronts[0]:
+                #         # 注意：如果idx超出当前种群大小，则源自归档
+                #         if idx < len(archive):
+                #             pass  # 此处仅做占位
+                #     # 但简单起见，直接保存所有处于非支配前沿的解
+                #     for idx in fronts[0]:
+                #         archive.append( (combined_solutions[idx], combined_fitness[idx].copy()) )
+                
+                # 取第一前沿上的所有解
+                candidate_indices = fronts[0] if fronts else []
+                
+                # 如果候选解数量超过 100，则利用拥挤距离进行筛选
+                if len(candidate_indices) > 200:
+                    distances = compute_crowding_distance(combined_fitness, candidate_indices)
+                    # 根据拥挤距离降序排序，挑选拥挤度高的解（也可以选择其他排序依据）
+                    sorted_indices = sorted(candidate_indices, key=lambda i: distances[i], reverse=True)
+                    candidate_indices = sorted_indices[:200]
+                
+                # 清空原归档，并保存更新后的解
+                archive = []
+                for idx in candidate_indices:
+                    archive.append((combined_solutions[idx], combined_fitness[idx].copy()))
+
+                # -----------------------------------------------------
+
+                # 父代数量逐步衰减
+                num_parents = int(num_population * parents_ratio)
+                parents_ratio *= ratio_decay
+
+            # # 每5代检查种群多样性，若太低则注入新个体
+            # if g % 5 == 0 and diversity < 0.2:
+            #     replace_count = max(5, int(num_population * 0.1))
+            #     for i in range(replace_count):
+            #         worst_idx = np.argmin(fitness[:, 0])  # 可根据某个目标选择，也可混合指标
+            #         population[worst_idx] = self.create_genome_for_parameters(1)[0]
+            #         fitness[worst_idx] = [float("-Inf")] * len(self.fitness_obj)
+            
+            # # 可在后半程引入模拟退火进行局部搜索
+            # if g >= num_generations // 2 and archive:
+            #     # 选择归档中目标值和较均衡的个体（例如按总和最大）进行模拟退火改进
+            #     best_idx = np.argmax([sum(fit) for sol, fit in archive])
+            #     improved_sol = simulated_annealing(archive[best_idx][0],
+            #                                     evaluate_solution,
+            #                                     para_dim=self.para_dim,
+            #                                     max_iter=50,
+            #                                     initial_temp=50.0,
+            #                                     cooling_rate=0.98)
+            #     improved_fit = evaluate_solution(improved_sol)
+            #     # 若改进后个体在归档中表现更好，则更新归档
+            #     if sum(improved_fit) > sum(archive[best_idx][1]):
+            #         archive[best_idx] = (improved_sol, improved_fit)
+            
+            # 计算并打印本轮迭代耗时
+            elapsed_time = time.time() - start_time
+            # print("Generation {} 耗时: {:.3f}秒".format(g, elapsed_time))
+
+        pool.close()
+
+        # 最终从归档中选择一个折中解（例如：目标和最大的解）
+        if archive:
+            best_idx = np.argmax([sum(fit) for sol, fit in archive])
+            best_sol = archive[best_idx][0]
+            # print("Generation {} 当前最优解: {}".format(g, best_sol))
+            # print("对应适应度: {}".format(fitness[best_idx]))
+        else:
+            best_sol = population[0]
+            # print("Generation {} 当前最优解: {}".format(g, population[best_idx]))
+            # print("对应适应度: {}".format(fitness[best_idx]))
+
+        best_map, _ = self.generate_mapping(self.dimension, best_sol)
+        best_map = Mapping(best_map)
+        remainders = {}
+        outermost_idx = {}
+        for d in best_map.factor_dict.keys():
+            T = self.dimension_dict[d]
+            F = best_map.factor_dict[d]
+            remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
+        best_mapping = utils.generate_mapping(best_map.factor_dict, best_map.permutation_list, best_map.target_list,
+                                            best_map.type_list, best_map.bypass_list, remainders, outermost_idx)
+        map_path = f'{self.report_dir}/map.yaml'
+        utils.store_yaml(map_path, best_mapping)
+        prob_path = f'{self.report_dir}/problem.yaml'
+        utils.store_yaml(prob_path, self.problem.problem)
+        arch_path = f'{self.report_dir}/arch.yaml'
+        utils.store_yaml(arch_path, self.accelerator.arch_dict)
+        utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
+        arr_str  = np.array2string(best_sol, separator=', ')
+        print(arr_str)
+        return best_map
+
+    def generate_mapping_with_weight(self, weight):
+        best_map, _ = self.generate_mapping(self.dimension, weight)
+        best_map = Mapping(best_map)
+        remainders = {}
+        outermost_idx = {}
+        for d in best_map.factor_dict.keys():
+            T = self.dimension_dict[d]
+            F = best_map.factor_dict[d]
+            remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
+        best_mapping = utils.generate_mapping(best_map.factor_dict, best_map.permutation_list, best_map.target_list,
+                                            best_map.type_list, best_map.bypass_list, remainders, outermost_idx)
+        map_path = f'{self.report_dir}/map.yaml'
+        utils.store_yaml(map_path, best_mapping)
+        prob_path = f'{self.report_dir}/problem.yaml'
+        utils.store_yaml(prob_path, self.problem.problem)
+        arch_path = f'{self.report_dir}/arch.yaml'
+        utils.store_yaml(arch_path, self.accelerator.arch_dict)
+        utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
+        print("---------------------------------------")
