@@ -98,16 +98,18 @@ def main():
         expanded_dict = yaml.load(fd, Loader=yaml.SafeLoader)
 
 
-    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension)
+    weight_matrix = None
     if weight_matrix_config:
         with open(os.path.join(config_dir, '{}.json'.format(weight_matrix_config)), 'r') as fd:
             data = json.load(fd)
-        weight = data['weight']
-        print(weight)
-        ME.generate_mapping_with_weight(weight)
-    else:
-        chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
-    
+        matrix_list = []
+        for key, matrix in data.items():
+            matrix_list.append(matrix)
+        weight_matrix = matrix_list[:16]
+        
+    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension, weight_matrix=weight_matrix)
+    print(opt.population)
+    chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
     # with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
     #     pickle.dump(chkpt, fd)
 

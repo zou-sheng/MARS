@@ -18,7 +18,7 @@ import time
 
 
 class MappingExplorer:
-    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict, parameter_dimension=2):
+    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict, parameter_dimension=2, weight_matrix=None):
         if optim_obj == 'latency':
             self.fitness_obj = ['cycles']
         elif optim_obj == 'all':
@@ -32,6 +32,7 @@ class MappingExplorer:
         self.expanded_scope = expanded_scope
         self.expanded_dict = expanded_dict
         self.mapper = mapper
+        self.weight_matrix = weight_matrix
 
         arch_path = pathlib.Path('{}/{}/{}/{}.yaml'.format(accelerator_dir, mapper, accelerator, type)).resolve()
         self.accelerator = Arch(arch_path, accelerator, version)
@@ -1161,7 +1162,7 @@ class MappingExplorer:
             pass
         elif self.mapper == "MARS":
             start_time = time.time()
-            mapping = self.run_parameters2(num_population=num_population, num_generations=num_generations)
+            mapping = self.run_parameters(num_population=num_population, num_generations=num_generations)
             # print("耗时: ", time.time() - start_time)
             exit()
             for i in range(num_population):
@@ -1172,7 +1173,12 @@ class MappingExplorer:
 
     def create_genome_for_parameters(self, num_population):
         para_list = []
-        for i in range(num_population):
+        weight_matrix_len = 0
+        if self.weight_matrix:
+            for i in self.weight_matrix:
+                para_list.append(np.array(i))
+            weight_matrix_len = len(self.weight_matrix)
+        for i in range(num_population-weight_matrix_len):
             if self.para_dim == 1:
                 # p = []
                 # for i in range(len(self.temporal_level) + len(self.spatial_level)):
@@ -1184,7 +1190,6 @@ class MappingExplorer:
                 row = len(self.temporal_level) + len(self.spatial_level)
                 col = 8
                 # para_list.append(np.random.randint(1, 11, size=(row, col)).astype(float))
-                
                 para_list.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
             else:
                 print("无效的参数维度，请选择 1 或 2。")
