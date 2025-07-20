@@ -315,7 +315,9 @@ class MappingExplorer:
         # 维度约束
         for c in range(cols):
             col_sum = sum(matrix[r][c] for r in range(rows))
-            prob += col_sum == math.log2(dimension_list[c])
+            for r in range(rows):
+                prob += matrix[r][c] <= math.log2(dimension_list[c])
+            prob += col_sum >= math.log2(dimension_list[c])
 
         prob.solve(PULP_CBC_CMD(msg=0))
         # print(prob)

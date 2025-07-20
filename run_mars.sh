@@ -25,6 +25,7 @@ cd ./src
 # echo "执行时间：${elapsed_time} 秒"
 
 # start_time=$(date +%s.%N)  # 获取开始时间（纳秒级时间戳，如：1689023456.123456789）
+<<<<<<< HEAD
 for layer_id in {70..70}
 do
     printf "网络: deepbench, 层数: %d\n" $layer_id 
@@ -33,6 +34,16 @@ do
     # python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
     # python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 done
+=======
+# for layer_id in {75..75}
+# do
+#     printf "网络: deepbench, 层数: %d\n" $layer_id 
+#     python main.py --optim_obj all --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    # python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    # python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+# done
+>>>>>>> 622ef9bc (7/21 0:56)
 # end_time=$(date +%s.%N)    # 获取结束时间
 # elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)  # 计算差值，保留3位小数（秒）
 
@@ -78,6 +89,19 @@ done
 #     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload mobilenet --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 # done
+# for layer_id in {0..8}
+# do
+#     printf "网络: transformer, 层数: %d\n" $layer_id
+#     python main.py --optim_obj energy --population 100 --epochs 100 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj latency --population 100 --epochs 100 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+#     python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload transformer --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+# done
 # for layer_id in {12..12}
 # do
 #     printf "网络: unet, 层数: %d\n" $layer_id
@@ -102,16 +126,16 @@ done
 #     python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload resnet50 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj latency --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload resnet50 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 # done
-# for layer_id in {0..5}
-# do
-#     printf "网络: gpt1, 层数: %d\n" $layer_id 
+for layer_id in {0..0}
+do
+    printf "网络: gpt1, 层数: %d\n" $layer_id 
 #     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-#     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-#     python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    # python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-# done
+done
 # for layer_id in {5..5}
 # do
 #     printf "网络: alexnet, 层数: %d\n" $layer_id 
