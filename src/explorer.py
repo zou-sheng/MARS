@@ -15,6 +15,7 @@ import shutil
 import numpy as np
 from collections import deque
 import time
+import cvxpy as cp
 
 
 class MappingExplorer:
@@ -228,7 +229,8 @@ class MappingExplorer:
 
     
     def generate_mapping(self, dimension, p):
-        sol = self.lpsolver(dimension, p)
+        # sol = self.lpsolver(dimension, p)
+        sol = self.qpsolver(dimension, p)
         mapping_dict, dimension_dict = utils.generate_mapping_for_lpsolver2(sol, self.targets, self.type, self.bypass)
         
         prob = copy.deepcopy(self.problem.problem)       
@@ -332,6 +334,109 @@ class MappingExplorer:
         # print("time2: ", time.time()-start_time)
         return solution
     
+    def qpsolver(self, dimension_list, p, a=10):
+        rows = len(self.temporal_level) + len(self.spatial_level)
+        cols = 8 # 问题维度R, S, P, Q, C, K, H, N
+        n = rows * cols # n为变量维度
+        x = cp.Variable(n)
+        P = np.diag([2*a] * n)
+        q = p.flatten()
+        objective = cp.Minimize(0.5 * cp.quad_form(x, P) + q.T @ x)
+
+        constraints = []
+
+        # 1. 除DRAM外每一个存储层次的存储容量约束
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                break
+                
+            buffer_level = self.temporal_level[buffer_name]
+            tensors_list = self.buffer_tensor_dict[buffer_name]
+            
+            if len(tensors_list) > 0:
+                # 计算右侧值
+                rhs = len(tensors_list) * math.log2(self.buffer_size_list[buffer_key] / len(tensors_list))
+                
+                # 构建左侧系数向量
+                coeffs = np.zeros((rows, cols))
+                for l in range(buffer_level + 1):
+                    for tensor in tensors_list:
+                        for dim in self.tensor_dimensions[tensor]:
+                            coeffs[l][dim] += 1
+                
+                # 转为1D向量并添加到约束
+                flat_coeffs = coeffs.flatten()
+                constraints.append((flat_coeffs, rhs, 'leq'))
+
+        # 2. 并行容量约束
+        for spatial_name in self.spatial_level:
+            sp_level = self.spatial_level[spatial_name]
+            rhs = math.log2(self.spatial_size_list[spatial_name])
+            
+            # 构建左侧系数向量
+            coeffs = np.zeros((rows, cols))
+            for c in range(cols):
+                coeffs[sp_level][c] += 1
+            
+            # 转为1D向量并添加到约束
+            flat_coeffs = coeffs.flatten()
+            constraints.append((flat_coeffs, rhs, 'leq'))
+        
+        # 3. 维度约束 - 上下界
+        for c in range(cols):
+            max_val = math.log2(dimension_list[c])
+            for r in range(rows):
+                # 下界约束: 0 <= matrix[r][c]
+                coeffs = np.zeros((rows, cols))
+                coeffs[r][c] = -1  # -matrix[r][c] <= 0
+                flat_coeffs = coeffs.flatten()
+                constraints.append((flat_coeffs, 0, 'leq'))
+                
+                # 上界约束: matrix[r][c] <= max_val
+                coeffs = np.zeros((rows, cols))
+                coeffs[r][c] = 1
+                flat_coeffs = coeffs.flatten()
+                constraints.append((flat_coeffs, max_val, 'leq'))
+        
+        # 4. 维度约束 - 列总和
+        for c in range(cols):
+            min_sum = math.log2(dimension_list[c])
+            
+            # 列总和约束: sum(matrix[r][c]) >= min_sum
+            coeffs = np.zeros((rows, cols))
+            for r in range(rows):
+                coeffs[r][c] = -1  # -sum(matrix[r][c]) <= -min_sum
+            flat_coeffs = coeffs.flatten()
+            constraints.append((flat_coeffs, -min_sum, 'leq'))
+        
+        # 将约束转换为G, h矩阵形式 (Gx <= h)
+        num_vars = rows * cols
+        num_constraints = len(constraints)
+        
+        G = np.zeros((num_constraints, num_vars))
+        h = np.zeros(num_constraints)
+        
+        for i, (coeffs, rhs, sense) in enumerate(constraints):
+            G[i] = coeffs
+            h[i] = rhs
+
+        constraints = [G @ x <= h]
+
+        problem = cp.Problem(objective, constraints)
+        # 记录开始时间
+        # start_time = time.time()
+        # 求解并输出结果
+        problem.solve(solver=cp.OSQP)
+        # print("time1: ", time.time()-start_time)
+        result_matrix = x.value.reshape(rows, cols)
+        power_matrix = np.power(2, result_matrix)
+        
+        solution = self._integerize_with_staged_optimization(power_matrix, p, a)
+        # print(solution)
+        # print("time2: ", time.time()-start_time)
+        return solution
+
     def _integerize_with_staged_optimization1(self, solution):
         def calculate_remaining_capacity(data, fixed_rows):
             """
@@ -935,7 +1040,7 @@ class MappingExplorer:
         
         return compute_last_row(data)
 
-    def _integerize_with_staged_optimization(self, solution, p):
+    def _integerize_with_staged_optimization(self, solution, p, a=50):
         def calculate_remaining_capacity(data, fixed_rows):
             """计算存储层次剩余容量"""
             result = {}
@@ -1007,7 +1112,8 @@ class MappingExplorer:
                 nonlocal best_data, best_objective
                 
                 if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
-                    current_objective = np.sum(p_row * current_data[row])
+                    # current_objective = np.sum(p_row * current_data[row])
+                    current_objective = np.sum(p_row * np.log2(current_data[row]) + a * np.log2(current_data[row])**2)
                     if current_objective > best_objective:
                         best_data = current_data.copy()
                         best_objective = current_objective
