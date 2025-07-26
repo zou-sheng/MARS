@@ -134,7 +134,6 @@ def find_remainders(A, T):
     A = A.copy()
     n = len(A) - 1  # n is the number of b's
     # Calculate constant part
-    
     constant_part = (A[0] - 1) * np.prod(A[1:])  # 计算常量部分
     while  T - constant_part <= 0:
         A[0] = A[0] - 1
@@ -171,6 +170,93 @@ def find_remainders(A, T):
             if all(x == 1 for x in lst[i+1:]):
                 outermost_idx = i
     return results, outermost_idx
+
+
+def find_remainders2(A, T):
+    # 保证不修改原始 A
+    A = A.copy()
+    n = len(A) - 1  # 对应 b 的个数
+
+    # 计算常量部分： (A[0]-1)*np.prod(A[1:])
+    constant_part = (A[0] - 1) * np.prod(A[1:])
+    # 保证 T - constant_part >0，否则调整 A[0]
+    while T - constant_part <= 0:
+        A[0] -= 1
+        constant_part = (A[0] - 1) * np.prod(A[1:])
+
+    required_sum = T - constant_part  # 需要的额外和
+    results = []
+    outermost_idx = -1
+
+    # 预计算乘积数组 prod，其中：
+    # 对于 0 <= i < n-1: prod[i] = np.prod(A[i+2:]) ；对于 i == n-1，我们记作1（因为最后一项直接累加 b_n）
+    prod = [1] * n
+    if n >= 1:
+        prod[-1] = 1  # 对应 b_n 的权重为1
+    for i in range(n-2, -1, -1):
+        prod[i] = A[i+2] * prod[i+1]  # A[i+2:] 的乘积
+
+    # 预计算剩余上界数组 max_remain[i] 表示从第 i 个 b 开始，
+    # 能够贡献的最大值之和（用于剪枝）
+    max_remain = [0] * (n + 1)
+    max_remain[n] = 0
+    # 对于 0 <= i <= n-2: 最大贡献为 (A[i+1]-1)*prod[i]（因为 b_i 的范围 1~A[i+1]）；对于 i == n-1: 最大贡献为 A[n]
+    for i in range(n-1, -1, -1):
+        if i == n-1:
+            max_contrib = A[n]  # 最后一个 b 的最大贡献
+        else:
+            max_contrib = (A[i+1] - 1) * prod[i]
+        max_remain[i] = max_contrib + max_remain[i+1]
+
+    # 使用递归遍历 b1, b2, ..., bn，每一步累加贡献，并进行剪枝
+    def backtrack(index, current_b, current_sum):
+        # 使用剪枝：如果当前和加上后续所有索引可能贡献不足 required_sum，则无需继续
+        if current_sum + max_remain[index] < required_sum:
+            return
+
+        if index == n:
+            # 当填满所有 b 时判断累计和是否恰好等于目标
+            if current_sum == required_sum:
+                # 按原代码要求，存储顺序为 [b_n, ..., b_1, A[0]]
+                results.append(current_b.copy()[::-1] + [A[0]])
+            return
+
+        # b 的取值范围：1 到 A[index+1]
+        for b in range(1, A[index + 1] + 1):
+            # 根据位置计算这一位的贡献：
+            # 当 index < n-1，贡献为 (b-1)*prod[index]；
+            # 当 index == n-1，贡献直接为 b（因为最后一项不减1，加权为1）。
+            if index < n - 1:
+                contribution = (b - 1) * prod[index]
+            else:
+                contribution = b
+
+            new_sum = current_sum + contribution
+
+            # 如果 new_sum 超过 required_sum，因为 b 递增所以可以提前 break
+            if new_sum > required_sum:
+                break
+
+            current_b[index] = b
+            backtrack(index + 1, current_b, new_sum)
+
+    # 开始回溯：起始当前和为 0，current_b 用长度为 n 的数组保存当前解
+    backtrack(0, [0] * n, 0)
+
+    if not results:
+        print(f"Warning: No valid combination found for A={A}, T={T}, required_sum={required_sum}")
+        return [], -1
+
+    # 查找 outermost_idx: 从左到右第一个不为 1 且其后全为 1 的位置
+    lst = results[0]
+    for i in range(len(lst)):
+        if lst[i] != 1:
+            if all(x == 1 for x in lst[i + 1:]):
+                outermost_idx = i
+                break
+
+    return results, outermost_idx
+
 
 def expand_factors(factors, target):
 
@@ -387,4 +473,5 @@ def parse_timeloop_output(file_path):
 
 
 if __name__ == "__main__":
-    print(find_remainders([1, 1, 1, 6, 1], 5))
+    print(find_remainders([7, 2, 2, 6, 5], 699))
+    print(find_remainders2([7, 2, 2, 6, 5], 699))

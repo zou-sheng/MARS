@@ -425,16 +425,16 @@ class MappingExplorer:
 
         problem = cp.Problem(objective, constraints)
         # 记录开始时间
-        # start_time = time.time()
+        start_time = time.time()
         # 求解并输出结果
         problem.solve(solver=cp.OSQP)
-        # print("time1: ", time.time()-start_time)
+        print("time1: ", time.time()-start_time)
         result_matrix = x.value.reshape(rows, cols)
         power_matrix = np.power(2, result_matrix)
         
         solution = self._integerize_with_staged_optimization(power_matrix, p, a)
-        # print(solution)
-        # print("time2: ", time.time()-start_time)
+        print(solution)
+        print("time2: ", time.time()-start_time)
         return solution
 
     def _integerize_with_staged_optimization1(self, solution):
@@ -1424,13 +1424,12 @@ class MappingExplorer:
         try:
             mapping, _ = self.generate_mapping(self.dimension, p)
             mapping = Mapping(mapping)
-        # try:
             remainders = {}
             outermost_idx = {}
             for d in mapping.factor_dict.keys():
                 T = self.dimension_dict[d]
                 F = mapping.factor_dict[d]
-                remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
+                remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
                 
             
             temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
@@ -1526,7 +1525,6 @@ class MappingExplorer:
                 }
                 
                 print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
-        
         pool.close()
 
         remainders = {}
@@ -1703,6 +1701,7 @@ class MappingExplorer:
         return best_map
     '''
 
+    # 单目标
     def run_parameters(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
         def crossover_tile(parents, pop, alpha=0.5):
@@ -2175,6 +2174,7 @@ class MappingExplorer:
 
         return best_map        
 
+    # 多目标
     def run_parameters2(self, num_population=10, num_generations=100, elite_ratio=0.05,
                    parents_ratio=0.15, ratio_decay=1, num_finetune=1):
         def crossover_tile(parents, pop, alpha=0.5):
@@ -2469,7 +2469,7 @@ class MappingExplorer:
         num_parents = num_population
 
         for g in range(num_generations):
-            start_time = time.time()   # 记录本轮迭代开始时间
+            # start_time = time.time()   # 记录本轮迭代开始时间
 
             # 自适应参数
             diversity = 0
@@ -2485,7 +2485,6 @@ class MappingExplorer:
             crossover_alpha = adaptive_crossover_rate(g, num_generations)
             mutation_alpha = adaptive_mutation_rate(g, num_generations)
             finetune_iter = 1 if g < num_generations // 2 else num_finetune
-
             for f in range(finetune_iter):
                 # 使用多目标选择父代
                 parents, parent_indices = select_parents_multi(population, fitness, int(num_population * parents_ratio))
@@ -2509,7 +2508,6 @@ class MappingExplorer:
                     if self.para_dim == 2:
                         shuffle_row(pop_ind, alpha=0.1)
                         shuffle_col(pop_ind, alpha=0.1)
-
                 # 合并精英与变异后的个体构成新种群
                 population = elite + population[num_elite:]
                 # 更新适应度
@@ -2588,7 +2586,7 @@ class MappingExplorer:
             #         archive[best_idx] = (improved_sol, improved_fit)
             
             # 计算并打印本轮迭代耗时
-            elapsed_time = time.time() - start_time
+            # elapsed_time = time.time() - start_time
             # print("Generation {} 耗时: {:.3f}秒".format(g, elapsed_time))
 
         pool.close()
@@ -2621,8 +2619,8 @@ class MappingExplorer:
         arch_path = f'{self.report_dir}/arch.yaml'
         utils.store_yaml(arch_path, self.accelerator.arch_dict)
         utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
-        arr_str  = np.array2string(best_sol, separator=', ')
-        print(arr_str)
+        # arr_str  = np.array2string(best_sol, separator=', ')
+        # print(arr_str)
         return best_map
 
     def generate_mapping_with_weight(self, weight):

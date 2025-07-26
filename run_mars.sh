@@ -210,4 +210,15 @@ done
 #     python main.py --optim_obj energy --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload bertlarge --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 #     python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload bertlarge --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 # done
+
+for layer_id in {0..75}
+do
+    printf "网络: deepbench, 层数: %d\n" $layer_id 
+    python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj latency --population 100 --epochs 100 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj energy --population 100 --epochs 100 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator TensorCore --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+done
 cd ..
