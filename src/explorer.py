@@ -229,8 +229,8 @@ class MappingExplorer:
 
     
     def generate_mapping(self, dimension, p):
-        # sol = self.lpsolver(dimension, p)
-        sol = self.qpsolver(dimension, p)
+        sol = self.lpsolver(dimension, p)
+        # sol = self.qpsolver(dimension, p)
         mapping_dict, dimension_dict = utils.generate_mapping_for_lpsolver2(sol, self.targets, self.type, self.bypass)
         
         prob = copy.deepcopy(self.problem.problem)       
@@ -1112,8 +1112,8 @@ class MappingExplorer:
                 nonlocal best_data, best_objective
                 
                 if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
-                    # current_objective = np.sum(p_row * current_data[row])
-                    current_objective = np.sum(p_row * np.log2(current_data[row]) + a * np.log2(current_data[row])**2)
+                    current_objective = np.sum(p_row * current_data[row])
+                    # current_objective = np.sum(p_row * np.log2(current_data[row]) + a * np.log2(current_data[row])**2)
                     if current_objective > best_objective:
                         best_data = current_data.copy()
                         best_objective = current_objective
@@ -1259,19 +1259,31 @@ class MappingExplorer:
                 if succ:
                     mapping = Mapping(map_path)
                     mapping_list.append(mapping)
+                    map_path = f'{self.report_dir}/map.yaml'
+                    utils.store_yaml(map_path, {"mapping": mapping.mapping})
+                    prob_path = f'{self.report_dir}/problem.yaml'
+                    utils.store_yaml(prob_path, self.problem.problem)
+                    arch_path = f'{self.report_dir}/arch.yaml'
+                    utils.store_yaml(arch_path, self.accelerator.arch_dict)
+
+                    # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
+                    utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
                 else:
                     print(False)
                     pass
                 if os.path.exists(temp_dir):
                     shutil.rmtree(temp_dir)
 
+            # exit()
+
+
         elif self.mapper == "Soter":
             
             pass
         elif self.mapper == "MARS":
             start_time = time.time()
-            mapping = self.run_parameters(num_population=num_population, num_generations=num_generations)
-            # print("耗时: ", time.time() - start_time)
+            mapping = self.run_parameters2(num_population=num_population, num_generations=num_generations)
+            print("耗时: ", time.time() - start_time)
             exit()
             for i in range(num_population):
                 mapping_list.append(copy.deepcopy(mapping))
@@ -2028,6 +2040,7 @@ class MappingExplorer:
         fitness = np.ones((num_population, len(self.fitness_obj)), float)
         num_parents = num_population
         for g in range(num_generations):
+            start_time = time.time()
             # alpha = adaptive_parameters(g, num_generations)
             
             # 计算自适应参数
@@ -2136,7 +2149,8 @@ class MappingExplorer:
                     worst_idx = np.argmin(fitness[:, stage_idx])
                     population[worst_idx] = self.create_genome_for_parameters(1)[0]
                     fitness[worst_idx] = [float("-Inf")] * len(best_reward)
-
+            elapsed_time = time.time() - start_time
+            print("Generation {} 耗时: {:.3f}秒".format(g, elapsed_time))
         pool.close()
 
         remainders = {}

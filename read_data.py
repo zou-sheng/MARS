@@ -9,8 +9,8 @@ def extract_value_from_file(file_path):
         with open(file_path, 'r') as file:
             content = file.read()
             # 使用正则表达式查找Cycles行
-            # match = re.search(r'Cycles:\s*(\d+)', content)
-            match = re.search(r'Energy:\s*(\d+\.\d+)', content)
+            match = re.search(r'Cycles:\s*(\d+)', content)
+            # match = re.search(r'Energy:\s*(\d+\.\d+)', content)
             # match = re.search(r'EDP\(J\*cycle\):\s*([\de.+]+)', content)
             if match:
                 return match.group(1)  # 返回捕获的数字部分
@@ -23,7 +23,7 @@ def extract_value_from_file(file_path):
 
 def main():
     # 配置参数
-    main_folder = "./report/MARS/Simba/obj_EDP/transformer_input1"  # 主文件夹路径
+    main_folder = "./report/Cosa/Simba/obj_latency/bertlarge_input1"  # 主文件夹路径
     target_file = "timeloop-model.stats.txt"  # 目标文件名
     output_excel = "extracted_cycles.xlsx"  # 输出Excel文件名
     

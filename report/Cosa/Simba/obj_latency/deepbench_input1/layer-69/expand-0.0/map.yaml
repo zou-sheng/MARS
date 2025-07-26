@@ -1,0 +1,221 @@
+!!python/object:input_objs.Mapping
+bypass_list:
+- &id009
+  bypass:
+  - Inputs
+  - Outputs
+  keep:
+  - Weights
+  target: Registers
+  type: bypass
+- &id010
+  bypass:
+  - Weights
+  - Inputs
+  keep:
+  - Outputs
+  target: AccumulationBuffer
+  type: bypass
+- &id011
+  bypass:
+  - Inputs
+  - Outputs
+  keep:
+  - Weights
+  target: WeightBuffer
+  type: bypass
+- &id012
+  bypass:
+  - Weights
+  - Outputs
+  keep:
+  - Inputs
+  target: InputBuffer
+  type: bypass
+- &id013
+  bypass:
+  - Weights
+  keep:
+  - Inputs
+  - Outputs
+  target: GlobalBuffer
+  type: bypass
+- &id014
+  bypass: []
+  keep:
+  - Weights
+  - Inputs
+  - Outputs
+  target: DRAM
+  type: bypass
+factor_dict:
+  C:
+  - 1
+  - 8
+  - 8
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  H:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  K:
+  - 1
+  - 8
+  - 2
+  - 1
+  - 1
+  - 4
+  - 1
+  - 1
+  N:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 2
+  - 1
+  - 1
+  P:
+  - 25
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 14
+  Q:
+  - 5
+  - 1
+  - 1
+  - 1
+  - 1
+  - 2
+  - 1
+  - 8
+  R:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 3
+  S:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 3
+items:
+- &id001
+  factors: R=1 S=1 P=25 Q=5 C=1 K=1 N=1 H=1
+  permutation: RSPQCKNH
+  target: Registers
+  type: temporal
+- &id002
+  factors: R=1 S=1 P=1 Q=1 C=8 K=8 N=1 H=1
+  permutation: RSPQCKNH
+  target: AccumulationBuffer
+  type: spatial
+- &id003
+  factors: R=1 S=1 P=1 Q=1 C=8 K=2 N=1 H=1
+  permutation: RSPQCKNH
+  target: AccumulationBuffer
+  type: temporal
+- &id004
+  factors: R=1 S=1 P=1 Q=1 C=1 K=1 N=1 H=1
+  permutation: RSPQCKNH
+  target: WeightBuffer
+  type: temporal
+- &id005
+  factors: R=1 S=1 P=1 Q=1 C=1 K=1 N=1 H=1
+  permutation: RSPQCKNH
+  target: InputBuffer
+  type: temporal
+- &id006
+  factors: R=1 S=1 P=1 Q=2 C=1 K=4 N=2 H=1
+  permutation: RSPQCKNH
+  target: GlobalBuffer
+  type: spatial
+- &id007
+  factors: R=1 S=1 P=1 Q=1 C=1 K=1 N=1 H=1
+  permutation: RSPQCKNH
+  target: GlobalBuffer
+  type: temporal
+- &id008
+  factors: R=3 S=3 P=14 Q=8 C=1 K=1 N=1 H=1
+  permutation: RSPQCKNH
+  target: DRAM
+  type: temporal
+mapping:
+- *id001
+- *id002
+- *id003
+- *id004
+- *id005
+- *id006
+- *id007
+- *id008
+- *id009
+- *id010
+- *id011
+- *id012
+- *id013
+- *id014
+permutation_list:
+- RSPQCKNH
+- RSPQCKNH
+- RSPQCKNH
+- RSPQCKNH
+- RSPQCKNH
+- RSPQCKNH
+- RSPQCKNH
+- RSPQCKNH
+target_groups:
+  AccumulationBuffer:
+  - *id002
+  - *id003
+  DRAM:
+  - *id008
+  GlobalBuffer:
+  - *id006
+  - *id007
+  InputBuffer:
+  - *id005
+  Registers:
+  - *id001
+  WeightBuffer:
+  - *id004
+target_list:
+- Registers
+- AccumulationBuffer
+- AccumulationBuffer
+- WeightBuffer
+- InputBuffer
+- GlobalBuffer
+- GlobalBuffer
+- DRAM
+type_list:
+- temporal
+- spatial
+- temporal
+- temporal
+- temporal
+- spatial
+- temporal
+- temporal
