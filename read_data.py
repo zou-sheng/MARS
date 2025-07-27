@@ -23,7 +23,7 @@ def extract_value_from_file(file_path):
 
 def main():
     # 配置参数
-    main_folder = "./report/Cosa/Simba/obj_latency/bertlarge_input1"  # 主文件夹路径
+    main_folder = "./report/MARS/TensorCore/obj_latency/deepbench_input1"  # 主文件夹路径
     target_file = "timeloop-model.stats.txt"  # 目标文件名
     output_excel = "extracted_cycles.xlsx"  # 输出Excel文件名
     

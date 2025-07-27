@@ -25,6 +25,7 @@ def main():
     batch_size                 = opt.batch_size
     parameter_dimension        = opt.parameter_dimension
     weight_matrix_config       = opt.weight_matrix_config
+    solver                     = opt.solver
     
     with open(os.path.join(benchmark_dir, '{}_workload/layers.yaml'.format(workload)), 'r') as fd:
         layers = yaml.load(fd, Loader=yaml.SafeLoader)
@@ -107,7 +108,7 @@ def main():
             matrix_list.append(matrix)
         weight_matrix = matrix_list[:16]
         
-    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension, weight_matrix=weight_matrix)
+    ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension, weight_matrix=weight_matrix, solver=solver)
     print(opt.population)
     chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
     # with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
@@ -132,5 +133,6 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--parameter_dimension', type=int, default=2)
     parser.add_argument('--weight_matrix_config', type=str, default=None)
+    parser.add_argument('--solver', type=str, default='lp')
 
     main()
