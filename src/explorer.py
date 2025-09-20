@@ -16,6 +16,7 @@ import numpy as np
 from collections import deque
 import time
 import cvxpy as cp
+import bisect
 
 
 class MappingExplorer:
@@ -61,6 +62,8 @@ class MappingExplorer:
 
         self.dimension, self.dimension_dict = self.problem.get_problem_info()
         self.expanded_dimension_dict = self.get_expanded_problem()
+        self.factors_candidate = [sorted(utils.get_factors(num), reverse=True) for num in self.dimension]
+        print(self.factors_candidate)
 
        
         # 用于存储temporal层级
@@ -330,10 +333,10 @@ class MappingExplorer:
         # 记录开始时间
         # start_time = time.time()
         solution = [[2**matrix[i][j].value() for j in range(cols)] for i in range(rows)]
-        # print(solution)
+        print(solution)
         # print("time1: ", time.time()-start_time)
-        solution = self._integerize_with_staged_optimization(solution, p)
-        # print(solution)
+        solution = self._integerize_with_staged_optimization(solution, p, mode='PFM')
+        print(solution)
         # print("time2: ", time.time()-start_time)
         return solution
     
@@ -1043,7 +1046,7 @@ class MappingExplorer:
         
         return compute_last_row(data)
 
-    def _integerize_with_staged_optimization(self, solution, p):
+    def _integerize_with_staged_optimization(self, solution, p, mode='IFM'):
         def calculate_remaining_capacity(data, fixed_rows):
             """计算存储层次剩余容量"""
             result = {}
@@ -1133,8 +1136,12 @@ class MappingExplorer:
                 upper_bound = compute_column_upper_bound(
                     current_data, row, actual_col, fixed_rows, columns_processed, constraint_func, target
                 )
+                if mode == 'IFM':
+                    values_to_try = range(upper_bound, 0, -1)
+                else: # PFM
+                    values_to_try = [v for v in self.factors_candidate[actual_col] if v <= upper_bound and v <= original_value]
                 
-                for value in range(upper_bound, 0, -1):
+                for value in values_to_try:
                     new_data = current_data.copy()
                     new_data[row][actual_col] = value
                     if bfs(new_data, col_index + 1, columns_processed_current):
@@ -1143,9 +1150,60 @@ class MappingExplorer:
             bfs(data.copy(), 0, set())
             return best_data
         
+        
         # 固定行优化流程
         fixed_rows = []
-        data = np.ceil(solution).astype(int)
+        if mode == 'IFM':
+            data = np.ceil(solution).astype(int)
+        else:
+            solution = np.asarray(solution)
+            rows, cols = solution.shape
+            # 初始化data数组
+            data = np.empty((rows, cols), dtype=int)
+            for col in range(cols):
+                col_values = solution[:, col]
+                # 按从小到大排序（便于找到第一个大于val的最小值）
+                col_candidates = sorted(self.factors_candidate[col])
+                for i in range(rows):
+                    val = solution[i, col]
+                    # # 直接处理 val 为 1.0 的情况
+                    # if val == 1.0:
+                    #     data[i, col] = 1  # 直接赋值为 1
+                    #     continue  # 跳过当前循环，进入下一个
+                    val = col_values[i]
+                    # 查找第一个大于val的候选值，添加默认值避免异常
+                    try:
+                        # data[i, col] = next(c for c in col_candidates if c >= val)
+                        data[i, col] = next(c for c in col_candidates if c > val)
+                    except StopIteration:
+                        # 处理没有找到符合条件的值的情况
+                        # 可以根据业务需求设置默认值，这里示例用最大值
+                        data[i, col] = max(col_candidates) if col_candidates else 1
+
+
+            # solution = np.asarray(solution)
+            # rows, cols = solution.shape
+            # # 初始化 data 数组
+            # data = np.empty((rows, cols), dtype=int)
+            
+            # for col in range(cols):
+            #     col_candidates = sorted(self.factors_candidate[col])  # 确保候选值是有序的
+                
+            #     for i in range(rows):
+            #         val = solution[i, col]
+                    
+            #         # 直接处理 val 为 1.0 的情况
+            #         if val == 1.0:
+            #             data[i, col] = 1  # 直接赋值为 1
+            #             continue  # 跳过当前循环，进入下一个
+                    
+            #        # 使用 bisect_right 查找第一个大于等于 val 的候选值
+            #         idx = bisect.bisect_right(col_candidates, val)
+            #         if idx < len(col_candidates):
+            #             data[i, col] = col_candidates[idx]  # 找到的值是第一个大于 val 的值
+            #         else:
+            #             # 处理没有找到符合条件的值的情况
+            #             data[i, col] = max(col_candidates) if col_candidates else 1
         
         # 空间层次优化
         for spatial_name in self.spatial_level:
@@ -1192,6 +1250,212 @@ class MappingExplorer:
             return np.vstack([data[:-1], np.maximum(last_row, 1)])
         
         return compute_last_row(data)
+
+    def integerize_optimization(self, solution, p, mode='IFM'):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """计算存储层次剩余容量"""
+            result = {}
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
+                if buffer_name == 'DRAM':
+                    continue
+                all_involved_rows = list(range(buffer_level + 1))
+                used_capacity = 0
+                for tensor in self.buffer_tensor_dict[buffer_name]:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            tensor_capacity *= data[l][dim] if l in fixed_rows else 1
+                    used_capacity += tensor_capacity
+                result[buffer_name] = used_capacity
+            return result
+
+        def remaining_capacity_constraint(data, fixed_rows):
+            """检查容量约束"""
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > self.buffer_size_list[buffer_key]:
+                    return False
+            return True
+
+        def compute_column_upper_bound(data, row, col, fixed_rows, columns_processed, constraint_func, target):
+            """计算列的有效上界（不超过原始值，且未处理列设为1）"""
+            original_value = data[row][col]
+            test_data = data.copy()
+            
+            # 未处理的列设为1（包括当前列未处理时，但当前列会被单独设置）
+            for c in range(len(data[row])):
+                if c != col and c not in columns_processed:
+                    test_data[row][c] = 1
+            
+            # low, high = 1, math.floor(original_value * 1.1)
+            low, high = 1, original_value
+            best_valid = 1
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_data[row][col] = mid  # 设置当前列的值
+                
+                if constraint_func(test_data) <= target and remaining_capacity_constraint(test_data, fixed_rows + [row]):
+                    best_valid = mid
+                    low = mid + 1  # 尝试更大的值，但不超过original_value
+                else:
+                    high = mid - 1
+            
+            # 确保上界不超过原始值
+            return min(best_valid, original_value)
+
+        def maximize_row_with_constraint(data, row, constraint_func, target, fixed_rows, p_row):
+            """带约束的行最大化（DFS+上界优化）"""
+            fixed_positions = np.where(data[row] == 1)[0]
+            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
+            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
+            best_data = data.copy()
+            best_objective = 0
+            iterations = [0]
+
+            def bfs(current_data, col_index, columns_processed):
+                iterations[0] += 1
+                nonlocal best_data, best_objective
+                
+                if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
+                    current_objective = np.sum(p_row * current_data[row])
+                    # current_objective = np.sum(p_row * np.log2(current_data[row]) + a * np.log2(current_data[row])**2)
+                    if current_objective > best_objective:
+                        best_data = current_data.copy()
+                        best_objective = current_objective
+                    return True
+
+                if col_index >= len(columns_to_process):
+                    return False
+
+                actual_col = columns_to_process[col_index]
+                original_value = data[row][actual_col]
+                columns_processed_current = columns_processed.union({actual_col})
+                
+                # 计算上界并限制不超过原始值
+                upper_bound = compute_column_upper_bound(
+                    current_data, row, actual_col, fixed_rows, columns_processed, constraint_func, target
+                )
+                if mode == 'IFM':
+                    values_to_try = range(upper_bound, 0, -1)
+                else: # PFM
+                    values_to_try = [v for v in self.factors_candidate[actual_col] if v <= upper_bound and v <= original_value]
+                
+                for value in values_to_try:
+                    new_data = current_data.copy()
+                    new_data[row][actual_col] = value
+                    if bfs(new_data, col_index + 1, columns_processed_current):
+                        return True  # 找到最优解后提前终止
+            
+            bfs(data.copy(), 0, set())
+            return best_data
+        
+        
+        # 固定行优化流程
+        fixed_rows = []
+        if mode == 'IFM':
+            data = np.ceil(solution).astype(int)
+        else:
+            solution = np.asarray(solution)
+            rows, cols = solution.shape
+            # 初始化data数组
+            data = np.empty((rows, cols), dtype=int)
+            for col in range(cols):
+                col_values = solution[:, col]
+                # 按从小到大排序（便于找到第一个大于val的最小值）
+                col_candidates = sorted(self.factors_candidate[col])
+                for i in range(rows):
+                    val = solution[i, col]
+                    # # 直接处理 val 为 1.0 的情况
+                    # if val == 1.0:
+                    #     data[i, col] = 1  # 直接赋值为 1
+                    #     continue  # 跳过当前循环，进入下一个
+                    val = col_values[i]
+                    # 查找第一个大于val的候选值，添加默认值避免异常
+                    try:
+                        # data[i, col] = next(c for c in col_candidates if c >= val)
+                        data[i, col] = next(c for c in col_candidates if c > val)
+                    except StopIteration:
+                        # 处理没有找到符合条件的值的情况
+                        # 可以根据业务需求设置默认值，这里示例用最大值
+                        data[i, col] = max(col_candidates) if col_candidates else 1
+
+
+            # solution = np.asarray(solution)
+            # rows, cols = solution.shape
+            # # 初始化 data 数组
+            # data = np.empty((rows, cols), dtype=int)
+            
+            # for col in range(cols):
+            #     col_candidates = sorted(self.factors_candidate[col])  # 确保候选值是有序的
+                
+            #     for i in range(rows):
+            #         val = solution[i, col]
+                    
+            #         # 直接处理 val 为 1.0 的情况
+            #         if val == 1.0:
+            #             data[i, col] = 1  # 直接赋值为 1
+            #             continue  # 跳过当前循环，进入下一个
+                    
+            #        # 使用 bisect_right 查找第一个大于等于 val 的候选值
+            #         idx = bisect.bisect_right(col_candidates, val)
+            #         if idx < len(col_candidates):
+            #             data[i, col] = col_candidates[idx]  # 找到的值是第一个大于 val 的值
+            #         else:
+            #             # 处理没有找到符合条件的值的情况
+            #             data[i, col] = max(col_candidates) if col_candidates else 1
+        
+        # 空间层次优化
+        for spatial_name in self.spatial_level:
+            sp_level = self.spatial_level[spatial_name]
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            p_row = p[sp_level]  # 获取当前行的权重
+            data = maximize_row_with_constraint(
+                data, sp_level, 
+                lambda x: np.prod(x[sp_level]), 
+                spatial_capacity, 
+                fixed_rows,
+                p_row
+            )
+            fixed_rows.append(sp_level)
+        
+        # 存储层次优化
+        def create_buffer_constraint(buffer_name):
+            return lambda x: sum(
+                np.prod(x[self.temporal_level[buffer_name]][self.tensor_dimensions[tensor]]) 
+                for tensor in self.buffer_tensor_dict[buffer_name]
+            )
+                
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                continue
+            buffer_level = self.temporal_level[buffer_name]
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            p_row = p[buffer_level]  # 获取当前行的权重
+            constraint_func = create_buffer_constraint(buffer_name)
+            data = maximize_row_with_constraint(
+                data, buffer_level, 
+                constraint_func, 
+                buffer_capacity, 
+                fixed_rows,
+                p_row
+            )
+            fixed_rows.append(buffer_level)
+        
+        # 计算最后一行
+        def compute_last_row(data):
+            product = np.prod(data[:-1], axis=0, dtype=np.float64)
+            last_row = np.ceil(np.array(self.dimension) / product).astype(int)
+            return np.vstack([data[:-1], np.maximum(last_row, 1)])
+        
+        return compute_last_row(data)
+
 
     def _integerize_with_staged_optimization5(self, solution, p, a):
         def calculate_remaining_capacity(data, fixed_rows):
