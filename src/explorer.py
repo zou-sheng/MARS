@@ -1650,6 +1650,10 @@ class MappingExplorer:
             exit()
             for i in range(num_population):
                 mapping_list.append(copy.deepcopy(mapping))
+        elif self.mapper == "random":
+            print("random")
+            mapping = self.random_search()
+            exit()
         else:
             print("无效的选项，请选择 'cosa'、'soter' 或 'MARS'。")
         return mapping_list
@@ -1816,14 +1820,20 @@ class MappingExplorer:
 
     def run(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
+        print(111111111)
         num_generations = num_generations
+        print(111111111)
         num_population = num_population
+        print(111111111)
         num_elite = int(num_population * elite_ratio)
-        pool = Pool(min(num_population + num_elite, cpu_count()))
+        print(111111111)
+        # pool = Pool(min(num_population + num_elite, cpu_count()))
+        print(111111111)
         best_reward_list = []
         best_reward = [-float("Inf") for _ in range( len(self.fitness_obj))]
+        print(111111111)
         best_sol = None
-
+        print(111111111)
         population = self.create_genome(num_population, num_generations)
         # reward_list = pool.map(self.thread_fun, population)
         # print(reward_list)
@@ -2066,6 +2076,130 @@ class MappingExplorer:
 
         return best_map
     '''
+
+    def generate_candidate_solution(self, candidates):
+        """
+        使用生成时约束策略，高概率生成一个有效的随机解。
+        """
+        rows = len(self.temporal_level) + len(self.spatial_level)
+        cols = 8
+
+        matrix = [[] for _ in range(rows)]
+        # 跟踪每个缓存已使用的容量
+        used_capacities = {name: 0 for name in self.buffer_name_list.values() if name != 'DRAM'}
+        print(self.buffer_name_list)
+        print(used_capacities)
+        print(self.buffer_size_list)
+        # a. 先生成受空间约束的行
+        for spatial_name, sp_level in self.spatial_level.items():
+            sp_capacity = self.spatial_size_list[spatial_name]
+            while True:
+                # 为该行生成随机因子
+                row = [random.choice(candidates[sp_level][col]) for col in range(cols)]
+                if np.prod(row) <= sp_capacity:
+                    matrix[sp_level] = row
+                    break # 找到有效行，继续下一行
+
+        # b. 接着生成受存储约束的行 (以及其他行)
+        # 假设行是按层次从低到高处理的
+        for row_level in range(rows):
+            if matrix[row_level]: # 如果该行已在步骤a中生成，则跳过
+                continue
+            
+            while True:
+                # 为该行生成随机因子
+                row_candidates = [random.choice(candidates[row_level][col]) for col in range(cols)]
+                
+                # 临时检查这一行的加入是否会导致任何缓存容量超标
+                temp_used_capacities = used_capacities.copy()
+                valid = True
+                
+                for buffer_key in self.buffer_name_list.keys():
+                    buffer_name = self.buffer_name_list[buffer_key]
+                    if buffer_name == 'DRAM':
+                        break
+                    buffer_level = self.temporal_level[buffer_name]
+                    # 只有当当前行的层级 <= 缓存层级时，才会影响该缓存
+                    if row_level <= buffer_level:
+                        # 计算所有已生成行（加上当前尝试行）对该缓存的贡献
+                        for tensor in self.buffer_tensor_dict[buffer_name]:
+                            tensor_capacity = 1
+                            for l in range(buffer_level + 1):
+                                # 对于已经生成的行，使用 matrix[l]
+                                # 对于当前行，使用 row_candidates
+                                # 对于尚未生成的行，假设为1 (最保守的估计)
+                                if l < row_level:
+                                    current_row = matrix[l]
+                                elif l == row_level:
+                                    current_row = row_candidates
+                                else: # l > row_level
+                                    current_row = [1] * cols
+                                    
+                                for dim in self.tensor_dimensions[tensor]:
+                                    tensor_capacity *= current_row[dim]
+                            temp_used_capacities[buffer_name] += tensor_capacity
+                            
+                            if temp_used_capacities[buffer_name] > self.buffer_size_list[buffer_key]:
+                                valid = False
+                                break # 缓存超标，无需继续计算其他张量
+             
+                if valid:
+                    # 如果有效，则正式采纳这一行，并更新已用容量
+                    matrix[row_level] = row_candidates
+                    used_capacities = temp_used_capacities
+                    break # 继续生成下一行
+
+        # c. 计算最后一行 (根据你的_integerize_with_staged_optimization5函数逻辑)
+        # 注意：这里的实现是一个简化版，假设最后一行是第7行
+        # 并且它的计算方式是基于前面所有行的乘积
+        if not matrix[-1]: # 如果最后一行还未生成
+            product = np.ones(cols, dtype=np.float64)
+            for row in matrix[:-1]:
+                product *= np.array(row)
+            last_row = np.ceil(np.array(self.dimension) / product).astype(int)
+            matrix[-1] = np.maximum(last_row, 1).tolist()
+            
+        return matrix
+
+    def random_search(self, max_iterations=10, mode='IFM'):
+        start_time = time.time()
+        rows = len(self.temporal_level) + len(self.spatial_level)
+        cols = 8 # 问题维度R, S, P, Q, C, K, H, N
+        """
+        使用智能生成器进行随机搜索。
+        """
+        if mode == 'IFM':
+            candidates = [[list(range(1, d+1)) for d in self.dimension] for _ in range(rows)]
+        elif mode == 'PFM':
+            candidates = [[utils.get_factors(d) for d in self.dimension] for _ in range(rows)]
+        best_score = -float('inf')
+        best_matrix = None
+        valid_solutions_found = 0
+        print(time.time() - start_time)
+        print(f"开始优化的随机搜索，总迭代次数: {max_iterations}")
+
+        for i in range(max_iterations):
+            
+            print(time.time() - start_time)
+            # 使用智能生成器生成候选解
+            candidate_matrix = self.generate_candidate_solution(candidates)
+            print(candidate_matrix)
+            # # 仍然进行最终的有效性检查，以确保万无一失
+            # if self.is_mapping_valid(candidate_matrix):
+            #     valid_solutions_found += 1
+            #     current_score = self.black_box_evaluation_function(candidate_matrix)
+                
+            #     if current_score > best_score:
+            #         best_score = current_score
+            #         best_matrix = candidate_matrix
+            #         print(f"迭代 {i+1}/{max_iterations}: 找到更优解，得分: {best_score}")
+            # # else:
+            # #     print(f"迭代 {i+1} 生成的解无效。")
+
+        print(f"\n--- 搜索完成 ---")
+        print(f"总尝试次数: {max_iterations}, 有效解数量: {valid_solutions_found}")
+        print(f"有效解比例: {valid_solutions_found / max_iterations:.2%}")
+        return best_matrix, best_score
 
     # 单目标
     def run_parameters(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
