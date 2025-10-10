@@ -17,7 +17,173 @@ from collections import deque
 import time
 import cvxpy as cp
 import bisect
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+from collections import deque
 
+class DQN(nn.Module):
+    """深度Q网络模型"""
+    def __init__(self, state_size, action_size, hidden_size=128):
+        super(DQN, self).__init__()
+        self.fc1 = nn.Linear(state_size, hidden_size)
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        self.fc3 = nn.Linear(hidden_size, action_size)
+    
+    def forward(self, x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        return self.fc3(x)
+
+class ReplayBuffer:
+    """经验回放缓冲区"""
+    def __init__(self, capacity=10000):
+        self.buffer = deque(maxlen=capacity)
+    
+    def add(self, state, action, reward, next_state, done):
+        self.buffer.append((state, action, reward, next_state, done))
+    
+    def sample(self, batch_size):
+        return random.sample(self.buffer, batch_size)
+    
+    def __len__(self):
+        return len(self.buffer)
+
+class DQNAgent:
+    """DQN智能体"""
+    def __init__(self, state_size, action_size, lr=1e-4, gamma=0.99, epsilon=1.0, 
+                 epsilon_min=0.01, epsilon_decay=0.995, batch_size=64):
+        self.state_size = state_size
+        self.action_size = action_size
+        self.lr = lr
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.epsilon_min = epsilon_min
+        self.epsilon_decay = epsilon_decay
+        self.batch_size = batch_size
+        
+        self.policy_net = DQN(state_size, action_size)
+        self.target_net = DQN(state_size, action_size)
+        self.target_net.load_state_dict(self.policy_net.state_dict())
+        self.optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
+        self.memory = ReplayBuffer()
+        self.total_steps = 0
+        
+    def select_action(self, state, eval_mode=False):
+        """选择动作：探索或利用"""
+        if not eval_mode and random.random() < self.epsilon:
+            return random.randrange(self.action_size)
+        with torch.no_grad():
+            state_tensor = torch.FloatTensor(state).unsqueeze(0)
+            q_values = self.policy_net(state_tensor)
+            return q_values.max(1)[1].item()
+    
+    def update_epsilon(self):
+        """更新探索率"""
+        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
+    
+    def update_target_network(self):
+        """更新目标网络"""
+        self.target_net.load_state_dict(self.policy_net.state_dict())
+    
+    def train(self):
+        """训练网络"""
+        if len(self.memory) < self.batch_size:
+            return
+            
+        transitions = self.memory.sample(self.batch_size)
+        batch = tuple(zip(*transitions))
+        
+        states = torch.FloatTensor(batch[0])
+        actions = torch.LongTensor(batch[1]).unsqueeze(1)
+        rewards = torch.FloatTensor(batch[2]).unsqueeze(1)
+        next_states = torch.FloatTensor(batch[3])
+        dones = torch.FloatTensor(batch[4]).unsqueeze(1)
+        
+        # 计算当前Q值
+        current_q = self.policy_net(states).gather(1, actions)
+        
+        # 计算目标Q值
+        with torch.no_grad():
+            next_q = self.target_net(next_states).max(1)[0].detach().unsqueeze(1)
+            target_q = rewards + (1 - dones) * self.gamma * next_q
+        
+        # 计算损失并优化
+        loss = F.mse_loss(current_q, target_q)
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+        
+        self.total_steps += 1
+        if self.total_steps % 100 == 0:
+            self.update_target_network()
+        self.update_epsilon()
+
+class MatrixEnvironment:
+    """二维矩阵优化环境"""
+    def __init__(self, rows, cols, candidates, reward_function):
+        """
+        初始化环境
+        rows, cols: 矩阵行列数
+        candidates: 每个位置的候选值列表，形状为 [rows, cols, num_candidates]
+        reward_function: 奖励函数，输入矩阵返回奖励值
+        """
+        self.rows = rows
+        self.cols = cols
+        self.candidates = candidates  # 候选值列表
+        self.reward_function = reward_function  # 奖励函数
+        self.current_matrix = None
+    
+    def reset(self):
+        """重置环境，生成初始矩阵"""
+        self.current_matrix = np.zeros((self.rows, self.cols), dtype=int)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                self.current_matrix[i, j] = random.choice(self.candidates[i][j])
+        return self._get_state(self.current_matrix)
+    
+    def step(self, action):
+        """执行动作，返回新状态、奖励和是否结束"""
+        row, col, value = self._decode_action(action)
+        if row is None or col is None:
+            return self._get_state(self.current_matrix), -100, True, {}
+        
+        original_matrix = copy.deepcopy(self.current_matrix)
+        self.current_matrix[row, col] = value
+        
+        
+        # 计算奖励
+        reward, _ = self.reward_function(self.current_matrix)
+        
+        # 结束条件（示例：假设无终止条件，需自行实现）
+        done = False
+        
+        next_state = self._get_state(self.current_matrix)
+        return next_state, reward, done, {}
+    
+    def _get_state(self, matrix):
+        """将矩阵转换为状态向量（需自行实现状态表示）"""
+        # 示例：直接使用矩阵扁平化作为状态
+        return matrix.flatten().tolist()
+    
+    def _decode_action(self, action):
+        """将动作索引解码为矩阵位置和值"""
+        total_positions = self.rows * self.cols
+        if action >= total_positions:
+            return None, None, None
+        
+        row = action // self.cols
+        col = action % self.cols
+        candidate_idx = action % len(self.candidates[row][col])
+        
+        if candidate_idx < len(self.candidates[row][col]):
+            return row, col, self.candidates[row][col][candidate_idx]
+        return None, None, None
+    
+    def get_current_matrix(self):
+        """获取当前矩阵"""
+        return self.current_matrix
 
 class MappingExplorer:
     def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict, parameter_dimension=2, weight_matrix=None, solver='lp'):
@@ -1656,7 +1822,15 @@ class MappingExplorer:
                 mapping_list.append(copy.deepcopy(mapping))
         elif self.mapper == "random":
             print("random")
-            mapping = self.random_search()
+            mapping = self.random_search(max_iterations=num_generations)
+            exit()
+        elif self.mapper == "GA":
+            print("genetic algorithm")
+            mapping = self.genetic_algorithm(population_size=num_population, generations=num_generations)
+            exit()
+        elif self.mapper == "RL":
+            print("reinforcement learning")
+            mapping = self.reinforcement_learning(episodes=num_generations)
             exit()
         else:
             print("无效的选项，请选择 'cosa'、'soter' 或 'MARS'。")
@@ -2146,8 +2320,6 @@ class MappingExplorer:
                 nonlocal best_data
                 
                 if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
-                    print(constraint_func(current_data), target, remaining_capacity_constraint(current_data, fixed_rows + [row]))
-                    print(current_data)
                     best_data = current_data
                     return True
 
@@ -2207,10 +2379,6 @@ class MappingExplorer:
         
         # 存储层次优化
         def create_buffer_constraint(buffer_name):
-            print(buffer_name)
-            print("1:", self.temporal_level)
-            print(self.tensor_dimensions)
-            print(self.buffer_tensor_dict)
             return lambda x: sum(
                 np.prod(x[self.temporal_level[buffer_name]][self.tensor_dimensions[tensor]]) 
                 for tensor in self.buffer_tensor_dict[buffer_name]
@@ -2239,9 +2407,167 @@ class MappingExplorer:
         
         return compute_last_row(data)
 
-    
+    def adjust_candidate_solution(self, matrix, mode='IFM'):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """计算存储层次剩余容量"""
+            result = {}
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
+                if buffer_name == 'DRAM':
+                    continue
+                all_involved_rows = list(range(buffer_level + 1))
+                used_capacity = 0
+                for tensor in self.buffer_tensor_dict[buffer_name]:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            # print(tensor_capacity, data[l][dim])
+                            tensor_capacity *= data[l][dim] if l in fixed_rows else 1
+                    used_capacity += tensor_capacity
+                result[buffer_name] = used_capacity
+            return result
 
-    def random_search(self, max_iterations=10000, mode='IFM'):
+        def remaining_capacity_constraint(data, fixed_rows):
+            """检查容量约束"""
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > self.buffer_size_list[buffer_key]:
+                    return False
+            return True
+
+        def compute_column_upper_bound(data, row, col, fixed_rows, columns_processed, constraint_func, target):
+            """计算列的有效上界（不超过原始值，且未处理列设为1）"""
+            original_value = data[row][col]
+            test_data = data.copy()
+            
+            # 未处理的列设为1（包括当前列未处理时，但当前列会被单独设置）
+            for c in range(len(data[row])):
+                if c != col and c not in columns_processed:
+                    test_data[row][c] = 1
+            
+            # low, high = 1, math.floor(original_value * 1.1)
+            low, high = 1, original_value
+            best_valid = 1
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_data[row][col] = mid  # 设置当前列的值
+                
+                if constraint_func(test_data) <= target and remaining_capacity_constraint(test_data, fixed_rows + [row]):
+                    best_valid = mid
+                    low = mid + 1  # 尝试更大的值，但不超过original_value
+                else:
+                    high = mid - 1
+            
+            # 确保上界不超过原始值
+            return min(best_valid, original_value)
+
+        def adjust_row_with_constraint(data, row, constraint_func, target, fixed_rows):
+            """带约束的行最大化（DFS+上界优化）"""
+            fixed_positions = np.where(data[row] == 1)[0]
+            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
+            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
+            best_data = data.copy()
+            iterations = [0]
+
+            def bfs(current_data, col_index, columns_processed):
+                iterations[0] += 1
+                nonlocal best_data
+                
+                if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
+                    best_data = current_data
+                    return True
+
+                if col_index >= len(columns_to_process):
+                    return False
+
+                actual_col = columns_to_process[col_index]
+                original_value = data[row][actual_col]
+                columns_processed_current = columns_processed.union({actual_col})
+                
+                # 计算上界并限制不超过原始值
+                upper_bound = compute_column_upper_bound(
+                    current_data, row, actual_col, fixed_rows, columns_processed, constraint_func, target
+                )
+                if mode == 'IFM':
+                    values_to_try = list(range(upper_bound, 0, -1))
+                else: # PFM
+                    values_to_try = [v for v in self.factors_candidate[actual_col] if v <= upper_bound and v <= original_value]
+                
+                random.shuffle(values_to_try)
+
+                for value in values_to_try:
+                    new_data = current_data.copy()
+                    new_data[row][actual_col] = value
+                    if bfs(new_data, col_index + 1, columns_processed_current):
+                        return True  # 找到最优解后提前终止
+            
+            bfs(data.copy(), 0, set())
+            return best_data
+        
+        
+        # 固定行优化流程
+        fixed_rows = []
+        # matrix = []
+        # for row in range(self.num_rows):
+        #     matrix_row = []
+        #     for col in range(self.num_cols):
+        #         if mode == 'IFM':
+        #             matrix_row.append(random.choice(self.candidates[row][col]))
+        #         elif mode == 'PFM':
+        #             matrix_row.append(random.choice(self.factors_candidate[col]))
+        #     matrix.append(matrix_row)
+        data = np.array(matrix)
+
+        # 空间层次优化
+        for spatial_name in self.spatial_level:
+            sp_level = self.spatial_level[spatial_name]
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            data = adjust_row_with_constraint(
+                data, sp_level, 
+                lambda x: np.prod(x[sp_level]), 
+                spatial_capacity, 
+                fixed_rows
+            )
+            
+            fixed_rows.append(sp_level)
+        
+        # 存储层次优化
+        def create_buffer_constraint(buffer_name):
+            return lambda x: sum(
+                np.prod(x[self.temporal_level[buffer_name]][self.tensor_dimensions[tensor]]) 
+                for tensor in self.buffer_tensor_dict[buffer_name]
+            )
+           
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                continue
+            buffer_level = self.temporal_level[buffer_name]
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            constraint_func = create_buffer_constraint(buffer_name)
+            data = adjust_row_with_constraint(
+                data, buffer_level, 
+                constraint_func, 
+                buffer_capacity, 
+                fixed_rows
+            )
+            fixed_rows.append(buffer_level)
+
+        # 计算最后一行
+        def compute_last_row(data):
+            product = np.prod(data[:-1], axis=0, dtype=np.float64)
+            last_row = np.ceil(np.array(self.dimension) / product).astype(int)
+            return np.vstack([data[:-1], np.maximum(last_row, 1)])
+        
+        return compute_last_row(data)
+   
+
+    def random_search(self, max_iterations=1000, mode='IFM'):
         start_time = time.time()
         rows = len(self.temporal_level) + len(self.spatial_level)
         cols = 8 # 问题维度R, S, P, Q, C, K, H, N
@@ -2318,6 +2644,216 @@ class MappingExplorer:
         print(f"总尝试次数: {max_iterations}, 有效解数量: {valid_solutions_found}")
         print(f"有效解比例: {valid_solutions_found / max_iterations:.2%}")
         return best_mapping, best_score
+
+    def genetic_algorithm(self, population_size=100, generations=100, mutation_rate=0.1, mode='IFM'):
+        def select_parents(population):
+            # 选择父代
+            weighted_population = [(individual, fitness(individual)[0]) for individual in population]
+            weighted_population.sort(key=lambda x: x[1], reverse=True)  # 按适应度排序
+            return random.choices(
+                population=[ind[0] for ind in weighted_population],
+                weights=[ind[1] for ind in weighted_population],
+                k=2
+            )
+
+        def crossover(parent1, parent2):
+            # 交叉操作
+            child = np.copy(parent1)
+            for row in range(self.num_rows):
+                if random.random() < 0.5:
+                    child[row] = parent2[row]
+            return child
+        
+        def mutate(individual):
+            # 变异操作
+            for row in range(self.num_rows):
+                for col in range(self.num_cols):
+                    if random.random() < mutation_rate:
+                        if mode == 'IFM':
+                            individual[row][col] = random.choice(self.candidates[row][col])
+                        elif mode == 'PFM':
+                            individual[row][col] = random.choice(self.factors_candidate[col])
+            return individual
+
+        def fitness(individual):
+            # 计算适应度
+            mapping_dict, _ = utils.generate_mapping_for_lpsolver2(individual, self.targets, self.type, self.bypass)
+            mapping = Mapping(mapping_dict)
+            if self.is_mapping_valid(mapping):
+                original_dir = os.getcwd()
+                # 创建一个唯一的临时文件夹
+                temp_dir = f'{original_dir}/mars_tmp/temp_{uuid.uuid4()}'
+                os.makedirs(temp_dir)
+                remainders = {}
+                outermost_idx = {}
+                for d in mapping.factor_dict.keys():
+                    T = self.dimension_dict[d]
+                    F = mapping.factor_dict[d]
+                    remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
+                    
+                
+                temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
+                
+                output_stats_path = os.path.join(temp_dir, 'timeloop-model.stats.txt')
+                utils.store_yaml(f'{temp_dir}/temp.yaml', temp_mapping)
+                utils.store_yaml(f'{temp_dir}/temp_prob.yaml', self.problem.problem)
+                utils.store_yaml(f'{temp_dir}/temp_arch.yaml', self.accelerator.arch_dict)
+                utils.run_timeloop(f'{temp_dir}/temp_arch.yaml', f'{temp_dir}/temp_prob.yaml', f'{temp_dir}/temp.yaml', cwd=temp_dir)
+                try:
+                    self.observation = utils.parse_timeloop_output(output_stats_path)
+                except:
+                    pass
+                current_score = self.judge()
+                if os.path.exists(temp_dir):
+                    shutil.rmtree(temp_dir)
+                return (current_score[0] if current_score else -float('inf'), temp_mapping)
+            return (-float('inf'), None)
+        
+        population = []
+        for _ in range(population_size):
+            matrix = []
+            for row in range(self.num_rows):
+                matrix_row = []
+                for col in range(self.num_cols):
+                    if mode == 'IFM':
+                        matrix_row.append(random.choice(self.candidates[row][col]))
+                    elif mode == 'PFM':
+                        matrix_row.append(random.choice(self.factors_candidate[col]))
+                matrix.append(matrix_row)
+            population.append(matrix)
+
+        best_solution = None
+        best_score = -float('inf')
+
+        for generation in range(generations):
+            new_population = []
+            for _ in range(population_size //2):
+                parent1, parent2 = select_parents(population)
+                child1 = crossover(parent1, parent2)
+                child2 = crossover(parent2, parent1)
+                new_population.extend([mutate(child1), mutate(child2)])
+
+            population = new_population
+
+            for individual in population:
+                individual = self.adjust_candidate_solution(individual)
+                score, mapping = fitness(individual)
+                if score > best_score:
+                    print(mapping)
+                    best_score = score
+                    best_solution = mapping
+
+            print(f"迭代 {generation+1}/{generations} 代: 找到更优解，得分: {best_score}")
+
+        map_path = f'{self.report_dir}/map.yaml'
+        utils.store_yaml(map_path, best_solution)
+        prob_path = f'{self.report_dir}/problem.yaml'
+        utils.store_yaml(prob_path, self.problem.problem)
+        arch_path = f'{self.report_dir}/arch.yaml'
+        utils.store_yaml(arch_path, self.accelerator.arch_dict)
+
+        # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
+        utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
+
+        return best_solution, best_score
+
+    def reinforcement_learning(self, episodes=200, max_steps=50, mode='IFM'):
+        def fitness(individual):
+            # 计算适应度
+            individual = self.adjust_candidate_solution(individual)
+            print(9999)
+            mapping_dict, _ = utils.generate_mapping_for_lpsolver2(individual, self.targets, self.type, self.bypass)
+            mapping = Mapping(mapping_dict)
+            if self.is_mapping_valid(mapping):
+                original_dir = os.getcwd()
+                # 创建一个唯一的临时文件夹
+                temp_dir = f'{original_dir}/mars_tmp/temp_{uuid.uuid4()}'
+                os.makedirs(temp_dir)
+                remainders = {}
+                outermost_idx = {}
+                for d in mapping.factor_dict.keys():
+                    T = self.dimension_dict[d]
+                    F = mapping.factor_dict[d]
+                    remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
+                    
+                
+                temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
+                
+                output_stats_path = os.path.join(temp_dir, 'timeloop-model.stats.txt')
+                utils.store_yaml(f'{temp_dir}/temp.yaml', temp_mapping)
+                utils.store_yaml(f'{temp_dir}/temp_prob.yaml', self.problem.problem)
+                utils.store_yaml(f'{temp_dir}/temp_arch.yaml', self.accelerator.arch_dict)
+                utils.run_timeloop(f'{temp_dir}/temp_arch.yaml', f'{temp_dir}/temp_prob.yaml', f'{temp_dir}/temp.yaml', cwd=temp_dir)
+                try:
+                    self.observation = utils.parse_timeloop_output(output_stats_path)
+                except:
+                    pass
+                current_score = self.judge()
+                if os.path.exists(temp_dir):
+                    shutil.rmtree(temp_dir)
+                return (current_score[0] if current_score else -float('inf'), temp_mapping)
+            return (-float('inf'), None)
+
+        """强化学习优化主函数"""
+        rows = self.num_rows
+        cols = self.num_cols
+        state_size = rows * cols  # 初始状态为矩阵扁平化
+        
+        action_size = rows * cols * max(len(cand) for row in self.candidates for cand in row)
+        
+        # 初始化环境和智能体
+        env = MatrixEnvironment(
+            rows, cols, self.candidates, fitness
+        )
+        agent = DQNAgent(state_size, action_size)
+        
+        best_matrix = None
+        best_score = -float('inf')
+        best_mapping = None
+        
+        for episode in range(episodes):
+            state = env.reset()
+            done = False
+            steps = 0
+            
+            while not done and steps < max_steps:
+                # 选择动作
+                action = agent.select_action(state)
+                
+                # 执行动作
+                next_state, reward, done, _ = env.step(action)
+                agent.memory.add(state, action, reward, next_state, done)
+                agent.train()
+                
+                state = next_state
+                steps += 1
+            
+            # 评估当前矩阵
+            current_matrix = env.get_current_matrix()
+            print(current_matrix)
+            current_score, current_mapping = fitness(current_matrix)
+            print(current_score)
+            if current_score > best_score:
+                best_score = current_score
+                best_matrix = copy.deepcopy(current_matrix)
+                best_mappint = current_mapping
+                print(f"Episode {episode+1}/{episodes}: 找到更优解，得分: {best_score}")
+
+            print(f"Episode {episode+1}/{episodes}, 最优得分: {best_score}")
+            
+        map_path = f'{self.report_dir}/map.yaml'
+        utils.store_yaml(map_path, best_mapping)
+        prob_path = f'{self.report_dir}/problem.yaml'
+        utils.store_yaml(prob_path, self.problem.problem)
+        arch_path = f'{self.report_dir}/arch.yaml'
+        utils.store_yaml(arch_path, self.accelerator.arch_dict)
+
+        # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
+        utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
+        
+        return best_matrix, best_score
+
+    
 
     # 单目标
     def run_parameters(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
