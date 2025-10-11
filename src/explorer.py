@@ -229,7 +229,7 @@ class MappingExplorer:
         self.dimension, self.dimension_dict = self.problem.get_problem_info()
         self.expanded_dimension_dict = self.get_expanded_problem()
         self.factors_candidate = [sorted(utils.get_factors(num), reverse=True) for num in self.dimension]
-        print(self.factors_candidate)
+
 
        
         # 用于存储temporal层级
@@ -2581,18 +2581,14 @@ class MappingExplorer:
         best_score = -float('inf')
         best_mapping = None
         valid_solutions_found = 0
-        print(time.time() - start_time)
-        print(f"开始优化的随机搜索，总迭代次数: {max_iterations}")
         original_dir = os.getcwd()
         # 创建一个唯一的临时文件夹
         temp_dir = f'{original_dir}/mars_tmp/temp_{uuid.uuid4()}'
         os.makedirs(temp_dir)
         for i in range(max_iterations):
             
-            print(time.time() - start_time)
             # 使用智能生成器生成候选解
             candidate_matrix = self.generate_candidate_solution()
-            print(candidate_matrix)
             mapping_dict, _ = utils.generate_mapping_for_lpsolver2(candidate_matrix, self.targets, self.type, self.bypass)
             mapping = Mapping(mapping_dict)
             if self.is_mapping_valid(mapping):
@@ -2618,11 +2614,10 @@ class MappingExplorer:
                 except:
                     pass
                 current_score = self.judge()
-                print("current_score", current_score)
                 if current_score and current_score[0] > best_score:
                     best_score = current_score[0]
                     best_mapping = temp_mapping
-                    print(f"迭代 {i+1}/{max_iterations}: 找到更优解，得分: {best_score}")
+                    # print(f"迭代 {i+1}/{max_iterations}: 找到更优解，得分: {best_score}")
             else:
                 continue
 
@@ -2641,8 +2636,7 @@ class MappingExplorer:
 
         
         print(f"\n--- 搜索完成 ---")
-        print(f"总尝试次数: {max_iterations}, 有效解数量: {valid_solutions_found}")
-        print(f"有效解比例: {valid_solutions_found / max_iterations:.2%}")
+        print(f"最优得分: {best_score}")
         return best_mapping, best_score
 
     def genetic_algorithm(self, population_size=100, generations=100, mutation_rate=0.1, mode='IFM'):
@@ -2739,11 +2733,10 @@ class MappingExplorer:
                 individual = self.adjust_candidate_solution(individual)
                 score, mapping = fitness(individual)
                 if score > best_score:
-                    print(mapping)
                     best_score = score
                     best_solution = mapping
 
-            print(f"迭代 {generation+1}/{generations} 代: 找到更优解，得分: {best_score}")
+            # print(f"迭代 {generation+1}/{generations} 代: 找到更优解，得分: {best_score}")
 
         map_path = f'{self.report_dir}/map.yaml'
         utils.store_yaml(map_path, best_solution)
@@ -2755,13 +2748,14 @@ class MappingExplorer:
         # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
         utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
 
+        print(f"\n--- 搜索完成 ---")
+        print(f"最优得分: {best_score}")
         return best_solution, best_score
 
     def reinforcement_learning(self, episodes=200, max_steps=50, mode='IFM'):
         def fitness(individual):
             # 计算适应度
             individual = self.adjust_candidate_solution(individual)
-            print(9999)
             mapping_dict, _ = utils.generate_mapping_for_lpsolver2(individual, self.targets, self.type, self.bypass)
             mapping = Mapping(mapping_dict)
             if self.is_mapping_valid(mapping):
@@ -2830,16 +2824,14 @@ class MappingExplorer:
             
             # 评估当前矩阵
             current_matrix = env.get_current_matrix()
-            print(current_matrix)
             current_score, current_mapping = fitness(current_matrix)
-            print(current_score)
             if current_score > best_score:
                 best_score = current_score
                 best_matrix = copy.deepcopy(current_matrix)
                 best_mappint = current_mapping
-                print(f"Episode {episode+1}/{episodes}: 找到更优解，得分: {best_score}")
+                # print(f"Episode {episode+1}/{episodes}: 找到更优解，得分: {best_score}")
 
-            print(f"Episode {episode+1}/{episodes}, 最优得分: {best_score}")
+            # print(f"Episode {episode+1}/{episodes}, 最优得分: {best_score}")
             
         map_path = f'{self.report_dir}/map.yaml'
         utils.store_yaml(map_path, best_mapping)
@@ -2851,6 +2843,9 @@ class MappingExplorer:
         # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
         utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
         
+        print(f"\n--- 搜索完成 ---")
+        print(f"最优得分: {best_score}")
+
         return best_matrix, best_score
 
     
