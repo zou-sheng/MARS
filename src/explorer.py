@@ -2828,7 +2828,7 @@ class MappingExplorer:
             if current_score > best_score:
                 best_score = current_score
                 best_matrix = copy.deepcopy(current_matrix)
-                best_mappint = current_mapping
+                best_mapping = current_mapping
                 # print(f"Episode {episode+1}/{episodes}: 找到更优解，得分: {best_score}")
 
             # print(f"Episode {episode+1}/{episodes}, 最优得分: {best_score}")
