@@ -22,6 +22,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from collections import deque
+import gurobipy as gp
+from gurobipy import GRB
 
 class DQN(nn.Module):
     """深度Q网络模型"""
@@ -404,6 +406,7 @@ class MappingExplorer:
     def generate_mapping(self, dimension, p, a=1):
         if self.solver == 'lp':
             sol = self.lpsolver(dimension, p)
+            sol = self.lpsolver_gurobi(dimension, p)
         elif self.solver == 'qp':
             sol = self.qpsolver(dimension, p, a)
         mapping_dict, dimension_dict = utils.generate_mapping_for_lpsolver2(sol, self.targets, self.type, self.bypass)
@@ -495,21 +498,150 @@ class MappingExplorer:
             for r in range(rows):
                 prob += matrix[r][c] <= math.log2(dimension_list[c])
             prob += col_sum >= math.log2(dimension_list[c])
-
+        
+        start_time = time.time()
         prob.solve(PULP_CBC_CMD(msg=0))
         # print(prob)
         
         # 记录开始时间
-        # start_time = time.time()
         solution = [[2**matrix[i][j].value() for j in range(cols)] for i in range(rows)]
-        print(solution)
-        # print("time1: ", time.time()-start_time)
+        # print(solution)
+        print("time1: ", time.time()-start_time)
         solution = self._integerize_with_staged_optimization(solution, p, mode='PFM')
         # solution = self._integerize_optimization(solution, p, mode='PFM')
         print(solution)
         # print("time2: ", time.time()-start_time)
         return solution
     
+    def lpsolver_gurobi(self, dimension_list, p):
+        """
+        使用 Gurobi 求解器来解决矩阵映射问题。
+        此函数与原始的 pulp 版本功能完全相同，但性能和求解能力更强。
+        """
+        # 1. 定义问题维度
+        rows = len(self.temporal_level) + len(self.spatial_level)
+        cols = 8  # 问题维度R, S, P, Q, C, K, H, N
+
+        try:
+            # 2. 创建 Gurobi 模型实例
+            #    Gurobi 默认就是最大化问题 (GRB.MAXIMIZE)
+            m = gp.Model("Matrix_Mapping_Problem")
+
+            # 3. 创建变量
+            #    Gurobi 的 addVars 方法可以更高效地创建变量字典。
+            #    vtype=GRB.CONTINUOUS 定义为连续变量，lb=0 设置下界为0。
+            matrix = m.addVars(rows, cols, vtype=GRB.CONTINUOUS, lb=0, name="x")
+
+            # 4. 设置目标函数
+            #    Gurobi 推荐使用线性表达式 (LinExpr) 来构建目标和约束，效率更高。
+            obj = gp.LinExpr()
+            
+            if self.para_dim == 1:
+                p_i = 0
+                # --- 空间层次贡献 ---
+                for spatial_name in self.spatial_level:
+                    sp_level = self.spatial_level[spatial_name]
+                    for c in range(cols):
+                        obj += matrix[sp_level, c] * p[p_i]
+                    p_i += 1
+
+                # --- 时间层次（存储）贡献 ---
+                for buffer_key in sorted(self.buffer_name_list.keys()):
+                    buffer_name = self.buffer_name_list[buffer_key]
+                    if buffer_name == 'DRAM':
+                        break
+                    buffer_level = self.temporal_level[buffer_name]
+                    tensors_list = self.buffer_tensor_dict[buffer_name]
+                    for l in range(buffer_level + 1):
+                        for tensor in tensors_list:
+                            for dim in self.tensor_dimensions[tensor]:
+                                obj += matrix[l, dim] * p[p_i]
+                    p_i += 1
+
+            elif self.para_dim == 2:
+                for r in range(rows):
+                    for c in range(cols):
+                        obj += matrix[r, c] * p[r][c]
+
+            # 将构建好的目标函数设置给模型
+            m.setObjective(obj, GRB.MAXIMIZE)
+
+            # 5. 添加约束
+            # --- 存储容量约束 ---
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    break
+                buffer_level = self.temporal_level[buffer_name]
+                tensors_list = self.buffer_tensor_dict[buffer_name]
+                
+                if not tensors_list: # 如果没有张量需要存储，跳过此约束
+                    continue
+
+                # 使用 Gurobi 的 quicksum 函数来高效地创建求和表达式
+                buffer_capacity = gp.quicksum(
+                    matrix[l, dim] 
+                    for l in range(buffer_level + 1)
+                    for tensor in tensors_list
+                    for dim in self.tensor_dimensions[tensor]
+                )
+                
+                rhs = len(tensors_list) * math.log2(self.buffer_size_list[buffer_key] / len(tensors_list))
+                m.addConstr(buffer_capacity <= rhs, name=f"cap_{buffer_name}")
+
+            # --- 并行容量约束 ---
+            for spatial_name in self.spatial_level:
+                sp_level = self.spatial_level[spatial_name]
+                spatial_capacity = gp.quicksum(matrix[sp_level, c] for c in range(cols))
+                rhs = math.log2(self.spatial_size_list[spatial_name])
+                m.addConstr(spatial_capacity <= rhs, name=f"par_{spatial_name}")
+
+            # --- 维度约束 ---
+            for c in range(cols):
+                col_sum = gp.quicksum(matrix[r, c] for r in range(rows))
+                dim_log = math.log2(dimension_list[c])
+                
+                # 每个元素的上界
+                for r in range(rows):
+                    m.addConstr(matrix[r, c] <= dim_log, name=f"dim_ub_{r}_{c}")
+                
+                # 列总和的下界
+                m.addConstr(col_sum >= dim_log, name=f"dim_lb_{c}")
+
+            # 6. 求解模型
+            #    设置 LogToConsole=0 可以关闭 Gurobi 的控制台输出，使其与 pulp 的 msg=0 行为一致。
+            #    设置输出文件可以帮助调试。
+            m.setParam(GRB.Param.LogToConsole, 0)
+            # m.setParam(GRB.Param.OutputFlag, 0) # 另一种关闭输出的方式
+            # m.setParam(GRB.Param.LogFile, "gurobi.log") # 如果需要日志文件
+            
+            # 记录开始时间
+            start_time = time.time()
+            m.optimize()
+            print("time1: ", time.time()-start_time)
+            # 7. 处理求解结果
+            if m.status == GRB.Status.OPTIMAL:
+                # 提取最优解并转换回原始空间 (从 log2 到线性)
+                solution = [[2 ** matrix[i, j].X for j in range(cols)] for i in range(rows)]
+                print("Gurobi found an optimal solution.")
+                # print(solution)
+
+                # 调用后续的整数化处理函数
+                solution = self._integerize_with_staged_optimization(solution, p, mode='PFM')
+                # solution = self._integerize_optimization(solution, p, mode='PFM')
+                # print(solution)
+                
+                return solution
+            else:
+                # 如果模型未找到最优解（例如，不可行或无界），打印状态并返回
+                print(f"Gurobi solver did not find an optimal solution. Status code: {m.status}")
+                print(f"Status explanation: {m.getAttr(GRB.Attr.StatusName)}")
+                return None
+
+        except gp.GurobiError as e:
+            print(f"A Gurobi error occurred: {e}")
+            return None
+
     def qpsolver(self, dimension_list, p, a=10):
         rows = len(self.temporal_level) + len(self.spatial_level)
         cols = 8 # 问题维度R, S, P, Q, C, K, H, N
