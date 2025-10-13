@@ -6,8 +6,10 @@ import pickle
 from explorer import MappingExplorer
 from datetime import datetime
 import json
+import time
 
 def main():
+    start_time = time.time()
     # current_time = datetime.now()
     # print("当前时间：", current_time)  # 输出示例：2023-06-15 14:30:25.123456
     opt                        = parser.parse_args()
@@ -110,11 +112,12 @@ def main():
         
     ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension, weight_matrix=weight_matrix, solver=solver)
     print(opt.population)
-    chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
+    # chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
     # with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
     #     pickle.dump(chkpt, fd)
+    ME.generate_mapping_with_weight(weight_matrix[0])
 
-
+    print("总时间： ", time.time() - start_time)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

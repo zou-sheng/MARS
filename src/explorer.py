@@ -405,7 +405,7 @@ class MappingExplorer:
     
     def generate_mapping(self, dimension, p, a=1):
         if self.solver == 'lp':
-            sol = self.lpsolver(dimension, p)
+            # sol = self.lpsolver(dimension, p)
             sol = self.lpsolver_gurobi(dimension, p)
         elif self.solver == 'qp':
             sol = self.qpsolver(dimension, p, a)
@@ -507,10 +507,11 @@ class MappingExplorer:
         solution = [[2**matrix[i][j].value() for j in range(cols)] for i in range(rows)]
         # print(solution)
         print("time1: ", time.time()-start_time)
+        start_time = time.time()
         solution = self._integerize_with_staged_optimization(solution, p, mode='PFM')
         # solution = self._integerize_optimization(solution, p, mode='PFM')
         print(solution)
-        # print("time2: ", time.time()-start_time)
+        print("time2: ", time.time()-start_time)
         return solution
     
     def lpsolver_gurobi(self, dimension_list, p):
@@ -619,6 +620,7 @@ class MappingExplorer:
             start_time = time.time()
             m.optimize()
             print("time1: ", time.time()-start_time)
+            start_time = time.time()
             # 7. 处理求解结果
             if m.status == GRB.Status.OPTIMAL:
                 # 提取最优解并转换回原始空间 (从 log2 到线性)
@@ -631,6 +633,7 @@ class MappingExplorer:
                 # solution = self._integerize_optimization(solution, p, mode='PFM')
                 # print(solution)
                 
+                print("time2: ", time.time()-start_time)
                 return solution
             else:
                 # 如果模型未找到最优解（例如，不可行或无界），打印状态并返回
@@ -4422,6 +4425,7 @@ class MappingExplorer:
 
 
     def generate_mapping_with_weight(self, weight):
+        print(weight)
         best_map, _ = self.generate_mapping(self.dimension, weight)
         best_map = Mapping(best_map)
         remainders = {}
