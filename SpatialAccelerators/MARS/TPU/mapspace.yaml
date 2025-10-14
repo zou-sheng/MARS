@@ -1,0 +1,29 @@
+mapspace:
+  constraints:
+  - target: Registers
+    type: bypass
+    bypass:
+    - Outputs
+    - Inputs
+    keep:
+    - Weights
+  - target: Accumulator
+    type: bypass
+    bypass:
+    - Weights
+    - Inputs
+    keep:
+    - Outputs
+  - target: LocalBuffer
+    type: bypass
+    bypass:
+    - Weights
+    - Outputs
+    keep:
+    - Inputs
+  - target: DRAM
+    type: bypass
+    keep:
+    - Weights
+    - Inputs
+    - Outputs

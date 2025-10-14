@@ -120,8 +120,8 @@ cd ./src
 # do
 #     python main.py --optim_obj latency --population 1 --epochs 1 --accelerator TensorCore --mapper Cosa --type arch --version v1 --workload unet --layer_id $layer_id --batch_size 1 --expanded_scope 0.0
 # done
-for layer_id in {0..5}
+for layer_id in {0..0}
 do
-    python main.py --optim_obj latency --population 1 --epochs 1 --accelerator Simba --mapper Cosa --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.0
+    python main.py --optim_obj latency --population 1 --epochs 1 --accelerator TPU --mapper Cosa --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.0
 done
 cd ..

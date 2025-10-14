@@ -112,10 +112,10 @@ def main():
         
     ME = MappingExplorer(problem['problem']['instance'], accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension, weight_matrix=weight_matrix, solver=solver)
     print(opt.population)
-    # chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
+    chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
     # with open(os.path.join(report_dir, 'env_chkpt.plt'), 'wb') as fd:
     #     pickle.dump(chkpt, fd)
-    ME.generate_mapping_with_weight(weight_matrix[0])
+    # ME.generate_mapping_with_weight(weight_matrix[0])
 
     print("总时间： ", time.time() - start_time)
 

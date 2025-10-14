@@ -405,8 +405,8 @@ class MappingExplorer:
     
     def generate_mapping(self, dimension, p, a=1):
         if self.solver == 'lp':
-            # sol = self.lpsolver(dimension, p)
-            sol = self.lpsolver_gurobi(dimension, p)
+            sol = self.lpsolver(dimension, p)
+            # sol = self.lpsolver_gurobi(dimension, p)
         elif self.solver == 'qp':
             sol = self.qpsolver(dimension, p, a)
         mapping_dict, dimension_dict = utils.generate_mapping_for_lpsolver2(sol, self.targets, self.type, self.bypass)
@@ -4430,12 +4430,15 @@ class MappingExplorer:
         best_map = Mapping(best_map)
         remainders = {}
         outermost_idx = {}
+        print(best_map)
         for d in best_map.factor_dict.keys():
             T = self.dimension_dict[d]
             F = best_map.factor_dict[d]
-            remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
+            remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
+        print(remainders)
         best_mapping = utils.generate_mapping(best_map.factor_dict, best_map.permutation_list, best_map.target_list,
                                             best_map.type_list, best_map.bypass_list, remainders, outermost_idx)
+        print(best_mapping)
         map_path = f'{self.report_dir}/map.yaml'
         utils.store_yaml(map_path, best_mapping)
         prob_path = f'{self.report_dir}/problem.yaml'

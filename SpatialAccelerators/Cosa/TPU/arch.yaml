@@ -1,0 +1,31 @@
+arch:
+  arithmetic:
+    instances: 65536
+    word-bits: 8
+  storage:
+    - name: Registers
+      entries: 1
+      instances: 65536
+      word-bits: 8
+      block-size: 1
+      num-ports: 2
+      num-banks: 1
+    - name: Accumulator
+      entries: 2097152
+      instances: 1
+      word-bits: 8
+      block-size: 1
+      num-ports: 2
+      num-banks: 1
+    - name: LocalBuffer
+      entries: 25165824
+      instances: 1
+      word-bits: 8
+      block-size: 32
+      num-ports: 2
+      num-banks: 2
+    - name: DRAM
+      technology: DRAM
+      instances: 1
+      word-bits: 8
+      bandwidth: 16

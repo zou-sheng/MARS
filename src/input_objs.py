@@ -304,6 +304,82 @@ class Arch:
             if re_ret:
                 instances *= (int(macc.split('..')[1].split(']')[0]) + 1)
             num_instances.append(instances)
+        elif 'TPU' in self.arch_name:
+            main_memory = arch['subtree'][0]
+            buffer_name = main_memory['name']
+            attributes = main_memory['local'][0]['attributes']
+            depth = attributes['depth'] if 'depth' in attributes else float('Inf')
+            word_bits = attributes['word-bits'] if 'word-bits' in attributes else 8
+            width = attributes['width'] if 'width' in attributes else 8
+            block_size = attributes['block-size'] if 'block-size' in attributes else 1
+            buffer_size = depth * block_size
+            instances = 1
+            re_ret = re.search(r'.*\[', buffer_name)
+            if re_ret:
+                instances = int(buffer_name.split('..')[1].split(']')[0]) + 1
+            buffer_name = main_memory['local'][0]['name']
+            buffer_name_list.append(buffer_name)
+            buffer_size_list.append(buffer_size)
+            num_instances.append(instances)
+            num_buffer_levels += 1
+
+            global_buffer = arch['subtree'][0]['subtree'][0]
+            buffer_name = global_buffer['name']
+            attributes = global_buffer['local'][0]['attributes']
+            depth = attributes['depth'] if 'depth' in attributes else float('Inf')
+            word_bits = attributes['word-bits'] if 'word-bits' in attributes else 8
+            width = attributes['width'] if 'width' in attributes else 8
+            block_size = attributes['block-size'] if 'block-size' in attributes else 1
+            buffer_size = depth * block_size
+            re_ret = re.search(r'.*\[', buffer_name)
+            if re_ret:
+                instances *= int(buffer_name.split('..')[1].split(']')[0]) + 1
+            buffer_name = global_buffer['local'][0]['name']
+            buffer_name_list.append(buffer_name)
+            buffer_size_list.append(buffer_size)
+            num_instances.append(instances)
+            num_buffer_levels += 1
+
+            local_buffer = arch['subtree'][0]['subtree'][0]['subtree'][0]
+            buffer_name = local_buffer['name']
+            attributes = local_buffer['local'][0]['attributes']
+            depth = attributes['depth'] if 'depth' in attributes else float('Inf')
+            word_bits = attributes['word-bits'] if 'word-bits' in attributes else 8
+            width = attributes['width'] if 'width' in attributes else 8
+            block_size = attributes['block-size'] if 'block-size' in attributes else 1
+            buffer_size = depth * block_size
+            re_ret = re.search(r'.*\[', buffer_name)
+            if re_ret:
+                instances *= int(buffer_name.split('..')[1].split(']')[0]) + 1
+            buffer_name = local_buffer['local'][0]['name']
+            buffer_name_list.append(buffer_name)
+            buffer_size_list.append(buffer_size)
+            num_instances.append(instances)
+            num_buffer_levels += 1
+
+            pe_buffer = arch['subtree'][0]['subtree'][0]['subtree'][0]['subtree'][0]
+            buffer_name = pe_buffer['name']
+            attributes = pe_buffer['local'][0]['attributes']
+            depth = attributes['depth'] if 'depth' in attributes else float('Inf')
+            word_bits = attributes['word-bits'] if 'word-bits' in attributes else 8
+            width = attributes['width'] if 'width' in attributes else 8
+            block_size = attributes['block-size'] if 'block-size' in attributes else 1
+            buffer_size = depth * block_size
+            re_ret = re.search(r'.*\[', buffer_name)
+            if re_ret:
+                instances *= int(buffer_name.split('..')[1].split(']')[0]) + 1
+            buffer_name = pe_buffer['local'][0]['name']
+            buffer_name_list.append(buffer_name)
+            buffer_size_list.append(buffer_size)
+            num_instances.append(instances)
+            num_buffer_levels += 1
+            num_pes = instances
+
+            macc = arch['subtree'][0]['subtree'][0]['subtree'][0]['subtree'][0]['local'][1]['name']
+            re_ret = re.search(r'.*\[', macc)
+            if re_ret:
+                instances *= (int(macc.split('..')[1].split(']')[0]) + 1)
+            num_instances.append(instances)
 
         print(buffer_name_list, num_instances, buffer_size_list)
 
