@@ -16,8 +16,8 @@ logger.setLevel(logging.ERROR)
 
 def run_timeloop(arch, prob, mapp, cwd=os.getcwd(), stdout=None, stderr=None):
     try:
-        # p = subprocess.check_call(['/home/mingchuan/Desktop/zousheng/accelergy-timeloop-infrastructure/src/timeloop/build/timeloop-model', str(arch), str(prob), str(mapp)], \
-        #                             cwd=cwd, stdout=stdout, stderr=stderr)
+    # p = subprocess.check_call(['/home/mingchuan/Desktop/zousheng/accelergy-timeloop-infrastructure/src/timeloop/build/timeloop-model', str(arch), str(prob), str(mapp)], \
+    #                             cwd=cwd, stdout=stdout, stderr=stderr)
         p = subprocess.check_call(['timeloop-model', str(arch), str(prob), str(mapp)], \
                                     cwd=cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         logger.info('run_timeloop> timeloop-model {} {} {} in {}'.format(arch, prob, mapp, cwd))

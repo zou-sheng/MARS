@@ -1,29 +1,29 @@
 mapspace:
   constraints:
   - target: Registers
-    type: bypass
+    type: datatype
     bypass:
     - Outputs
     - Inputs
     keep:
     - Weights
   - target: Accumulator
-    type: bypass
+    type: datatype
     bypass:
     - Weights
     - Inputs
     keep:
     - Outputs
   - target: LocalBuffer
-    type: bypass
+    type: datatype
     bypass:
     - Weights
     - Outputs
     keep:
     - Inputs
-  - target: DRAM
-    type: bypass
-    keep:
-    - Weights
-    - Inputs
-    - Outputs
+  # - target: DRAM
+  #   type: datatype
+  #   keep:
+  #   - Weights
+  #   - Inputs
+  #   - Outputs

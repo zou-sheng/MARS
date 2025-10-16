@@ -1,0 +1,23 @@
+mapspace:
+  constraints:
+  - bypass:
+    - Weights
+    - Outputs
+    keep:
+    - Inputs
+    target: Registers
+    type: bypass
+  - bypass:
+    - Inputs
+    - Weights
+    keep:
+    - Outputs
+    target: L1
+    type: bypass
+  - bypass:
+    - Outputs
+    keep:
+    - Inputs
+    - Weights
+    target: L2
+    type: bypass

@@ -1,0 +1,29 @@
+mapspace:
+  constraints:
+  - target: Registers
+    type: datatype
+    keep:
+    - Inputs
+    bypass:
+    - Weights
+    - Outputs
+  - target: L1
+    type: datatype
+    keep:
+    - Outputs
+    bypass:
+    - Inputs
+    - Weights
+  - target: L2
+    type: datatype
+    keep:
+    - Inputs
+    - Weights
+    bypass:
+    - Outputs
+  # - target: DRAM
+  #   type: bypass
+  #   keep:
+  #   - Weights
+  #   - Inputs
+  #   - Outputs

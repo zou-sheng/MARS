@@ -1937,7 +1937,7 @@ class MappingExplorer:
                 if os.path.exists(temp_dir):
                     shutil.rmtree(temp_dir)
 
-            # exit()
+            exit()
 
 
         elif self.mapper == "Soter":
