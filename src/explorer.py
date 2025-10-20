@@ -508,7 +508,7 @@ class MappingExplorer:
         # print(solution)
         # print("time1: ", time.time()-start_time)
         # start_time = time.time()
-        solution = self._integerize_with_staged_optimization(solution, p, mode='PFM')
+        solution = self._integerize_with_staged_optimization(solution, p, mode='IFM')
         # solution = self._integerize_optimization(solution, p, mode='PFM')
         # print(solution)
         # print("time2: ", time.time()-start_time)
@@ -1386,7 +1386,6 @@ class MappingExplorer:
             """计算列的有效上界（不超过原始值，且未处理列设为1）"""
             original_value = data[row][col]
             test_data = data.copy()
-            
             # 未处理的列设为1（包括当前列未处理时，但当前列会被单独设置）
             for c in range(len(data[row])):
                 if c != col and c not in columns_processed:
@@ -1405,7 +1404,6 @@ class MappingExplorer:
                     low = mid + 1  # 尝试更大的值，但不超过original_value
                 else:
                     high = mid - 1
-            
             # 确保上界不超过原始值
             return min(best_valid, original_value)
 
@@ -1421,9 +1419,8 @@ class MappingExplorer:
             def bfs(current_data, col_index, columns_processed):
                 iterations[0] += 1
                 nonlocal best_data, best_objective
-                
                 if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
-                    current_objective = np.sum(p_row * current_data[row])
+                    current_objective = np.sum(p_row * current_data[row])  
                     # current_objective = np.sum(p_row * np.log2(current_data[row]))
                     # current_objective = np.sum(p_row * np.log2(current_data[row]) + a * np.log2(current_data[row])**2)
                     if current_objective > best_objective:
@@ -1486,7 +1483,6 @@ class MappingExplorer:
                         # 处理没有找到符合条件的值的情况
                         # 可以根据业务需求设置默认值，这里示例用最大值
                         data[i, col] = max(col_candidates) if col_candidates else 1
-
 
             # solution = np.asarray(solution)
             # rows, cols = solution.shape
@@ -3768,8 +3764,8 @@ class MappingExplorer:
                 diversity = div_sum / count
             # crossover_alpha = adaptive_crossover_rate(g, num_generations)
             # mutation_alpha = adaptive_mutation_rate(g, num_generations)
-            crossover_alpha = 0.8
-            mutation_alpha = 0.4
+            crossover_alpha = 1.0
+            mutation_alpha = 0.2
             finetune_iter = 1 if g < num_generations // 2 else num_finetune
             for f in range(finetune_iter):
                 # 使用多目标选择父代

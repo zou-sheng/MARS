@@ -23,7 +23,7 @@ def extract_value_from_file(file_path):
 
 def main():
     # 配置参数
-    main_folder = "./report/RL/Simba/obj_EDP/deepbench_input1"  # 主文件夹路径
+    main_folder = "./report/MARS/TensorCore/obj_EDP/deepbench_input1"  # 主文件夹路径
     target_file = "timeloop-model.stats.txt"  # 目标文件名
     output_excel = "extracted_cycles.xlsx"  # 输出Excel文件名
     
@@ -72,7 +72,9 @@ def main():
     if results:
         # 按二级文件夹中的数字排序
         results.sort(key=lambda x: int(x["一级文件夹"].split('-')[1]))
-        
+        print("---------------------------")
+        for i in results:
+            print(i['Cycles值'])
         df = pd.DataFrame(results)
         df.to_excel(output_excel, index=False)
         print(f"成功将 {len(results)} 个Cycles值保存到 {output_excel}")

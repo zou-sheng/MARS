@@ -1,0 +1,42 @@
+mapping:
+- factors: R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1
+  permutation: RSPQCKHN
+  target: Registers
+  type: temporal
+- factors: R=2,1 S=11 P=55 Q=5 C=1 K=1 H=1 N=1
+  permutation: RSPQCKHN
+  target: L1
+  type: spatial
+- factors: R=6 S=1 P=55,1 Q=1 C=1 K=1 H=1 N=1
+  permutation: RSPQCKHN
+  target: L1
+  type: temporal
+- factors: R=11,1 S=11,1 P=55,1 Q=2,1 C=3 K=1 H=1 N=1
+  permutation: RSPQCKHN
+  target: L2
+  type: temporal
+- factors: R=1 S=1 P=1 Q=6 C=1 K=64 H=1 N=1
+  permutation: RSPQCKHN
+  target: DRAM
+  type: temporal
+- bypass:
+  - Inputs
+  keep:
+  - Weights
+  - Outputs
+  target: Registers
+  type: datatype
+- bypass:
+  - Outputs
+  keep:
+  - Inputs
+  - Weights
+  target: L1
+  type: datatype
+- bypass:
+  - Inputs
+  - Weights
+  keep:
+  - Outputs
+  target: L2
+  type: datatype

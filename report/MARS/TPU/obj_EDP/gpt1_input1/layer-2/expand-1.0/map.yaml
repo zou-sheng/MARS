@@ -1,0 +1,42 @@
+mapping:
+- factors: R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=40,32
+  permutation: RSPQCKHN
+  target: Registers
+  type: temporal
+- factors: R=1 S=1 P=1 Q=1 C=79,38 K=51,13 H=1 N=1
+  permutation: RSPQCKHN
+  target: Accumulator
+  type: spatial
+- factors: R=1 S=1 P=1 Q=1 C=7 K=2 H=1 N=1
+  permutation: RSPQCKHN
+  target: Accumulator
+  type: temporal
+- factors: R=1 S=1 P=1 Q=1 C=1 K=64,1 H=1 N=1
+  permutation: RSPQCKHN
+  target: LocalBuffer
+  type: temporal
+- factors: R=1 S=1 P=1 Q=1 C=1 K=1 H=12 N=13
+  permutation: RSPQCKHN
+  target: DRAM
+  type: temporal
+- bypass:
+  - Outputs
+  - Inputs
+  keep:
+  - Weights
+  target: Registers
+  type: bypass
+- bypass:
+  - Weights
+  - Inputs
+  keep:
+  - Outputs
+  target: Accumulator
+  type: bypass
+- bypass:
+  - Weights
+  - Outputs
+  keep:
+  - Inputs
+  target: LocalBuffer
+  type: bypass

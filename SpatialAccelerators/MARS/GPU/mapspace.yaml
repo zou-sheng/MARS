@@ -2,27 +2,27 @@ mapspace:
   constraints:
   - target: Registers
     type: datatype
-    bypass:
-    - Inputs
     keep:
+    - Inputs
+    bypass:
     - Weights
     - Outputs
   - target: L1
     type: datatype
-    bypass:
-    - Outputs
     keep:
+    - Outputs
+    bypass:
     - Inputs
     - Weights
   - target: L2
     type: datatype
-    bypass:
+    keep:
     - Inputs
     - Weights
-    keep:
+    bypass:
     - Outputs
   - target: DRAM
-    type: datatype
+    type: bypass
     keep:
     - Weights
     - Inputs

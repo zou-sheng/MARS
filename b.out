@@ -1,1972 +1,920 @@
 网络: alexnet, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -524.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -763.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -435.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7eb66ee0d7f0>
+{'R': [[1, 4, 1, 1, 2]], 'S': [[1, 1, 1, 1, 11]], 'P': [[1, 1, 1, 55, 1]], 'Q': [[1, 5, 1, 6, 1]], 'C': [[1, 1, 1, 1, 3]], 'K': [[64, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=64 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=7,4 S=1 P=1 Q=10,5 C=1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=55 Q=6 C=1 K=54,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=2 S=11 P=1 Q=1 C=3 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.0597224235534668
 网络: alexnet, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -23000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -35900.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -13000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7d4d50b8d7f0>
+{'R': [[1, 1, 1, 1, 5]], 'S': [[1, 1, 1, 1, 5]], 'P': [[1, 1, 1, 1, 8]], 'Q': [[1, 1, 1, 36, 1]], 'C': [[1, 4, 1, 1, 4]], 'K': [[192, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=192 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=20,4 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=5,1 Q=36 C=1 K=2,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=5 S=5 P=8 Q=1 C=4 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.06964302062988281
 网络: alexnet, 层数: 2
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -4910.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -29700.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -11300.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7e0197bcd7f0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 13]], 'Q': [[1, 1, 1, 4, 2]], 'C': [[1, 36, 1, 1, 5]], 'K': [[69, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,69 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=39,36 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=9,4 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=13 Q=2 C=5 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.07350921630859375
 网络: alexnet, 层数: 3
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -6690.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -29000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -12800.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x71170420d7f0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 3]], 'Q': [[1, 1, 1, 13, 1]], 'C': [[1, 20, 1, 1, 15]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,20 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=6,1 Q=13 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=3 Q=1 C=15 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.0443267822265625
 网络: alexnet, 层数: 4
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2180.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -13500.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -4230.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7351ccace7f0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 3]], 'Q': [[1, 1, 1, 13, 1]], 'C': [[1, 22, 1, 1, 10]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,22 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=6,1 Q=13 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=3 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.04387068748474121
 网络: alexnet, 层数: 5
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -147000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -147000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -147000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x77b9cd5ce7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 64, 1, 1, 23]], 'K': [[14, 2, 1, 1, 2]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=314,14 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=416,64 K=12,2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=23 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.5391941070556641
 网络: alexnet, 层数: 6
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -29600.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -29000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -29200.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7157cb20d7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 352, 1, 1, 10]], 'K': [[14, 2, 1, 1, 2]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=314,14 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=416,352 K=12,2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=10 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.8014395236968994
 网络: alexnet, 层数: 7
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -1760.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1740.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1730.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x73811fb8d7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 16, 1, 1, 41]], 'K': [[37, 4, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=321,37 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=102,16 K=4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=41 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.052513837814331055
 网络: resnet50, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -1070.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -2370.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1500.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x749335d761f0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 7]], 'P': [[1, 1, 1, 112, 1]], 'Q': [[1, 112, 1, 1, 1]], 'C': [[1, 1, 1, 1, 3]], 'K': [[28, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=36,28 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=3,1 S=1 P=1 Q=112 C=1 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=112 Q=41,1 C=1 K=23,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=7 P=1 Q=1 C=3 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.14562702178955078
 网络: resnet50, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -29.1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -27.5
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -27.2
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7368823d36d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 8, 1, 5, 1]], 'Q': [[1, 56, 1, 1, 1]], 'C': [[1, 1, 1, 1, 10]], 'K': [[64, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=64 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=12,8 Q=56 C=7,1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=5 Q=5,1 C=1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.857973337173462
 网络: resnet50, 层数: 2
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -954.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -901.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -915.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x78fd6cbeb6d0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 56, 1]], 'Q': [[1, 6, 1, 6, 1]], 'C': [[1, 1, 1, 1, 10]], 'K': [[64, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=64 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=10,6 C=7,1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=56 Q=6 C=1 K=54,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.06746077537536621
 网络: resnet50, 层数: 3
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -485.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -596.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -300.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7a530cccf6d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 10, 1, 3, 1]], 'Q': [[1, 56, 1, 1, 1]], 'C': [[1, 1, 1, 1, 22]], 'K': [[28, 1, 1, 7, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=38,28 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=23,10 Q=56 C=3,1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3 Q=7,1 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=22 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.8099560737609863
 网络: resnet50, 层数: 4
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -466.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -404.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -359.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7be5063f96d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 8, 1, 5, 1]], 'Q': [[1, 56, 1, 1, 1]], 'C': [[1, 4, 1, 1, 37]], 'K': [[64, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=64 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=12,8 Q=56 C=7,4 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=5 Q=5,1 C=1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=37 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  2.134782552719116
 网络: resnet50, 层数: 5
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -1460.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -2800.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1520.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7a2d493986d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 8, 1, 4, 1]], 'Q': [[1, 56, 1, 1, 1]], 'C': [[1, 1, 1, 1, 52]], 'K': [[20, 1, 1, 3, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=54,20 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=16,8 Q=56 C=5,1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=4 Q=6,1 C=1 K=3 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  5.020136594772339
 网络: resnet50, 层数: 6
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2080.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -3310.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -2070.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x74b05e7cce80>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 7, 2]], 'Q': [[1, 1, 1, 10, 1]], 'C': [[1, 11, 1, 1, 10]], 'K': [[128, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=128 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=3,1 C=13,11 K=128,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=21,7 Q=10 C=1 K=7,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=2 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.08307862281799316
 网络: resnet50, 层数: 7
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -386.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -596.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -659.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x784e3ef086d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 28, 1, 1, 1]], 'Q': [[1, 28, 1, 1, 1]], 'C': [[1, 2, 1, 1, 22]], 'K': [[8, 1, 1, 10, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=56,8 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=28 Q=28 C=6,2 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=28,1 Q=10,1 C=1 K=10 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=22 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.1625921726226807
 网络: resnet50, 层数: 8
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -5290.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -4340.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -3550.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x73b4b59446d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 28, 1, 1, 1]], 'Q': [[1, 28, 1, 1, 1]], 'C': [[1, 4, 1, 1, 43]], 'K': [[8, 1, 1, 10, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=56,8 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=28 Q=28 C=6,4 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=28,1 Q=10,1 C=1 K=10 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=43 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.3737435340881348
 网络: resnet50, 层数: 9
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -541.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -328.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -452.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7c22349cb6d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 12, 1, 2, 1]], 'Q': [[1, 28, 1, 1, 1]], 'C': [[1, 6, 1, 1, 47]], 'K': [[19, 1, 1, 2, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=109,19 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=16,12 Q=28 C=11,6 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=10,1 C=1 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=47 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  2.7564852237701416
 网络: resnet50, 层数: 10
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -3460.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -4930.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1570.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x721eedd4ce80>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 7, 2]], 'Q': [[1, 1, 1, 10, 1]], 'C': [[1, 11, 1, 1, 10]], 'K': [[128, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=128 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=3,1 C=13,11 K=128,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=21,7 Q=10 C=1 K=7,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=2 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.09181857109069824
 网络: resnet50, 层数: 11
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2150.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1390.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -3210.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x76b55ad486d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 5, 1, 2, 1]], 'Q': [[1, 28, 1, 1, 1]], 'C': [[1, 1, 1, 1, 74]], 'K': [[28, 1, 1, 4, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=76,28 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=23,5 Q=28 C=7,1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=11,1 C=1 K=4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=74 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.9240760803222656
 网络: resnet50, 层数: 12
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -3910.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -7100.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -15100.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7b7ac8fcce80>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 2, 3]], 'Q': [[1, 1, 1, 14, 1]], 'C': [[1, 22, 1, 1, 10]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,22 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=6,2 Q=14 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=3 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.045152902603149414
 网络: resnet50, 层数: 13
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -380.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -608.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -935.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x75ec73bcce80>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 14, 1]], 'Q': [[1, 1, 1, 14, 1]], 'C': [[1, 4, 1, 1, 37]], 'K': [[23, 14, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=77,23 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=7,4 K=14 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14 Q=14 C=1 K=4,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=37 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.051496267318725586
 网络: resnet50, 层数: 14
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -5400.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1930.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -5670.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7ebd43750e80>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 2, 1, 1, 3]], 'Q': [[1, 14, 1, 1, 1]], 'C': [[1, 96, 1, 1, 5]], 'K': [[1024, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1024 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3,2 Q=14 C=104,96 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2,1 Q=1 C=1 K=14,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3 Q=1 C=5 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.5981838703155518
 网络: resnet50, 层数: 15
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -669.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -828.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -530.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7905360ac6d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 14, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 2]], 'C': [[1, 10, 1, 1, 40]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14 Q=13,1 C=26,10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=235,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=2 C=40 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.6800453662872314
 网络: resnet50, 层数: 16
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -6350.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -10800.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -4200.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x799e6b1cde80>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 2, 3]], 'Q': [[1, 1, 1, 14, 1]], 'C': [[1, 22, 1, 1, 10]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,22 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=6,2 Q=14 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=3 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.044763803482055664
 网络: resnet50, 层数: 17
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2190.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -2320.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -2960.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7e0ccaa176d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 2, 1, 3, 1]], 'Q': [[1, 14, 1, 1, 1]], 'C': [[1, 36, 1, 1, 20]], 'K': [[512, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=512 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=6,2 Q=14 C=52,36 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3 Q=1 C=1 K=58,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=20 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.4045979976654053
 网络: resnet50, 层数: 18
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -47200.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -48400.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -46500.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x78cbf82b46d0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 7, 1]], 'C': [[1, 44, 1, 1, 10]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,44 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=7 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.06469964981079102
 网络: resnet50, 层数: 19
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -1050.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1900.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1100.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x70875eba0220>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 3]], 'Q': [[1, 7, 1, 1, 1]], 'C': [[1, 96, 1, 1, 3]], 'K': [[2048, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=2048 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3,1 Q=7 C=208,96 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=3,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3 Q=1 C=3 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.3210258483886719
 网络: resnet50, 层数: 20
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -6940.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -9770.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -8810.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x715dee150220>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 3]], 'Q': [[1, 7, 1, 1, 1]], 'C': [[1, 192, 1, 1, 5]], 'K': [[2048, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=2048 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3,1 Q=7 C=208,192 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=3,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3 Q=1 C=5 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.595109224319458
 网络: resnet50, 层数: 21
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -949.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1090.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1040.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x79aa347756d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 7, 1]], 'C': [[1, 20, 1, 1, 40]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,20 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=1 C=40 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.05611467361450195
 网络: resnet50, 层数: 22
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2500.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -17600.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -27300.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7beff569e6d0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 7, 1]], 'C': [[1, 44, 1, 1, 10]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,44 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=7 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.06418752670288086
 网络: resnet50, 层数: 23
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -451.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -458.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -447.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7b8443ed0220>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 8, 1, 1, 21]], 'K': [[37, 4, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=321,37 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=102,8 K=4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=21 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.053743839263916016
 网络: unet, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -63100.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -63600.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -65600.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x70375ffb02b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 4, 1, 72, 1]], 'Q': [[1, 572, 1, 1, 1]], 'C': [[1, 1, 1, 1, 1]], 'K': [[4, 1, 1, 7, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=8,4 Q=572 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=72 Q=1 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  17.399598598480225
 网络: unet, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -8950000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -9500000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -8140000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x753f311ad2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 2, 143]], 'Q': [[1, 570, 1, 1, 1]], 'C': [[1, 1, 1, 1, 64]], 'K': [[4, 7, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=570 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=4,2 Q=570,1 C=1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=143 Q=1 C=64 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  12.442964315414429
 网络: unet, 层数: 2
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -1920000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1890000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -2030000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x73c2d661a2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 284, 1]], 'Q': [[1, 284, 1, 1, 1]], 'C': [[1, 1, 1, 1, 64]], 'K': [[8, 13, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,8 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=284 C=1 K=13 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=284 Q=19,1 C=1 K=128,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=1 C=64 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.12186336517334
 网络: unet, 层数: 3
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -6940000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -7690000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -8890000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x783cb287e2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 282]], 'Q': [[1, 282, 1, 1, 1]], 'C': [[1, 11, 1, 1, 10]], 'K': [[128, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=128 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=282 C=13,11 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=283,1 C=1 K=128,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=282 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  4.112087249755859
 网络: unet, 层数: 4
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2290000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -3280000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1700000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7369666172b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 140]], 'Q': [[1, 1, 1, 67, 2]], 'C': [[1, 24, 1, 1, 5]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,24 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=73,67 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=140 Q=2 C=5 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.04447031021118164
 网络: unet, 层数: 5
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -9340000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -6830000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -8780000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7b629de242b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 138]], 'Q': [[1, 1, 1, 65, 2]], 'C': [[1, 22, 1, 1, 10]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,22 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=73,65 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=138 Q=2 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.045085906982421875
 网络: unet, 层数: 6
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2260000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -3100000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -4410000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7fed311882b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 68]], 'Q': [[1, 1, 1, 5, 10]], 'C': [[1, 48, 1, 1, 5]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,48 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7,5 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=68 Q=10 C=5 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.09704017639160156
 网络: unet, 层数: 7
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -8940000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -12800000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -12500000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7033c1efa2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 66]], 'Q': [[1, 1, 1, 3, 10]], 'C': [[1, 44, 1, 1, 10]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,44 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7,3 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=66 Q=10 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.0973353385925293
 网络: unet, 层数: 8
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -3740000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -8070000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -3730000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x750313c212b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 32]], 'Q': [[1, 1, 1, 2, 16]], 'C': [[1, 96, 1, 1, 5]], 'K': [[79, 4, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,79 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=104,96 K=4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=2 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=32 Q=16 C=5 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.20911598205566406
 网络: unet, 层数: 9
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -21700000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -16800000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -9740000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7589e2cce2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 30]], 'Q': [[1, 1, 1, 2, 15]], 'C': [[1, 88, 1, 1, 10]], 'K': [[79, 4, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,79 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=104,88 K=4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=2 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=30 Q=15 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.1954493522644043
 网络: unet, 层数: 10
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -1250000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -927000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -979000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7eafa46af2b0>
+{'R': [[1, 1, 1, 1, 2]], 'S': [[1, 1, 1, 1, 2]], 'P': [[1, 1, 1, 1, 28]], 'Q': [[1, 1, 1, 7, 4]], 'C': [[1, 36, 1, 1, 20]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,36 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=2 S=2 P=28 Q=4 C=20 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.0846245288848877
 网络: unet, 层数: 11
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -39900000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -24900000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -21400000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x790ca8e782b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 56]], 'Q': [[1, 1, 1, 7, 8]], 'C': [[1, 36, 1, 1, 20]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,36 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=56 Q=8 C=20 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.07944726943969727
 网络: unet, 层数: 12
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -4380000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -5200000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -5090000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x792f0bb5f2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 54]], 'Q': [[1, 1, 1, 5, 8]], 'C': [[1, 44, 1, 1, 10]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,44 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7,5 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=54 Q=8 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.09827303886413574
 网络: unet, 层数: 13
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -911000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1270000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1820000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7eec5df022b0>
+{'R': [[2, 1, 1, 1, 1]], 'S': [[2, 1, 1, 1, 1]], 'P': [[1, 4, 1, 1, 3]], 'Q': [[1, 1, 1, 1, 52]], 'C': [[1, 96, 1, 1, 3]], 'K': [[512, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=2 S=2 P=1 Q=1 C=1 K=512 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=24,4 Q=1 C=208,96 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=3,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=3 Q=52 C=3 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  2.680889844894409
 网络: unet, 层数: 14
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -9180000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -9770000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -9180000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x704c929fa2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 104]], 'Q': [[1, 1, 1, 31, 2]], 'C': [[1, 18, 1, 1, 20]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,18 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=73,31 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=104 Q=2 C=20 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.04660797119140625
 网络: unet, 层数: 15
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -3110000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -7160000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -3200000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7614ff4a42b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 1, 102]], 'Q': [[1, 1, 1, 29, 2]], 'C': [[1, 22, 1, 1, 10]], 'K': [[256, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=256 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=26,22 K=192,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=73,29 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=102 Q=2 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.046274423599243164
 网络: unet, 层数: 16
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -184000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -214000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -113000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7a1a4132e2b0>
+{'R': [[1, 1, 1, 2, 1]], 'S': [[1, 1, 1, 2, 1]], 'P': [[1, 1, 1, 100, 1]], 'Q': [[1, 25, 1, 4, 1]], 'C': [[1, 1, 1, 1, 256]], 'K': [[8, 9, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=15,8 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=25 C=1 K=9 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=2 S=2 P=100 Q=4 C=1 K=128,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=256 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.08079147338867188
 网络: unet, 层数: 17
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -8420000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -7400000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -8790000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7e67a552b2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 2, 100]], 'Q': [[1, 200, 1, 1, 1]], 'C': [[1, 9, 1, 1, 20]], 'K': [[128, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=128 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=200 C=13,9 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=201,1 C=1 K=128,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=100 Q=1 C=20 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.5814764499664307
 网络: unet, 层数: 18
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2190000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1740000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -2040000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x798d2f8f92b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 2, 99]], 'Q': [[1, 198, 1, 1, 1]], 'C': [[1, 11, 1, 1, 10]], 'K': [[128, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=128 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=198 C=13,11 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=198,1 C=1 K=128,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=99 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.9007959365844727
 网络: unet, 层数: 19
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -138000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -139000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -128000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x78181f3552b0>
+{'R': [[1, 1, 1, 2, 1]], 'S': [[1, 1, 1, 1, 2]], 'P': [[1, 1, 1, 196, 1]], 'Q': [[1, 196, 1, 1, 1]], 'C': [[1, 1, 1, 1, 128]], 'K': [[4, 7, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=196 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=2 S=1 P=196 Q=40,1 C=1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=2 P=1 Q=1 C=128 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.3999521732330322
 网络: unet, 层数: 20
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -7840000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -8360000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -9020000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x773adf58a2b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 392, 1]], 'Q': [[1, 392, 1, 1, 1]], 'C': [[1, 1, 1, 1, 128]], 'K': [[4, 7, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=392 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=392 Q=10,1 C=1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=1 C=128 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.7156429290771484
 网络: unet, 层数: 21
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2790000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -2010000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -2200000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x73869ee822b0>
+{'R': [[1, 1, 1, 1, 3]], 'S': [[1, 1, 1, 1, 3]], 'P': [[1, 1, 1, 390, 1]], 'Q': [[1, 390, 1, 1, 1]], 'C': [[1, 1, 1, 1, 64]], 'K': [[4, 7, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,4 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=390 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=390 Q=10,1 C=1 K=64,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=1 C=64 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.592233419418335
 网络: unet, 层数: 22
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -11400.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -11300.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -11600.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x748be32b62b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 4, 13, 1]], 'Q': [[1, 388, 1, 1, 1]], 'C': [[1, 1, 1, 1, 10]], 'K': [[2, 1, 1, 1, 1]], 'N': [[1, 1, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=388 C=7,1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=32,4 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=13 Q=1 C=1 K=2,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=10 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.2243728637695312
 网络: mobilenet, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -922000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -960000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -954000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x796f072442b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 14, 1, 1, 1]], 'Q': [[1, 14, 1, 1, 1]], 'C': [[1, 1, 1, 1, 576]], 'K': [[6, 7, 1, 1, 1]], 'N': [[1, 1, 1, 256, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=15,6 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14 Q=14 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14,1 Q=2,1 C=1 K=96,1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=576 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.1329023838043213
 网络: mobilenet, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -690000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -475000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -822000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7980046d22b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 6, 1, 1, 2]], 'Q': [[1, 1, 1, 1, 14]], 'C': [[1, 1, 1, 1, 96]], 'K': [[6, 58, 1, 1, 1]], 'N': [[1, 1, 1, 16, 6]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,6 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=8,6 Q=1 C=1 K=58 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=273,1 H=1 N=48,16', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=14 C=96 K=1 H=1 N=6', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.1490614414215088
 网络: mobilenet, 层数: 2
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -894000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -691000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -922000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x78490f70d7f0>
+{'R': [[1, 3, 1, 1, 1]], 'S': [[1, 3, 1, 1, 1]], 'P': [[1, 1, 1, 1, 14]], 'Q': [[1, 2, 1, 1, 7]], 'C': [[1, 1, 1, 1, 1]], 'K': [[1, 1, 1, 1, 1]], 'N': [[1, 256, 1, 1, 1]], 'H': [[1, 1, 1, 1, 576]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=2 C=1 K=1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=2,1 S=1 P=1 Q=1 C=1 K=1 H=1 N=89,1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14 Q=7 C=1 K=1 H=576 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.4840564727783203
 网络: mobilenet, 层数: 3
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -991000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -911000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -889000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7e5dc03902b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 14, 1, 1, 1]], 'Q': [[1, 14, 1, 1, 1]], 'C': [[1, 1, 1, 1, 576]], 'K': [[6, 7, 1, 1, 1]], 'N': [[1, 1, 1, 256, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=15,6 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14 Q=14 C=1 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14,1 Q=2,1 C=1 K=96,1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=576 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.1269514560699463
 网络: mobilenet, 层数: 4
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -473000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -591000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -708000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x772dd0f642b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 6, 1, 1, 2]], 'Q': [[1, 1, 1, 1, 14]], 'C': [[1, 1, 1, 1, 96]], 'K': [[6, 58, 1, 1, 1]], 'N': [[1, 1, 1, 16, 6]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10,6 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=8,6 Q=1 C=1 K=58 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=273,1 H=1 N=48,16', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=14 C=96 K=1 H=1 N=6', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.15233302116394043
 网络: mobilenet, 层数: 5
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -4440000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -3700000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -2590000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x791bf634d7f0>
+{'R': [[1, 3, 1, 1, 1]], 'S': [[1, 3, 1, 1, 1]], 'P': [[1, 1, 1, 1, 14]], 'Q': [[1, 2, 1, 1, 7]], 'C': [[1, 1, 1, 1, 1]], 'K': [[1, 1, 1, 1, 1]], 'N': [[1, 256, 1, 1, 1]], 'H': [[1, 1, 1, 1, 576]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=2 C=1 K=1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=2,1 S=1 P=1 Q=1 C=1 K=1 H=1 N=89,1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=14 Q=7 C=1 K=1 H=576 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  2.0771734714508057
 网络: mobilenet, 层数: 6
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -134000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -133000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -115000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7a384204d7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 4]], 'Q': [[1, 7, 1, 1, 1]], 'C': [[1, 3, 1, 1, 192]], 'K': [[10, 7, 1, 1, 1]], 'N': [[1, 1, 1, 256, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=25,10 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=3 K=7 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2,1 Q=1 C=1 K=129,1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=4 Q=1 C=192 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.05855202674865723
 网络: mobilenet, 层数: 7
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -380000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -350000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -276000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7cbaf5dcd7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 2, 1, 2, 1]], 'Q': [[1, 1, 1, 1, 7]], 'C': [[1, 1, 1, 1, 160]], 'K': [[10, 96, 1, 1, 1]], 'N': [[1, 1, 1, 256, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=5,2 Q=1 C=1 K=96 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=1 C=1 K=163,1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=160 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.07843470573425293
 网络: mobilenet, 层数: 8
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -196000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -144000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -201000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x795d3800d7f0>
+{'R': [[1, 3, 1, 1, 1]], 'S': [[1, 3, 1, 1, 1]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 1, 4]], 'C': [[1, 1, 1, 1, 1]], 'K': [[1, 1, 1, 1, 1]], 'N': [[1, 256, 1, 1, 1]], 'H': [[1, 1, 1, 1, 960]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=2,1 C=1 K=1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=3,1 P=1 Q=1 C=1 K=1 H=1 N=89,1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=4 C=1 K=1 H=960 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.6028447151184082
 网络: mobilenet, 层数: 9
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -375000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -405000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -432000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7e075398d7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 7, 1]], 'Q': [[1, 1, 1, 7, 1]], 'C': [[1, 8, 1, 1, 57]], 'K': [[160, 1, 1, 1, 1]], 'N': [[1, 1, 1, 4, 37]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=160 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=17,8 K=161,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=7 C=1 K=3,1 H=1 N=7,4', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=57 K=1 H=1 N=37', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.06149864196777344
 网络: mobilenet, 层数: 10
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -390000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -371000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -320000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7162e448d7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 2, 1, 2, 1]], 'Q': [[1, 1, 1, 1, 7]], 'C': [[1, 1, 1, 1, 160]], 'K': [[10, 96, 1, 1, 1]], 'N': [[1, 1, 1, 256, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=5,2 Q=1 C=1 K=96 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=1 C=1 K=163,1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=160 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.08338499069213867
 网络: mobilenet, 层数: 11
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -211000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -125000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -256000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x78c49530e7f0>
+{'R': [[1, 3, 1, 1, 1]], 'S': [[1, 3, 1, 1, 1]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 1, 4]], 'C': [[1, 1, 1, 1, 1]], 'K': [[1, 1, 1, 1, 1]], 'N': [[1, 256, 1, 1, 1]], 'H': [[1, 1, 1, 1, 960]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=2,1 C=1 K=1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=3,1 P=1 Q=1 C=1 K=1 H=1 N=89,1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=4 C=1 K=1 H=960 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.6165258884429932
 网络: mobilenet, 层数: 12
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -374000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -438000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -310000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x79c12120d7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 7, 1]], 'Q': [[1, 1, 1, 7, 1]], 'C': [[1, 8, 1, 1, 57]], 'K': [[160, 1, 1, 1, 1]], 'N': [[1, 1, 1, 4, 37]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=160 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=17,8 K=161,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=7 C=1 K=3,1 H=1 N=7,4', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=57 K=1 H=1 N=37', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.06164240837097168
 网络: mobilenet, 层数: 13
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -254000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -332000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -384000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x752f911ce7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 2, 1, 2, 1]], 'Q': [[1, 1, 1, 1, 7]], 'C': [[1, 1, 1, 1, 160]], 'K': [[10, 96, 1, 1, 1]], 'N': [[1, 1, 1, 256, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=10 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=5,2 Q=1 C=1 K=96 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=2 Q=1 C=1 K=163,1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=7 C=160 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.07842707633972168
 网络: mobilenet, 层数: 14
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -180000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -272000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -232000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x76af1af4d7f0>
+{'R': [[1, 3, 1, 1, 1]], 'S': [[1, 3, 1, 1, 1]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 1, 4]], 'C': [[1, 1, 1, 1, 1]], 'K': [[1, 1, 1, 1, 1]], 'N': [[1, 256, 1, 1, 1]], 'H': [[1, 1, 1, 1, 960]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=3 S=3 P=1 Q=2,1 C=1 K=1 H=1 N=256', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=3,1 P=1 Q=1 C=1 K=1 H=1 N=89,1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=4 C=1 K=1 H=960 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.6805548667907715
 网络: mobilenet, 层数: 15
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -1150000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -1300000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -1450000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x726bde18d7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 1, 4]], 'C': [[1, 32, 1, 1, 30]], 'K': [[1, 1, 1, 2, 1]], 'N': [[1, 102, 1, 1, 2]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=319,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=32 K=1 H=1 N=154,102', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=2,1 C=1 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=4 C=30 K=1 H=1 N=2', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  15.131348133087158
 网络: mobilenet, 层数: 16
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -2020000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -4090000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -3320000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7397931cd7f0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 7]], 'Q': [[1, 1, 1, 1, 7]], 'C': [[1, 60, 1, 1, 3]], 'K': [[1280, 1, 1, 1, 1]], 'N': [[1, 28, 1, 1, 7]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1280 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=130,60 K=1 H=1 N=38,28', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=9,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=7 Q=7 C=3 K=1 H=1 N=7', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  6.125816583633423
 网络: gpt1, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -69300.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -67700.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -39900.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x71538c41c6d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 66, 1, 1, 4]], 'K': [[2304, 1, 1, 1, 1]], 'N': [[1, 8, 1, 25, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=2304 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=234,66 K=1 H=1 N=21,8', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=25', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=4 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.0923640727996826
 网络: gpt1, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -3930.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -3980.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -4140.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7a1557a402b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 12, 1, 1, 2]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 74]], 'H': [[1, 1, 1, 1, 12]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,12 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=7,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=2 K=1 H=12 N=74', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.055211782455444336
 网络: gpt1, 层数: 2
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -5870.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -5510.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -6080.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x725496b902b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 1, 2, 1, 19]], 'K': [[64, 1, 1, 1, 1]], 'N': [[1, 512, 1, 1, 1]], 'H': [[1, 1, 1, 1, 12]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=64 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=7,1 K=1 H=1 N=512', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=4,2 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=5,1 H=1 N=109,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=19 K=1 H=12 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.5467422008514404
 网络: gpt1, 层数: 3
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -6600.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -6300.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -3980.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7fe6690a06d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 66, 1, 1, 10]], 'K': [[768, 1, 1, 1, 1]], 'N': [[1, 64, 1, 2, 3]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=768 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=78,66 K=1 H=1 N=64', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=26,1 H=1 N=3,2', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=10 K=1 H=1 N=3', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  4.880058288574219
 网络: gpt1, 层数: 4
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -104000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -175000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -109000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x79ba943bf6d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 144, 1, 1, 3]], 'K': [[3072, 1, 1, 1, 1]], 'N': [[1, 16, 1, 32, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=3072 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=312,144 K=1 H=1 N=16', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=32', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=3 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.1665174961090088
 网络: gpt1, 层数: 5
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -105000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -137000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -107000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x70ccc06e26d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 30, 1, 1, 40]], 'K': [[768, 1, 1, 1, 1]], 'N': [[1, 64, 1, 2, 3]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=768 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=78,30 K=1 H=1 N=64', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=26,1 H=1 N=3,2', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=40 K=1 H=1 N=3', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.6406590938568115
 网络: bertlarge, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -188000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -126000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -137000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7eeb546fe6d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 88, 1, 1, 4]], 'K': [[3072, 1, 1, 1, 1]], 'N': [[1, 16, 1, 32, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=3072 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=312,88 K=1 H=1 N=16', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=32', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=4 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.1574738025665283
 网络: bertlarge, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -7420.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -7680.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -7510.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7800059e32b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 12, 1, 1, 2]], 'K': [[197, 2, 1, 1, 1]], 'N': [[1, 1, 1, 1, 74]], 'H': [[1, 1, 1, 1, 16]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=315,197 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=52,12 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=7,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=2 K=1 H=16 N=74', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.05375814437866211
 网络: bertlarge, 层数: 2
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -10800.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -9730.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -8590.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7a2f515cd2b0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 1, 2, 1, 19]], 'K': [[64, 1, 1, 1, 1]], 'N': [[1, 512, 1, 1, 1]], 'H': [[1, 1, 1, 1, 16]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=64 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=7,1 K=1 H=1 N=512', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=4,2 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=5,1 H=1 N=109,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=19 K=1 H=16 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.5718820095062256
 网络: bertlarge, 层数: 3
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -22200.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -20100.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -15400.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7318092f46d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 88, 1, 1, 10]], 'K': [[1024, 1, 1, 1, 1]], 'N': [[1, 32, 1, 1, 6]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1024 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=104,88 K=1 H=1 N=48,32', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=14,1 H=1 N=2,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=10 K=1 H=1 N=6', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.533698797225952
 网络: bertlarge, 层数: 4
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -414000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -997000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -398000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x77e0891a36d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 192, 1, 1, 3]], 'K': [[328, 1, 1, 1, 2]], 'N': [[1, 8, 1, 1, 43]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=3768,328 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=416,192 K=1 H=1 N=12,8', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=3 K=2 H=1 N=43', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.1605589389801025
 网络: bertlarge, 层数: 5
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -324000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -546000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -346000.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7a30467246d0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 40, 1, 1, 40]], 'K': [[1024, 1, 1, 1, 1]], 'N': [[1, 32, 1, 1, 6]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1024 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=104,40 K=1 H=1 N=48,32', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=14,1 H=1 N=2,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=40 K=1 H=1 N=6', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  2.6111018657684326
 网络: GCN_Citeseer, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -23400.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -23500.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -25300.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7b8ce466f6a0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 311, 1, 1, 9]], 'K': [[3703, 1, 1, 1, 1]], 'N': [[1, 3, 1, 1, 2]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=3703 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=377,311 K=1 H=1 N=13,3', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=9 K=1 H=1 N=2', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.8136389255523682
 网络: GCN_Citeseer, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -20200.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -20700.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -20600.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x750e5a66f6a0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 1, 7, 1, 333]], 'K': [[1, 1, 1, 2, 1]], 'N': [[1, 254, 1, 2, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=15,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=3073,254', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=10,7 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=2 H=1 N=2', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=333 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.548891544342041
 网络: GCN_Citeseer, 层数: 2
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -0.67
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -0.659
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -0.645
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x780e6fc5f6a0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 23, 1, 1, 9]], 'K': [[6, 1, 1, 1, 1]], 'N': [[1, 16, 1, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=6 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=59,23 K=5,1 H=1 N=16', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=7,1 K=6,1 H=1 N=16,1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=14,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=9 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.07669591903686523
 网络: GCN_Citeseer, 层数: 3
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -16300.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -16300.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-reinforcement learning
-
---- 搜索完成 ---
-最优得分: -16200.0
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x77b35905f6a0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 2, 1, 1, 134]], 'K': [[6, 1, 1, 1, 1]], 'N': [[1, 143, 17, 1, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=6 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=25,2 K=1 H=1 N=199,143', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=17', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=6,1 H=1 N=7,1', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=134 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  1.451012134552002
 网络: GCN_reddit, 层数: 0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -3090000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -3080000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
-100
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7af4dbe6f6a0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 45, 1, 1, 3883]], 'K': [[283, 2, 1, 1, 1]], 'N': [[1, 1, 1, 4, 3]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=319,283 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=60,45 K=2 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=6,4', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=3883 K=1 H=1 N=3', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.11396098136901855
 网络: GCN_reddit, 层数: 1
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-random
-
---- 搜索完成 ---
-最优得分: -476000000000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x755fa746f6a0>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 1, 1, 1, 116483]], 'K': [[1, 1, 1, 2, 1]], 'N': [[1, 2490, 1, 76, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=15,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=3073,2490', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=2,1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=2 H=1 N=76', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=116483 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  3.6105875968933105
+网络: GCN_reddit, 层数: 2
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
-genetic algorithm
-
---- 搜索完成 ---
-最优得分: -578000000000.0
-['DRAM', 'GlobalBuffer', 'DummyBuffer', 'InputRegFile', 'WeightRegFile', 'PsumRegFile'] [1, 1, 16, 256, 256, 256, 256] [inf, 131072, 4, 12, 192, 16]
-[1, 16, 16, 1, 1, 1]
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x71d506dec040>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 1, 1, 1, 1677]], 'K': [[41, 1, 1, 1, 1]], 'N': [[1, 1, 1, 16, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=41 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=139,1 K=35,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=7,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=16', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1677 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  0.10073637962341309
+网络: GCN_reddit, 层数: 3
+['DRAM', 'L2', 'L1', 'Registers'] [1, 1, 1, 4992, 4992] [inf, 1572864, 49152, 1]
+[1, 1, 4992, 1]
 100
+[[4, 4, 4, 4, 4, 4, 4, 4], [20, 20, 20, 20, 20, 20, 20, 20], [3, 3, 3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 2, 2, 2, 2], [1, 1, 1, 1, 1, 1, 1, 1]]
+<input_objs.Mapping object at 0x7502210a8040>
+{'R': [[1, 1, 1, 1, 1]], 'S': [[1, 1, 1, 1, 1]], 'P': [[1, 1, 1, 1, 1]], 'Q': [[1, 1, 1, 1, 1]], 'C': [[1, 1, 1, 1, 58242]], 'K': [[1, 1, 1, 2, 1]], 'N': [[1, 359, 1, 195, 1]], 'H': [[1, 1, 1, 1, 1]]}
+{'mapping': [{'factors': 'R=1 S=1 P=1 Q=1 C=1 K=40,1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'Registers', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=4,1 K=1 H=1 N=1199,359', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'spatial'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'L1', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=1 K=2 H=1 N=195', 'permutation': 'RSPQCKHN', 'target': 'L2', 'type': 'temporal'}, {'factors': 'R=1 S=1 P=1 Q=1 C=58242 K=1 H=1 N=1', 'permutation': 'RSPQCKHN', 'target': 'DRAM', 'type': 'temporal'}, {'bypass': ['Weights', 'Outputs'], 'keep': ['Inputs'], 'target': 'Registers', 'type': 'datatype'}, {'bypass': ['Inputs', 'Weights'], 'keep': ['Outputs'], 'target': 'L1', 'type': 'datatype'}, {'bypass': ['Outputs'], 'keep': ['Inputs', 'Weights'], 'target': 'L2', 'type': 'datatype'}]}
+---------------------------------------
+总时间：  2.075796127319336
