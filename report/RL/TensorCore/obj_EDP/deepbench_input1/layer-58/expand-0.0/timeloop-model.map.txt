@@ -1,0 +1,24 @@
+DRAM [ Weights:262144 (262144) Inputs:50176 (50176) Outputs:50176 (50176) ] 
+---------------------------------------------------------------------------
+| for K in [0:2)
+|   for Q in [0:2)
+
+SMEM [ Weights:135168 (135168) Inputs:28672 (28672) ] 
+-----------------------------------------------------
+|     for Q in [0:2)
+|       for P in [0:2)
+|         for N in [0:2) (Spatial-X)
+|           for P in [0:2,1) (Spatial-X)
+
+RF [ Outputs:1584 (1584) ] 
+--------------------------
+|             for C in [0:9)
+|               for P in [0:3,1)
+|                 for K in [0:2) (Spatial-X)
+|                   for C in [0:59,40) (Spatial-X)
+|                     for Q in [0:2,1) (Spatial-X)
+
+LRF [ Inputs:1 (1) ] 
+--------------------
+|                       for K in [0:132,116)
+|                         << Compute >>

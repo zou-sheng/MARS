@@ -1,0 +1,31 @@
+DRAM [ Weights:128 (128) Inputs:9634816 (9634816) Outputs:301088 (301088) ] 
+---------------------------------------------------------------------------
+| for Q in [0:2)
+|   for P in [0:130)
+
+GlobalBuffer [ Inputs:40320 (40320) Outputs:1260 (1260) ] 
+---------------------------------------------------------
+|     for C in [0:2) (Spatial-X)
+|       for Q in [0:3) (Spatial-X)
+
+DummyBuffer [ ] 
+---------------
+|         for K in [0:2,1)
+|           for Q in [0:35,19)
+|             for C in [0:8) (Spatial-X)
+|               for Q in [0:2) (Spatial-X)
+
+InputRegFile [ Inputs:12 (12) ] 
+-------------------------------
+|                 for K in [0:2,1)
+
+WeightRegFile [ Weights:8 (8) ] 
+-------------------------------
+|                   for K in [0:2,1)
+
+PsumRegFile [ Outputs:6 (6) ] 
+-----------------------------
+|                     for K in [0:2)
+|                       for C in [0:4)
+|                         for P in [0:3,1)
+|                           << Compute >>

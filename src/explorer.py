@@ -499,19 +499,19 @@ class MappingExplorer:
                 prob += matrix[r][c] <= math.log2(dimension_list[c])
             prob += col_sum >= math.log2(dimension_list[c])
         
-        start_time = time.time()
+        # start_time = time.time()
         prob.solve(PULP_CBC_CMD(msg=0))
         # print(prob)
         
         # 记录开始时间
         solution = [[2**matrix[i][j].value() for j in range(cols)] for i in range(rows)]
         # print(solution)
-        print("time1: ", time.time()-start_time)
-        start_time = time.time()
+        # print("time1: ", time.time()-start_time)
+        # start_time = time.time()
         solution = self._integerize_with_staged_optimization(solution, p, mode='PFM')
         # solution = self._integerize_optimization(solution, p, mode='PFM')
-        print(solution)
-        print("time2: ", time.time()-start_time)
+        # print(solution)
+        # print("time2: ", time.time()-start_time)
         return solution
     
     def lpsolver_gurobi(self, dimension_list, p):
@@ -3766,8 +3766,10 @@ class MappingExplorer:
                         div_sum += np.linalg.norm(population[i].flatten() - population[j].flatten())
                         count += 1
                 diversity = div_sum / count
-            crossover_alpha = adaptive_crossover_rate(g, num_generations)
-            mutation_alpha = adaptive_mutation_rate(g, num_generations)
+            # crossover_alpha = adaptive_crossover_rate(g, num_generations)
+            # mutation_alpha = adaptive_mutation_rate(g, num_generations)
+            crossover_alpha = 0.8
+            mutation_alpha = 0.4
             finetune_iter = 1 if g < num_generations // 2 else num_finetune
             for f in range(finetune_iter):
                 # 使用多目标选择父代
@@ -3788,10 +3790,13 @@ class MappingExplorer:
                         gaussian_mutation(pop_ind, alpha=mutation_alpha, generation=g, max_generations=num_generations)
                     else:
                         mutate_factor(pop_ind, alpha=mutation_alpha, generation=g, max_generations=num_generations)
-                    shuffle_order(pop_ind, alpha=0.1)
+                    # shuffle_order(pop_ind, alpha=0.1)
+                    shuffle_order(pop_ind, alpha=mutation_alpha)
                     if self.para_dim == 2:
-                        shuffle_row(pop_ind, alpha=0.1)
-                        shuffle_col(pop_ind, alpha=0.1)
+                        # shuffle_row(pop_ind, alpha=0.1)
+                        # shuffle_col(pop_ind, alpha=0.1)
+                        shuffle_row(pop_ind, alpha=mutation_alpha)
+                        shuffle_col(pop_ind, alpha=mutation_alpha)
                 # 合并精英与变异后的个体构成新种群
                 population = elite + population[num_elite:]
                 # 更新适应度
@@ -3872,7 +3877,16 @@ class MappingExplorer:
             # 计算并打印本轮迭代耗时
             # elapsed_time = time.time() - start_time
             # print("Generation {} 耗时: {:.3f}秒".format(g, elapsed_time))
-
+            if archive:
+                best_idx = np.argmax([sum(fit) for sol, fit in archive])
+                best_sol = archive[best_idx][0]
+                # print("Generation {} 当前最优解: {}".format(g, best_sol))
+                # print("对应适应度: {}".format(fitness[best_idx]))
+            else:
+                best_sol = population[0]
+                # print("Generation {} 当前最优解: {}".format(g, population[best_idx]))
+                # print("对应适应度: {}".format(fitness[best_idx]))
+            print("Generation {} 当前最优解: {}".format(g, fitness[best_idx]))
         pool.close()
 
         # 最终从归档中选择一个折中解（例如：目标和最大的解）
