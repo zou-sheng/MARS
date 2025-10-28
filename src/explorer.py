@@ -435,6 +435,143 @@ class MappingExplorer:
         # print("time2: ", time.time()-start_time)
         return solution
     
+
+    # 对于一层
+    def HM_lpsolver(self, dimension_list, p, h):
+        rows = len(self.temporal_level) + len(self.spatial_level)
+        cols = 8 # 问题维度R, S, P, Q, C, K, H, N
+
+        # 创建一个最大化问题
+        prob = LpProblem("Matrix_Mapping_Problem", LpMaximize)
+
+        # 创建矩阵变量，每个元素是一个非负的连续变量
+        matrix = [[LpVariable(f"x_{i}_{j}", lowBound=0) for j in range(cols)] for i in range(rows)]
+        
+        # --------------------------
+        # 1. 定义新变量：存储容量约束上限（原固定值改为变量）
+        # --------------------------
+        # 存储层次容量上限变量  （变量仍然是取对数，保证后面的公式仍然是线性的）
+        buffer_log_limits = {}  # key: buffer_key, value: LpVariable
+        buffer_order = sorted(self.buffer_name_list.keys())
+        for buffer_key in buffer_order:   # 固定顺序：排序后的buffer_key
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                continue  # 跳过DRAM，保持原逻辑
+            # 变量名：确保唯一
+            var = LpVariable(f"buffer_limit_{buffer_key}", lowBound=0)
+            buffer_log_limits[buffer_key] = var
+            # 给变量加合理的上下界
+            prob += var >= 0  # 下界约束（非负）
+
+        # 空间容量上限变量
+        spatial_log_limits = {}  # key: spatial_name, value: LpVariable
+        spatial_order = sorted(self.spatial_level.keys())  # 固定顺序：self.spatial_level的键顺序
+        for spatial_name in spatial_order:
+            # 变量名：确保唯一
+            var = LpVariable(f"spatial_limit_{spatial_name}", lowBound=0)
+            spatial_log_limits[spatial_name] = var
+            # 上下界约束
+            prob += var >= 0  # 下界
+
+        # 定义目标函数：矩阵元素的加权和
+        objective = 0
+        if self.para_dim == 1:
+            idx = 0
+            p_i = 0
+            for spatial_name in self.spatial_level:
+                obj_sum = 0
+                sp_level = self.spatial_level[spatial_name] 
+                for c in range(cols):
+                    obj_sum += matrix[sp_level][c]
+                obj_sum = obj_sum * p[p_i]
+                objective += obj_sum
+                idx += 1
+                p_i += 1
+
+
+            idx = 0
+            # 除DRAM外每一个存储层次的存储容量约束
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                obj_sum = 0
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    break
+                buffer_level = self.temporal_level[buffer_name]
+                tensors_list = self.buffer_tensor_dict[buffer_name]
+                for l in range(buffer_level+1):
+                    for tensor in tensors_list:
+                        for dim in self.tensor_dimensions[tensor]:
+                            obj_sum += matrix[l][dim]
+                obj_sum = obj_sum * p[p_i]
+                objective += obj_sum
+                idx += 1
+                p_i += 1
+            
+        elif self.para_dim == 2:
+            for r in range(rows):
+                for c in range(cols):
+                    objective += matrix[r][c] * p[r][c]
+            
+            spatial_weights = h[:self.spatial_level]
+            buffer_weights = h[self.spatial_level:]
+            
+            for buf_key, weight in zip(buffer_order, buffer_weights):
+                if self.buffer_name_list[buf_key] == 'DRAM':
+                    continue  # 跳过DRAM（与变量生成逻辑一致）
+                objective -= buffer_log_limits[buf_key] * weight
+
+            # 加入spatial_log_limits的权重惩罚（按spatial_order顺序）
+            for sp_name, weight in zip(spatial_order, spatial_weights):
+                objective -= spatial_log_limits[sp_name] * weight
+
+        prob += objective
+        
+        # 除DRAM外每一个存储层次的存储容量约束
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_capacity = 0
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                break
+            buffer_level = self.temporal_level[buffer_name]
+            tensors_list = self.buffer_tensor_dict[buffer_name]
+            for l in range(buffer_level+1):
+                for tensor in tensors_list:
+                    for dim in self.tensor_dimensions[tensor]:
+                        buffer_capacity += matrix[l][dim]
+            # print("buffer_capacity: ", buffer_capacity)
+            if len(tensors_list) > 0:
+                prob += buffer_capacity <= len(tensors_list)*(buffer_log_limits[buffer_key] - math.log2(len(tensors_list)))
+        
+        # 并行容量约束
+        for spatial_name in self.spatial_level:
+            spatial_capacity = 0
+            sp_level = self.spatial_level[spatial_name] 
+            for c in range(cols):
+                spatial_capacity += matrix[sp_level][c]
+            # print("spatial_capacity: ", spatial_capacity)
+            prob += spatial_capacity <= spatial_log_limits[spatial_name]
+
+        # 维度约束
+        for c in range(cols):
+            col_sum = sum(matrix[r][c] for r in range(rows))
+            for r in range(rows):
+                prob += matrix[r][c] <= math.log2(dimension_list[c])
+            prob += col_sum >= math.log2(dimension_list[c])
+
+        prob.solve(PULP_CBC_CMD(msg=0))
+        # print(prob)
+        
+        # 记录开始时间
+        # start_time = time.time()
+        solution = [[2**matrix[i][j].value() for j in range(cols)] for i in range(rows)]
+        # print(solution)
+        # print("time1: ", time.time()-start_time)
+        # solution = self._integerize_with_staged_optimization(solution, p)
+        # print(solution)
+        # print("time2: ", time.time()-start_time)
+        return solution
+   
+
     def qpsolver(self, dimension_list, p, a=10):
         rows = len(self.temporal_level) + len(self.spatial_level)
         cols = 8 # 问题维度R, S, P, Q, C, K, H, N
