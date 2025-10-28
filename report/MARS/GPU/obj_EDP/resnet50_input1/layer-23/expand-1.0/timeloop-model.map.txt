@@ -1,14 +1,15 @@
 DRAM [ Weights:2048000 (2048000) Inputs:2048 (2048) Outputs:1000 (1000) ] 
 -------------------------------------------------------------------------
-| for C in [0:21)
+| for K in [0:2)
 
-L2 [ Weights:102000 (102000) Inputs:102 (102) ] 
-L1 [ Outputs:1000 (1000) ] 
---------------------------
-|   for K in [0:4) (Spatial-X)
-|     for C in [0:102,8) (Spatial-X)
+L2 [ Weights:1548288 (1548288) Inputs:2048 (2048) ] 
+L1 [ Outputs:756 (756) ] 
+------------------------
+|   for K in [0:18,6)
+|     for K in [0:2) (Spatial-X)
+|       for C in [0:2048) (Spatial-X)
 
 Registers [ Inputs:1 (1) ] 
 --------------------------
-|       for K in [0:321,37)
-|         << Compute >>
+|         for K in [0:21,13)
+|           << Compute >>

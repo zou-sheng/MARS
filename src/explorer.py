@@ -429,6 +429,7 @@ class MappingExplorer:
         # 定义目标函数：矩阵元素的加权和
         objective = 0
         if self.para_dim == 1:
+            # p = [1,1,1,1,1,1,1]
             idx = 0
             p_i = 0
             for spatial_name in self.spatial_level:

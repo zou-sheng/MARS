@@ -25,14 +25,14 @@ cd ./src
 # echo "执行时间：${elapsed_time} 秒"
 
 # start_time=$(date +%s.%N)  # 获取开始时间（纳秒级时间戳，如：1689023456.123456789）
-# for layer_id in {75..75}
-# do
-#     printf "网络: deepbench, 层数: %d\n" $layer_id 
-#     python main.py --optim_obj all --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-    # python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-    # python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-#     python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
-# done
+for layer_id in {75..75}
+do
+    printf "网络: deepbench, 层数: %d\n" $layer_id 
+    python main.py --optim_obj all --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj energy --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+    python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload deepbench --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
+done
 # end_time=$(date +%s.%N)    # 获取结束时间
 # elapsed_time=$(echo "scale=3; $end_time - $start_time" | bc)  # 计算差值，保留3位小数（秒）
 
@@ -161,11 +161,11 @@ cd ./src
 #     python main.py --optim_obj EDP --population 100 --epochs 100 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt3 --layer_id $layer_id --batch_size 1 --expanded_scope 0.0 --solver lp
 # done
 
-for layer_id in {0..0}
-do
-    printf "网络: gpt1, 层数: %d\n" $layer_id 
-    python main.py --optim_obj EDP --population 100 --epochs 200 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.0 --solver lp
-done
+# for layer_id in {0..0}
+# do
+#     printf "网络: gpt1, 层数: %d\n" $layer_id 
+#     python main.py --optim_obj EDP --population 100 --epochs 200 --accelerator Simba --mapper MARS --type arch --version v1 --workload gpt1 --layer_id $layer_id --batch_size 1 --expanded_scope 0.0 --solver lp
+# done
 
 # for layer_id in {0..5}
 # do
