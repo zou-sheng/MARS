@@ -499,6 +499,33 @@ def generate_arch(accelerator, config):
     
     return arch_dict
 
+def get_tensor_dimensions(problem):
+    tensor_dimensions = {}
+    dim2note = {0: 'R', 1: 'S', 2: 'P', 3: 'Q', 4: 'C', 5: 'K', 6: 'H', 7: 'N'}
+    note2dim = {'R': 0, 'S': 1, 'P': 2, 'Q': 3, 'C': 4, 'K': 5, 'H': 6, 'N': 7}
+    
+    # 遍历数据空间
+    for data_space in problem['problem']['shape']['data_spaces']:
+        tensor_name = data_space['name']
+        projection = data_space['projection']
+        involved_dimensions = []
+
+        # 递归函数用于提取维度
+        def extract_dimensions(proj):
+            if isinstance(proj, list):
+                for item in proj:
+                    extract_dimensions(item)
+            elif isinstance(proj, str) and proj in dim2note.values():
+                involved_dimensions.append(note2dim[proj])
+
+        extract_dimensions(projection)
+        # 去除重复维度
+        unique_dimensions = list(set(involved_dimensions))
+        tensor_dimensions[tensor_name] = unique_dimensions
+
+    return tensor_dimensions
+
+
 if __name__ == "__main__":
     print(find_remainders([7, 2, 2, 6, 5], 699))
     print(find_remainders2([7, 2, 2, 6, 5], 699))
