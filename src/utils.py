@@ -471,6 +471,33 @@ def parse_timeloop_output(file_path):
     
     return summary
 
+def generate_arch(accelerator, config):
+    # 目前仅处理simba
+    arch_dict = {'arch': 
+     {'arithmetic': {'instances': 1024, 'word-bits': 8}, 
+      'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, 
+                  {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, 
+                  {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, 
+                  {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, 
+                  {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, 
+                  {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+
+    # 并行容量：通过 .item() 将 NumPy 标量转为 Python 原生类型（如 int）
+    arch_dict['arch']['arithmetic']['instances'] = (config[0] * config[1]).item()
+    arch_dict['arch']['storage'][0]['instances'] = (config[0] * config[1]).item()
+    arch_dict['arch']['storage'][1]['instances'] = config[1].item()
+    arch_dict['arch']['storage'][2]['instances'] = config[1].item()
+    arch_dict['arch']['storage'][3]['instances'] = config[1].item()
+    arch_dict['arch']['storage'][4]['instances'] = 1  # 原生int，无需转换
+    
+    # 存储容量：同样用 .item() 转换 NumPy 标量
+    arch_dict['arch']['storage'][0]['entries'] = config[2].item()
+    arch_dict['arch']['storage'][1]['entries'] = config[3].item()
+    arch_dict['arch']['storage'][2]['entries'] = config[4].item()
+    arch_dict['arch']['storage'][3]['entries'] = config[5].item()
+    arch_dict['arch']['storage'][4]['entries'] = config[6].item()
+    
+    return arch_dict
 
 if __name__ == "__main__":
     print(find_remainders([7, 2, 2, 6, 5], 699))

@@ -28,6 +28,7 @@ class Arch:
 
     def get_arch_info_v1(self):
         arch = copy.deepcopy(self.arch_dict)
+        print(self.arch_dict)
         buffer_name_list = []
         buffer_size_list = []
         num_instances = []
