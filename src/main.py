@@ -33,7 +33,7 @@ def main():
             layers = yaml.load(fd, Loader=yaml.SafeLoader)
         
         report_dir = os.path.join(opt.report_dir, '{}'.format(mapper), '{}'.format(accelerator),'obj_{}'.format(opt.optim_obj),
-                                '{}_input{}'.format(workload, batch_size))
+                                '{}_input{}_all_DNN'.format(workload, batch_size))
         os.makedirs(report_dir, exist_ok=True)
         problems_list = []
         for layer_id in range(len(layers)):
@@ -97,7 +97,7 @@ def main():
 
             problems_list.append(problem)
         print(problems_list)
-        ME = MappingExplorer(problems_list, accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, expanded_dict, parameter_dimension, weight_matrix=weight_matrix, solver=solver, all_DNN=all_DNN)
+        ME = MappingExplorer(problems_list, accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, solver=solver, all_DNN=all_DNN)
         print(opt.population)
         chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)
     else:

@@ -525,6 +525,90 @@ def get_tensor_dimensions(problem):
 
     return tensor_dimensions
 
+def generate_accelerator(config, hardware):
+    arch_dict = {}
+    if hardware.name == "Simba":
+        arch_dict = {'arch': 
+            {'arithmetic': {'instances': 1024, 'word-bits': 8}, 
+            'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, 
+                        {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, 
+                        {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, 
+                        {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, 
+                        {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, 
+                        {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+        
+        # 并行容量：通过 .item() 将 NumPy 标量转为 Python 原生类型（如 int）
+        arch_dict['arch']['arithmetic']['instances'] = (config[0] * config[1]).item()
+        arch_dict['arch']['storage'][0]['instances'] = (config[0] * config[1]).item()
+        arch_dict['arch']['storage'][1]['instances'] = config[1].item()
+        arch_dict['arch']['storage'][2]['instances'] = config[1].item()
+        arch_dict['arch']['storage'][3]['instances'] = config[1].item()
+        arch_dict['arch']['storage'][4]['instances'] = 1  # 原生int，无需转换
+        
+        # 存储容量：同样用 .item() 转换 NumPy 标量
+        arch_dict['arch']['storage'][0]['entries'] = config[2].item()
+        arch_dict['arch']['storage'][1]['entries'] = config[3].item()
+        arch_dict['arch']['storage'][2]['entries'] = config[4].item()
+        arch_dict['arch']['storage'][3]['entries'] = config[5].item()
+        arch_dict['arch']['storage'][4]['entries'] = config[6].item()
+    else:
+        print("目前不支持", hardware.name)
+
+    return arch_dict
+
+def generate_mapping_for_lpsolver3(solution, p):
+    non_all_ones = []
+    for idx, row in enumerate(solution):
+        # 检查行中是否存在非1的元素
+        if isinstance(row, np.ndarray):
+            # 对 numpy 数组使用 .all() 方法
+            if not (row == 1).all():
+                non_all_ones.append(idx)
+        else:
+            # 对普通列表使用内置 all()
+            if not all(element == 1 for element in row):
+                non_all_ones.append(idx)
+    buffer_hierarchy = p.buffer_hierarchy
+    targets = []
+    tile_type = []
+    for i in range(len(buffer_hierarchy)):
+        if i in non_all_ones:
+            targets.append(buffer_hierarchy[i])
+            tile_type.append('spatial')
+        targets.append(buffer_hierarchy[i])
+        tile_type.append('temporal')
+    
+    permutations = ['RSPQCKHN'] * len(targets)
+    tensor_in_buffer = p.tensor_in_buffer
+    bypass = []
+    # 去掉DRAM
+    for i in range(len(buffer_hierarchy)-1):
+        item = {}
+        item['keep'] = tensor_in_buffer[buffer_hierarchy[i]]
+        item['bypass'] = [x for x in ['Weights','Inputs','Outputs'] if x not in item['keep']]
+        item['target'] = i
+        item['type'] = 'datatype'
+        bypass.append(item)
+    print(solution)
+    rounded_array = [[math.floor(num) for num in row] for row in solution]
+    print(rounded_array)
+    # 按列提取出来
+    extracted_columns = [list(col) for col in zip(*rounded_array)]
+    print(extracted_columns)
+    factors_dict = {}
+    factors_dict['R'] = extracted_columns[0]
+    factors_dict['S'] = extracted_columns[1]
+    factors_dict['P'] = extracted_columns[2]
+    factors_dict['Q'] = extracted_columns[3]
+    factors_dict['C'] = extracted_columns[4]
+    factors_dict['K'] = extracted_columns[5]
+    factors_dict['H'] = extracted_columns[6]
+    factors_dict['N'] = extracted_columns[7]
+
+    mapping = generate_mapping(factors_dict, permutations, targets, tile_type, bypass)
+
+    return mapping
+    
 
 if __name__ == "__main__":
     print(find_remainders([7, 2, 2, 6, 5], 699))

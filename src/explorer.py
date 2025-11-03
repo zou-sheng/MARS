@@ -17,9 +17,257 @@ from collections import deque
 import time
 import cvxpy as cp
 
+# 将各种硬件参数以及权重矩阵作为统一成基因
+# simba
+# buffer_hierarchy: Registers, AccumulationBuffer, WeightBuffer, InputBuffer, GlobalBuffer, DRAM
+# weight: 0 , input: 1, output: 2
+# tensor_in_buffer: {'Registers': ['Weights'], 'AccumulationBuffer': ['Outputs'], 'WeightBuffer': ['Weights'], 'InputBuffer': ['Inputs'], 'GlobalBuffer': ['Inputs','Outputs'], 'DRAM': ['Weights','Inputs','Outputs']}
+class HardwareConfig:
+    def __init__(self, name, buffer_hierarchy, NoC, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights, buffer_spatial_weights):
+        self.name = name
+        self.buffer_hierarchy = buffer_hierarchy
+        self.NoC = NoC
+        self.tensor_in_buffer = tensor_in_buffer
+        self.temporal_tile_weights = temporal_tile_weights
+        self.spatial_tile_weights = spatial_tile_weights
+        self.buffer_temporal_weights = buffer_temporal_weights
+        self.buffer_spatial_weights = buffer_spatial_weights
+        # 有n个
+        self.buffer_temporal_orders = None
+        self.buffer_spatial_orders = None
+
+        
+    def mutation(self, alpha=0.5, generation=0, max_generations=100):
+        # self.mutate_noc()
+        # self.mutate_tensor_in_buffer()
+        self.mutate_temporal_tile_weights(alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_spatial_tile_weights(alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_buffer_temporal_weights(alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_buffer_spatial_weights(alpha=alpha, generation=generation, max_generations=max_generations)
+        # self.mutate_buffer_temporal_order()
+        # self.mutate_buffer_spatial_order()
+
+    def mutate_noc(self):
+        pass
+
+    def mutate_tensor_in_buffer(self):
+        pass
+
+    def mutate_temporal_tile_weights(self, alpha=0.5, generation=0, max_generations=100):
+        layer_num = len(self.temporal_tile_weights)
+        for i in range(layer_num):
+            if random.random() < 0.7:
+                self.gaussian_mutation(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+            else:
+                self.mutate_factor(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+            self.shuffle_order(self.temporal_tile_weights[i], alpha=alpha)
+
+    def mutate_spatial_tile_weights(self, alpha=0.5, generation=0, max_generations=100):
+        layer_num = len(self.temporal_tile_weights)
+        for i in range(layer_num):
+            if random.random() < 0.7:
+                self.gaussian_mutation(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+            else:
+                self.mutate_factor(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+            self.shuffle_order(self.temporal_tile_weights[i], alpha=alpha)
+
+    def mutate_buffer_temporal_weights(self, alpha=0.5, generation=0, max_generations=100):
+        self.mutate_factor(self.buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.shuffle_order(self.buffer_temporal_weights)
+
+    def mutate_buffer_spatial_weights(self, alpha=0.5, generation=0, max_generations=100):
+        self.mutate_factor(self.buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.shuffle_order(self.buffer_temporal_weights)
+
+    def mutate_buffer_temporal_order(self):
+        pass
+
+    def mutate_buffer_spatial_order(self):
+        pass
+
+    def gaussian_mutation(self, arr, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
+        """
+        带自适应步长的高斯变异算子
+        
+        参数:
+        - arr: 待变异的参数矩阵 (numpy array)
+        - alpha: 变异概率 (0.0-1.0)
+        - generation: 当前迭代代数
+        - max_generations: 总迭代代数
+        - sigma_base: 基础标准差，控制变异步长
+        
+        返回:
+        - 变异后的参数矩阵
+        """
+        # 自适应标准差：随迭代进行减小步长（早期探索，后期开发）
+        decay_factor = 1.0 - (generation / max_generations) * 0.7
+        sigma = sigma_base * decay_factor
+        
+        if arr.ndim == 2:
+            rows, cols = arr.shape
+            for i in range(rows):
+                for j in range(cols):
+                    if random.random() < alpha:  # 以alpha概率进行变异
+                        # 添加高斯噪声
+                        arr[i, j] += np.random.normal(0, sigma)
+                        
+                        # 可选：限制参数范围（根据实际需求调整）
+                        # arr[i, j] = np.clip(arr[i, j], 0, 1)  # 例如限制在[0,1]
+        else:  # 一维数组处理
+            for i in range(len(arr)):
+                if random.random() < alpha:
+                    arr[i] += np.random.normal(0, sigma)
+                    # arr[i] = np.clip(arr[i], 0, 1)
+        
+        return arr
+    
+    def mutate_factor(self, arr, alpha=0.5, generation=0, max_generations=100):
+        """带自适应幅度的因子变异"""
+        # 变异幅度随代数衰减（早期探索，后期开发）
+        decay_factor = 1.0 - (generation / max_generations) * 0.7
+        
+        if arr.ndim == 2:
+            rows, cols = arr.shape
+            for i in range(rows):
+                for j in range(cols):
+                    if random.random() < alpha:
+                        # 随机选择变异方向（增大或减小）
+                        if random.random() < 0.5:
+                            # 增大因子（但幅度随迭代减小）
+                            arr[i, j] *= (1 + 0.5 * decay_factor)
+                        else:
+                            # 减小因子
+                            arr[i, j] *= (1 - 0.3 * decay_factor)
+        else:
+            for i in range(len(arr)):
+                if random.random() < alpha:
+                    if random.random() < 0.5:
+                        arr[i] *= (1 + 0.5 * decay_factor)
+                    else:
+                        arr[i] *= (1 - 0.3 * decay_factor)
+        
+        return arr
+
+    def shuffle_order(self, arr, alpha=0.5):
+        if arr.ndim == 1:
+            # 一维数组处理
+            if random.random() < alpha:
+                np.random.shuffle(arr)
+
+        elif arr.ndim == 2:
+            # 二维数组处理
+            for row in arr:
+                if random.random() < alpha:
+                    np.random.shuffle(row)
+
+        else:
+            raise ValueError("输入数组必须是一维或二维")
+        
+    def crossover_2D(self, dad, mom, alpha=0.5):
+        # 随机选择交叉策略
+        crossover_type = random.choice(['row_column', 'multi_point', 'arithmetic'])
+        
+        if crossover_type == 'row_column':
+            # 行/列交叉（原始实现）
+            if random.random() < alpha:
+                if dad.ndim == 2 and random.random() < 0.5:
+                    # 行交叉
+                    row_cutoff = random.randint(1, dad.shape[0]-1)
+                    dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
+                else:
+                    # 列交叉
+                    if dad.ndim == 1:
+                        col_cutoff = random.randint(1, len(dad)-1)
+                    else:
+                        col_cutoff = random.randint(1, dad.shape[1]-1)
+                    dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
+        
+        elif crossover_type == 'multi_point':
+            # 多点交叉
+            if dad.ndim == 2:
+                rows, cols = dad.shape
+                for i in range(rows):
+                    if random.random() < alpha:
+                        # 随机选择多个交叉点
+                        num_points = random.randint(1, cols//2)
+                        points = sorted(random.sample(range(1, cols), num_points))
+                        for j in range(len(points)):
+                            if j % 2 == 0:  # 交替交换片段
+                                start = points[j]
+                                end = points[j+1] if j+1 < len(points) else cols
+                                dad[i, start:end], mom[i, start:end] = mom[i, start:end], dad[i, start:end]
+            else:
+                if random.random() < alpha:
+                    num_points = random.randint(1, len(dad)//2)
+                    points = sorted(random.sample(range(1, len(dad)), num_points))
+                    for j in range(len(points)):
+                        if j % 2 == 0:
+                            start = points[j]
+                            end = points[j+1] if j+1 < len(points) else len(dad)
+                            dad[start:end], mom[start:end] = mom[start:end], dad[start:end]
+        
+        elif crossover_type == 'arithmetic':
+            # 算术交叉：生成介于父代之间的子代
+            if dad.ndim == 2:
+                rows, cols = dad.shape
+                for i in range(rows):
+                    for j in range(cols):
+                        if random.random() < alpha:
+                            beta = random.uniform(0.3, 0.7)  # 控制混合比例
+                            tmp = beta * dad[i, j] + (1-beta) * mom[i, j]
+                            mom[i, j] = beta * mom[i, j] + (1-beta) * dad[i, j]
+                            dad[i, j] = tmp
+            else:
+                for i in range(len(dad)):
+                    if random.random() < alpha:
+                        beta = random.uniform(0.3, 0.7)
+                        tmp = beta * dad[i] + (1-beta) * mom[i]
+                        mom[i] = beta * mom[i] + (1-beta) * dad[i]
+                        dad[i] = tmp
+
+    def crossover_1D(self, dad, mom, alpha=0.5):
+        if random.random() < alpha:
+            col_cutoff = random.randint(1, len(dad)-1)
+            dad[col_cutoff:], mom[col_cutoff:] = mom[col_cutoff:], dad[col_cutoff:]
+
+    def crossover(self, other):
+        # NoC
+
+        # tensor_in_buffer
+
+        # temporal_tile_weights
+        layer_num = len(self.temporal_tile_weights)
+        for i in range(layer_num):
+            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i])
+
+        # spatial_tile_weights
+        for i in range(layer_num):
+            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i])
+
+        # buffer_temporal_weights
+        self.crossover_1D(self.buffer_temporal_weights, other.buffer_temporal_weights)
+
+        # buffer_spatial_weights
+        self.crossover_1D(self.buffer_spatial_weights, other.buffer_spatial_weights)
+
+        # buffer_temporal_order
+
+        # buffer_spatial_order
+
+    def get_target(self):
+        pass
+
+    def get_tiles_type(self):
+        pass
+
+    def get_bypass(self):
+        pass
+
 
 class MappingExplorer:
-    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict, parameter_dimension=2, weight_matrix=None, solver='lp', all_DNN=False):
+    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict=None, parameter_dimension=2, weight_matrix=None, solver='lp', all_DNN=False):
+        self.accl_name = accelerator
+
         if optim_obj == 'latency':
             self.fitness_obj = ['cycles']
         elif optim_obj == 'all':
@@ -32,7 +280,12 @@ class MappingExplorer:
         if self.all_DNN:
             self.problems_list = operator_instance
             self.operator_instance = None  # 明确初始化
-            self.tensor_dimensions_list = [utils.get_tensor_dimensions(i) for i in self.problems_list]
+            self.tensor_dimensions_list = []
+            for i in self.problems_list:
+                dim = []
+                for d in ['R', 'S', 'P', 'Q', 'C', 'K', 'H', 'N']:
+                    dim.append(i['problem']['instance'][d])
+                self.tensor_dimensions_list.append(dim)
         else:
             self.operator_instance = operator_instance
             self.problems_list = None  # 明确初始化
@@ -259,6 +512,16 @@ class MappingExplorer:
         for key in dimension_dict.keys():
             prob['problem']['instance'][key] = dimension_dict[key]
         return mapping_dict, prob, arch_dict
+
+    def generate_mapping_and_config_for_all_DNN(self, dimensions_list, p):
+        sols, cfg = self.HM_lpsolver_all_DNN(dimensions_list, p)
+        mapping_list = []
+        for i in range(len(sols)):
+            # 如果要探索更多的配置，这部分需要修改
+            mapping_dict = utils.generate_mapping_for_lpsolver3(sols[i], p)
+            mapping_list.append(mapping_dict)
+        arch_dict = utils.generate_accelerator(cfg, p)
+        return mapping_list, None, arch_dict
 
 
     def lpsolver(self, dimension_list, p):
@@ -542,74 +805,54 @@ class MappingExplorer:
         return solution, config
     
     # 对于多层
-    def HM_lpsolver_all_DNN(self, dimension_list, p, h):
-        rows = len(self.temporal_level) + len(self.spatial_level)
+    def HM_lpsolver_all_DNN(self, dimension_list, p):
+        rows = len(self.temporal_level)
         cols = 8 # 问题维度R, S, P, Q, C, K, H, N
 
         # 创建一个最大化问题
         prob = LpProblem("Matrix_Mapping_Problem", LpMaximize)
 
         # 创建矩阵变量，每个元素是一个非负的连续变量
-        matrix = [[[LpVariable(f"x_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        spatial_tiles = [[[LpVariable(f"st_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles = [[[LpVariable(f"tt_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
         
-        # --------------------------
-        # 1. 定义新变量：存储容量约束上限（原固定值改为变量）
-        # --------------------------
-        # 存储层次容量上限变量  （变量仍然是取对数，保证后面的公式仍然是线性的）
-        buffer_log_limits = {}  # key: buffer_key, value: LpVariable
-        buffer_order = sorted(self.buffer_name_list.keys())
-        # for buffer_key in buffer_order:   # 固定顺序：排序后的buffer_key
-        #     buffer_name = self.buffer_name_list[buffer_key]
-        #     if buffer_name == 'DRAM':
-        #         continue  # 跳过DRAM，保持原逻辑
-        #     # 变量名：确保唯一
-        #     var = LpVariable(f"buffer_limit_{buffer_key}", lowBound=0)
-        #     buffer_log_limits[buffer_key] = var
-        #     # 给变量加合理的上下界
-        #     prob += var <= 18  # 下界约束（非负）
-        #     prob += var >= 0  # 下界约束（非负）
-
-        reg_var = LpVariable(f"buffer_limit_l1", lowBound=0)
-        buffer_log_limits['l1'] = reg_var
-        prob += reg_var <= 1
-        prob += reg_var >= 0
-        acc_var = LpVariable(f"buffer_limit_l2", lowBound=0)
-        buffer_log_limits['l2'] = acc_var
-        prob += acc_var <= 13
-        prob += acc_var >= 10
-        wei_var = LpVariable(f"buffer_limit_l3", lowBound=0)
-        buffer_log_limits['l3'] = wei_var
-        prob += wei_var <= 17
-        prob += wei_var >= 13
-        inp_var = LpVariable(f"buffer_limit_l4", lowBound=0)
-        buffer_log_limits['l4'] = inp_var
-        prob += inp_var <= 16
-        prob += inp_var >= 12
-        glb_var = LpVariable(f"buffer_limit_l5", lowBound=0)
-        buffer_log_limits['l5'] = glb_var
-        prob += glb_var <= 18
-        prob += glb_var >= 15
-
-        # # 空间容量上限变量
-        spatial_log_limits = {}  # key: spatial_name, value: LpVariable
-        spatial_order = sorted(self.spatial_level.keys())  # 固定顺序：self.spatial_level的键顺序
-        # for spatial_name in spatial_order:
-        #     # 变量名：确保唯一
-        #     var = LpVariable(f"spatial_limit_{spatial_name}", lowBound=0)
-        #     spatial_log_limits[spatial_name] = var
-        #     # 上下界约束
-        #     prob += var <= 12  # 下界约束（非负）
-        #     prob += var >= 0  # 下界
+        buffer_capacity = [LpVariable(f"bc_{i}", lowBound=0) for i in range(cols-1)]
+        spatial_capacity = [LpVariable(f"sc_{i}", lowBound=0) for i in range(cols-1)]
         
-        acc_spatial_var = LpVariable(f"spatial_limit_AccumulationBuffer", lowBound=0)
-        spatial_log_limits['AccumulationBuffer'] = acc_spatial_var
-        prob += acc_spatial_var <= 7
-        prob += acc_spatial_var >= 5
+        if self.accl_name == "Simba":
+            # buffer_capacity限制
+            # Registers
+            prob += buffer_capacity[0] <= 1
+            prob += buffer_capacity[0] >= 0
+            # AccumulationBuffer
+            prob += buffer_capacity[1] <= 13
+            prob += buffer_capacity[1] >= 10
+            # WeightBuffer
+            prob += buffer_capacity[2] <= 17
+            prob += buffer_capacity[2] >= 13
+            # InputBuffer
+            prob += buffer_capacity[3] <= 16
+            prob += buffer_capacity[3] >= 12
+            # GlobalBuffer
+            prob += buffer_capacity[4] <= 18
+            prob += buffer_capacity[4] >= 15
 
-        glb_spatial_var = LpVariable(f"spatial_limit_GlobalBuffer", lowBound=0)
-        spatial_log_limits['GlobalBuffer'] = glb_spatial_var
-        prob += glb_spatial_var <= 5
-        prob += glb_spatial_var >= 3
+            # spatial_capacity限制
+            # Registers
+            prob += spatial_capacity[0] <= 0
+            prob += spatial_capacity[0] >= 0
+            # AccumulationBuffer
+            prob += spatial_capacity[1] <= 7
+            prob += spatial_capacity[1] >= 5
+            # WeightBuffer
+            prob += spatial_capacity[2] <= 0
+            prob += spatial_capacity[2] >= 0
+            # InputBuffer
+            prob += spatial_capacity[3] <= 0
+            prob += spatial_capacity[3] >= 0
+            # GlobalBuffer
+            prob += spatial_capacity[4] <= 5
+            prob += spatial_capacity[4] >= 3
 
 
         # 定义目标函数：矩阵元素的加权和
@@ -617,84 +860,73 @@ class MappingExplorer:
         for k in range(len(dimension_list)):
             for r in range(rows):
                 for c in range(cols):
-                    objective += matrix[k][r][c] * p[k][r][c]
+                    objective += spatial_tiles[k][r][c] * p.spatial_tile_weights[k][r][c]
 
-        sp_level = len(self.spatial_level)
-        spatial_weights = h[:sp_level]
-        buffer_weights = h[sp_level:]
-        
-        for buf_key, weight in zip(buffer_order, buffer_weights):
-            if self.buffer_name_list[buf_key] == 'DRAM':
-                continue  # 跳过DRAM（与变量生成逻辑一致）
-            objective -= buffer_log_limits[buf_key] * weight
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                for c in range(cols):
+                    objective += temporal_tiles[k][r][c] * p.temporal_tile_weights[k][r][c]
 
-        # 加入spatial_log_limits的权重惩罚（按spatial_order顺序）
-        for sp_name, weight in zip(spatial_order, spatial_weights):
-            objective -= spatial_log_limits[sp_name] * weight
+        # 不包含DRAM，所以是rows-1行
+        for i in range(rows-1):
+            objective += spatial_capacity[i] * p.buffer_spatial_weights[i]
+
+        for i in range(rows-1):
+            objective += buffer_capacity[i] * p.buffer_temporal_weights[i]
 
         prob += objective
         
         # 除DRAM外每一个存储层次的存储容量约束
         for k in range(len(dimension_list)):
-            for buffer_key in sorted(self.buffer_name_list.keys()):
-                buffer_capacity = 0
-                buffer_name = self.buffer_name_list[buffer_key]
-                if buffer_name == 'DRAM':
-                    break
-                buffer_level = self.temporal_level[buffer_name]
-                tensors_list = self.buffer_tensor_dict[buffer_name]
-                for l in range(buffer_level+1):
+            # 去掉DRAM
+            for r in range(len(p.buffer_hierarchy)-1):
+                buf_capacity = 0
+                tensors_list = p.tensor_in_buffer[p.buffer_hierarchy[r]]
+                for i in range(r+1):
                     for tensor in tensors_list:
                         for dim in self.tensor_dimensions[tensor]:
-                            buffer_capacity += matrix[k][l][dim]
-                # print("buffer_capacity: ", buffer_capacity)
-                if len(tensors_list) > 0:
-                    prob += buffer_capacity <= len(tensors_list)*(buffer_log_limits[buffer_key] - math.log2(len(tensors_list)))
-        
+                            buf_capacity += temporal_tiles[k][r][dim]
+                            buf_capacity += spatial_tiles[k][r][dim]
+                
+                prob += buf_capacity <= len(tensors_list)*(buffer_capacity[r] - math.log2(len(tensors_list)))
+
+            
         # 并行容量约束
         for k in range(len(dimension_list)):
-            for spatial_name in spatial_order:
-                spatial_capacity = 0
-                sp_level = self.spatial_level[spatial_name] 
-                for c in range(cols):
-                    spatial_capacity += matrix[k][sp_level][c]
-                # print("spatial_capacity: ", spatial_capacity)
-                prob += spatial_capacity <= spatial_log_limits[spatial_name]
+            for r in range(len(p.buffer_hierarchy)-1):
+                sp_capacity = 0
+                for i in range(r+1):
+                    sp_capacity += spatial_tiles[k][r][i]
+                prob += sp_capacity <= spatial_capacity[r]
 
         # 维度约束
         for k in range(len(dimension_list)):
             for c in range(cols):
-                col_sum = sum(matrix[k][r][c] for r in range(rows))
+                temporal_sum = sum(temporal_tiles[k][r][c] for r in range(rows))
+                spatial_sum = sum(spatial_tiles[k][r][c] for r in range(rows))
+                col_sum = temporal_sum + spatial_sum
                 for r in range(rows):
-                    prob += matrix[k][r][c] <= math.log2(dimension_list[k][c])
-                prob += col_sum >= math.log2(dimension_list[k][c])
+                    prob += temporal_tiles[k][r][c] <= math.log2(dimension_list[k][c])
+                    prob += spatial_tiles[k][r][c] <= math.log2(dimension_list[k][c])
+                prob += col_sum == math.log2(dimension_list[k][c])
 
         prob.solve(PULP_CBC_CMD(msg=0))
         # print(prob)
         
-        # 记录开始时间
-        # start_time = time.time()
-        solution = [[[2**matrix[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        spatial_tiles_solution = [[[2**spatial_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles_solution = [[[2**temporal_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
         
-        config = []
-        
-        for spatial_name in spatial_order:  # 用定义时的sorted顺序遍历
-            var = spatial_log_limits[spatial_name]
-            config.append(2**var.value())
-        for buffer_key in buffer_order:  # 用定义时的sorted顺序遍历
-            buffer_name = self.buffer_name_list[buffer_key]
-            if buffer_name == 'DRAM':
-                continue  # 跳过DRAM，保持原逻辑
-            var = buffer_log_limits[buffer_key]
-            config.append(2**var.value())
+        buffer_capacity_solution = [2**buffer_capacity[i].value() for i in range(rows-1)]
+        spatial_capacity_solution = [2**spatial_capacity[i].value() for i in range(rows-1)]
 
-        
+        solutions = [spatial_tiles_solution, temporal_tiles_solution, buffer_capacity_solution, spatial_capacity_solution]
         # print(solution)
         # print("time1: ", time.time()-start_time)
-        solution, config = self._integerize_with_staged_optimization_with_config_all_DNN(solution, config, p, h)
+        # 映射优先的调整
+        solutions, config = self._integerize_with_staged_optimization_with_config_all_DNN(solutions, p)
         # print(solution)
         # print("time2: ", time.time()-start_time)
-        return solution, config
+        return solutions, config
     
 
     def qpsolver(self, dimension_list, p, a=10):
@@ -800,256 +1032,7 @@ class MappingExplorer:
         print("time2: ", time.time()-start_time)
         return solution
 
-    def _integerize_with_staged_optimization1(self, solution):
-        def calculate_remaining_capacity(data, fixed_rows):
-            """
-            计算在固定行确定后，各个存储层次的剩余容量
-            
-            参数:
-            data: 当前的数据矩阵
-            fixed_rows: 已固定的行索引列表
-            
-            返回:
-            一个字典，包含每个存储层次的总容量、已占容量和剩余容量
-            """
-            result = {}
-                     
-            # 处理buffer约束
-            for buffer_key in sorted(self.buffer_name_list.keys()):
-                buffer_name = self.buffer_name_list[buffer_key]
-                buffer_level = self.temporal_level[buffer_name]
-                constraint['keep']
-                # 跳过DRAM
-                if buffer_name == 'DRAM':
-                    continue
-
-                # 获取该buffer约束涉及的所有行
-                all_involved_rows = list(range(buffer_level + 1))
-                
-                # 计算buffer约束的已占容量
-                used_capacity = 0
-                tensors_list = self.buffer_tensor_dict[buffer_name]
-                
-                for tensor in tensors_list:
-                    tensor_capacity = 1
-                    for l in all_involved_rows:
-                        for dim in self.tensor_dimensions[tensor]:
-                            # 如果行已固定，使用其值；否则假设为1
-                            if l in fixed_rows:
-                                tensor_capacity *= data[l][dim]
-                            else:
-                                tensor_capacity *= 1  # 假设值为1
-                    
-                    used_capacity += tensor_capacity
-                
-                result[buffer_name] = used_capacity            
-            return result
-
-        def remaining_capacity_constraint(data, fixed_rows):
-            """
-            检查在固定行确定后，指定存储层次的剩余容量约束是否满足
-            
-            参数:
-            data: 当前的数据矩阵
-            fixed_rows: 已固定的行索引列表
-            storage_name: 存储层次名称
-            
-            返回:
-            True如果约束满足，False否则
-            """
-            capacities = calculate_remaining_capacity(data, fixed_rows)
-            
-            # 检查指定存储层次的剩余容量是否非负
-            for buffer_key in sorted(self.buffer_name_list.keys()):                
-                buffer_capacity = self.buffer_size_list[buffer_key]
-                buffer_name = self.buffer_name_list[buffer_key]
-                if buffer_name == 'DRAM':
-                    continue
-                if capacities[buffer_name] > buffer_capacity:
-                    return False
-            
-            return True 
-
-               
-        def maximize_row_with_constraint(data, row, constraint_func, target, objective_func, fixed_rows):
-            """
-            递归DFS版本：最大化指定行，同时满足特定约束，只处理原始值不为1的列
-            """
-            # 找出原始值为1的位置
-            fixed_positions = np.where(data[row] == 1)[0]
-            # 确定需要处理的列（原始值不为1的列）
-            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
-
-            # 按原始值降序排序（关键修改点）
-            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
-
-            best_data = data.copy()
-            best_objective = 0
-            iterations = [0]
-
-            def bfs(current_data, col_index):
-                iterations[0] += 1
-                nonlocal best_data, best_objective
-                # 检查约束条件
-                if constraint_func(current_data) <= target:
-                    # 检查所有剩余容量约束
-                    if remaining_capacity_constraint(current_data, fixed_rows + [row]):
-                        current_objective = objective_func(current_data)
-                        if current_objective > best_objective:
-                            best_data = current_data.copy()
-                            best_objective = current_objective
-                            # print(f"找到更好的解，目标函数值: {best_objective}")
-                        return True
-
-                if col_index >= len(columns_to_process):
-                    return False
-
-                # 获取当前要处理的列索引
-                actual_col = columns_to_process[col_index]
-                original_value = data[row][actual_col]
-
-                # 从大到小尝试值，找到第一个满足条件的值后停止
-                for value in range(original_value, 0, -1):
-                    new_data = current_data.copy()
-                    new_data[row][actual_col] = value
-
-                    # # 检查是否满足基本条件
-                    # if np.all(new_data > 0):
-                    #     # 检查约束条件
-                    #     if constraint_func(new_data) > target:
-                    #         continue
-                    #     print("new_data2", new_data)
-                    # 递归处理下一列
-                    flag = bfs(new_data, col_index + 1)
-
-                    if flag:
-                        break
-
-            # 从第一列开始DFS
-            bfs(data.copy(), 0)
-
-            # print(f"第{row}行最大化完成，目标函数值: {best_objective}，共执行 {iterations[0]} 次迭代")
-            return best_data
-        
-        # 已固定的行列表
-        fixed_rows = []
-
-        data = np.ceil(solution).astype(int)
-        for spatial_name in self.spatial_level:
-            spatial_capacity = self.spatial_size_list[spatial_name]
-            sp_level = self.spatial_level[spatial_name] 
-            data = maximize_row_with_constraint(data, sp_level, lambda x: np.prod(x[sp_level]), spatial_capacity, lambda x: np.prod(x[sp_level]), fixed_rows)
-            fixed_rows.append(sp_level)
-
-        def create_buffer_constraint(buffer_name):
-            """创建用于maximize_row_with_constraint的约束函数"""
-            def constraint_func(data):
-                buffer_level = self.temporal_level[buffer_name]
-                tensors_list = self.buffer_tensor_dict[buffer_name]
-                buffer_capacity = 0
-                
-                for tensor in tensors_list:
-                    tmp = 1
-                    for l in range(buffer_level+1):
-                        for dim in self.tensor_dimensions[tensor]:
-                            tmp *= data[l][dim]
-                    buffer_capacity += tmp
-                return buffer_capacity 
-
-            return constraint_func
-        
-        
-        for buffer_key in sorted(self.buffer_name_list.keys()):
-            buffer_capacity = self.buffer_size_list[buffer_key]
-            buffer_name = self.buffer_name_list[buffer_key]
-            buffer_level = self.temporal_level[buffer_name]
-            if buffer_name == 'DRAM':
-                break
-            constraint_func = create_buffer_constraint(buffer_name)  
-            data = maximize_row_with_constraint(data, buffer_level, constraint_func, buffer_capacity, constraint_func, fixed_rows)
-            fixed_rows.append(buffer_level)
-
-        def compute_last_row(data):
-            """计算最后一行的值，每一列等于对应的target除以这一列前几行的乘积向上取整"""
-            # 计算前n-1行的乘积
-            product = np.prod(data[:len(data)-2], axis=0)
-            
-            # 获取对应的target值
-            targets = np.array(self.dimension)
-            
-            # 计算最后一行的值：target除以乘积，然后向上取整
-            last_row = np.ceil(targets / product).astype(int)
-            
-            # 确保最后一行的每个元素至少为1
-            last_row = np.maximum(last_row, 1)
-            
-            # 更新数据
-            new_data = data.copy()
-            new_data[len(data)-1] = last_row
-            
-            # print("最后一行计算完成")
-            return new_data
-
-        solution = compute_last_row(data)
-        return solution
-    
-    def _integerize_with_staged_optimization2(self, solution):
-        # 已固定的行列表
-        fixed_rows = set()
-
-        data = np.ceil(solution).astype(np.int64)
-        
-        # 处理空间层
-        for spatial_name in self.spatial_level:
-            spatial_capacity = self.spatial_size_list[spatial_name]
-            sp_level = self.spatial_level[spatial_name]
-            data = maximize_row_with_constraint(
-                self.buffer_info,
-                data,
-                sp_level,
-                lambda x: np.prod(x[sp_level]),
-                spatial_capacity,
-                lambda x: np.prod(x[sp_level]),
-                fixed_rows
-            )
-            fixed_rows.add(sp_level)
-        
-        # 处理缓冲层
-        for buffer_key in sorted(self.buffer_name_list.keys()):
-            buffer_capacity = self.buffer_size_list[buffer_key]
-            buffer_name = self.buffer_name_list[buffer_key]
-            buffer_level = self.temporal_level[buffer_name]
-            
-            if buffer_name == 'DRAM':
-                break
-            
-            def constraint_func(data):
-                buffer_level = self.temporal_level[buffer_name]
-                tensors_list = self.buffer_tensor_dict[buffer_name]
-                buffer_capacity = 0
-                
-                for tensor in tensors_list:
-                    tmp = 1
-                    for l in range(buffer_level + 1):
-                        for dim in self.tensor_dimensions[tensor]:
-                            tmp *= data[l, dim]
-                    buffer_capacity += tmp
-                return buffer_capacity
-            
-            data = maximize_row_with_constraint(
-                self.buffer_info,
-                data,
-                buffer_level,
-                constraint_func,
-                buffer_capacity,
-                constraint_func,
-                fixed_rows
-            )
-            fixed_rows.add(buffer_level)
-        
-        # 计算最后一行
-        solution = compute_last_row(data, self.dimension)
-        return solution
+ 
 
     def _integerize_with_staged_optimization3(self, solution):
         def calculate_remaining_capacity(data, fixed_rows):
@@ -1595,16 +1578,20 @@ class MappingExplorer:
         data = compute_last_row(data)
         return data, config
 
-    def _integerize_with_staged_optimization_with_config_all_DNN(self, solution, config, p, h):
+    # 硬件优先，会导致配置浪费
+    def _integerize_with_staged_optimization_with_config_all_DNN(self, solutions, p):
         
         # 计算最后一行
-        def compute_last_row(data):
-            product = np.prod(data[:-1], axis=0, dtype=np.float64)
-            last_row = np.ceil(np.array(self.dimension) / product).astype(int)
-            return np.vstack([data[:-1], np.maximum(last_row, 1)])
+        def compute_last_row(dimension, spatial_tiles, temporal_tiles):
+
+            spatial_prod = np.prod(spatial_tiles, axis=0, dtype=np.float64)
+            temporal_prod = np.prod(temporal_tiles[:-1], axis=0, dtype=np.float64)
+            last_row = np.ceil(np.array(dimension) / (spatial_prod*temporal_prod)).astype(int)
+
+            return last_row
         
         # 计算最小硬件开销
-        def min_hardware_config(data_list):
+        def min_hardware_config(spatial_tiles_list, temporal_tiles_list):
             """
             计算多个矩阵对应的最小硬件配置（每个约束维度取所有矩阵的最小值）
             
@@ -1615,45 +1602,60 @@ class MappingExplorer:
             """
             # 先收集每个矩阵的硬件配置
             all_configs = []
-            for data in data_list:
-                config = []
+            for k in range(len(spatial_tiles_list)):
+                spatial_config = []
+                buffer_config = []
                 # 1. 并行容量约束
-                for spatial_name in sorted(self.spatial_level.keys()):
-                    sp_level = self.spatial_level[spatial_name] 
-                    spatial_capacity = np.prod(data[sp_level])
-                    config.append(spatial_capacity)
+                for r in range(len(p.buffer_hierarchy)-1):
+                    spatial_capacity = 1
+                    for i in range(r+1):
+                        spatial_capacity *= spatial_tiles_list[k][r][i]
+                    spatial_config.append(spatial_capacity)
                 # 2. 除DRAM外的存储层次容量约束
-                for buffer_key in sorted(self.buffer_name_list.keys()):
-                    buffer_name = self.buffer_name_list[buffer_key]
-                    if buffer_name == 'DRAM':
-                        break
-                    buffer_level = self.temporal_level[buffer_name]
-                    tensors_list = self.buffer_tensor_dict[buffer_name]
+                # 去掉DRAM
+                for r in range(len(p.buffer_hierarchy)-1):
                     buffer_capacity = 0
-                    for tensor in tensors_list:
-                        tensor_capacity = 1
-                        for l in range(buffer_level + 1):
+                    tensors_list = p.tensor_in_buffer[p.buffer_hierarchy[r]]
+                    for i in range(r+1):
+                        for tensor in tensors_list:
+                            tensor_capacity = 1 
                             for dim in self.tensor_dimensions[tensor]:
-                                tensor_capacity *= data[l][dim]
-                        buffer_capacity += tensor_capacity
-                    config.append(buffer_capacity)
-                all_configs.append(config)
+                                tensor_capacity *= spatial_tiles_list[k][r][dim]
+                                tensor_capacity *= temporal_tiles_list[k][r][dim]
+                            buffer_capacity += tensor_capacity
+                    
+                    buffer_config.append(buffer_capacity)
+                all_configs.append([spatial_config, buffer_config])
             
             # 对每个约束维度取所有矩阵的最大值（即最小硬件配置）
-            # 将所有配置按列（约束维度）聚合，然后取每列的最大值
-            min_config = [max(dim_values) for dim_values in zip(*all_configs)]
+            max_spatial = [max(col) for col in zip(*[cfg[0] for cfg in all_configs])]
+            max_buffer = [max(col) for col in zip(*[cfg[1] for cfg in all_configs])]
+            min_config = [max_spatial, max_buffer]
             return min_config
 
-        data = np.ceil(solution).astype(int)
-        # cfg = np.ceil(solution).astype(int)
-               
+        spatial_tiles_solution = solutions[0]
+        temporal_tiles_solution = solutions[1]
         
-        config = min_hardware_config(data)
-        new_data = []
-        for d in data:
-            new_d = compute_last_row(d)
-            new_data.append(new_d)
+        buffer_capacity_solution = solutions[2]
+        spatial_capacity_solution = solutions[3]
+        
+        spatial_tiles_list = []
+        temporal_tiles_list = []
+        datas = []
+        for i in range(len(solutions[0])):
+            spatial_tiles_list.append(np.ceil(spatial_tiles_solution[i]).astype(int))
+            temporal_tiles_list.append(np.ceil(temporal_tiles_solution[i]).astype(int))
+        
+        config = min_hardware_config(spatial_tiles_list, temporal_tiles_list)
 
+        # 把spatial_tiles_list和temporal_tiles_list同时输出，到generate_mapping_for_lpsolver3中再处理而不是得到一个矩阵送到generate_mapping_for_lpsolver3中
+        new_data = []
+        for i in range(len(solutions[0])):
+            last_row = compute_last_row(self.tensor_dimensions_list[i], spatial_tiles_list[i], temporal_tiles_list[i])
+
+            new_data.append(np.vstack((spatial_tiles_list[i], last_row)))#[spatial_tiles_list[i], temporal_tiles])
+            print("9999: ", new_data[0])
+            print("8888: ", spatial_tiles_list[i])
         return new_data, config
 
 
@@ -1911,7 +1913,10 @@ class MappingExplorer:
                 mapping_list.append(copy.deepcopy(mapping))
         elif self.mapper == "Saturn":
             start_time = time.time()
-            mapping, hw_config = self.run_parameters4(num_population=num_population, num_generations=num_generations)
+            if self.all_DNN:
+                mapping = self.run_parameters5(num_population=num_population, num_generations=num_generations)
+            else:
+                mapping, hw_config = self.run_parameters4(num_population=num_population, num_generations=num_generations)
             
             print("耗时: ", time.time() - start_time)
             exit()
@@ -1956,19 +1961,24 @@ class MappingExplorer:
         
         return para_list_h, para_list_p
 
-    def create_genome_for_parameters3(self, num_population, h):
-        para_list_h = []
-        para_list_p = []
-        row = len(self.temporal_level) + len(self.spatial_level)
+    def create_genome_for_parameters3(self, num_population):
+        pop = []
+        buffer_hierarchy = ['Registers', 'AccumulationBuffer', 'WeightBuffer', 'InputBuffer', 'GlobalBuffer', 'DRAM']
+        tensor_in_buffer = {'Registers': ['Weights'], 'AccumulationBuffer': ['Outputs'], 'WeightBuffer': ['Weights'], 'InputBuffer': ['Inputs'], 'GlobalBuffer': ['Inputs','Outputs'], 'DRAM': ['Weights','Inputs','Outputs']}
+        layer_num = len(self.problems_list)
+        row = len(buffer_hierarchy)
         col = 8
         for i in range(num_population):
-            para_list_h.append(np.random.randint(10, 100, size=h).astype(float))
-        for p in range(len(self.problems_list)):
-            p_list = []    
-            for i in range(num_population):
-                p_list.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
-            para_list_p.append(p_list)
-        return para_list_h, para_list_p
+            temporal_tile_weights = []
+            spatial_tile_weights = []
+            for n in range(layer_num): 
+                temporal_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+                spatial_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+            buffer_temporal_weights = np.random.randint(10, 100, size=row).astype(float)
+            buffer_spatial_weights = np.random.randint(10, 100, size=row).astype(float)
+            p = HardwareConfig("Simba", buffer_hierarchy, 0, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights, buffer_spatial_weights)
+            pop.append(p)
+        return pop
 
     def select_parents(self, pop, fitness, num_parents, num_population, stage_idx=0, first_stage_value=None):
         # 选择在当前代中表现最好的个体作为下一代后代的父母
@@ -2140,39 +2150,48 @@ class MappingExplorer:
             if os.path.exists(temp_dir):
                 shutil.rmtree(temp_dir)
         return self.judge()
-    
-    def thread_fun_p(self, p, h):
+
+    def thread_fun_hardware(self, p):
         original_dir = os.getcwd()
         # 创建一个唯一的临时文件夹
         temp_dir = f'{original_dir}/mars_tmp/temp_{uuid.uuid4()}'
         os.makedirs(temp_dir)
-        try:
-            mapping, _ = self.generate_mapping_and_config(self.dimension, p)
-            mapping = Mapping(mapping)
+        rewards = []
+        # try:
+        mapping_list, _, arch = self.generate_mapping_and_config_for_all_DNN(self.tensor_dimensions_list, p)
+        
+        
+        values_list = []
+        utils.store_yaml(f'{temp_dir}/temp_arch.yaml', arch)
+        for i in mapping_list:
+            mapping = Mapping(i)
             remainders = {}
             outermost_idx = {}
             for d in mapping.factor_dict.keys():
                 T = self.dimension_dict[d]
                 F = mapping.factor_dict[d]
                 remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
-                
-            
+            problem = self.problems_list[i]
+            # 需要根据探索的结果修改permutation_list，type_list， target_list和bypass_list
             temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
-            
             output_stats_path = os.path.join(temp_dir, 'timeloop-model.stats.txt')
             utils.store_yaml(f'{temp_dir}/temp.yaml', temp_mapping)
-            utils.store_yaml(f'{temp_dir}/temp_prob.yaml', self.problem.problem)
-            utils.store_yaml(f'{temp_dir}/temp_arch.yaml', self.accelerator.arch_dict)
+            utils.store_yaml(f'{temp_dir}/temp_prob.yaml', problem)
             utils.run_timeloop(f'{temp_dir}/temp_arch.yaml', f'{temp_dir}/temp_prob.yaml', f'{temp_dir}/temp.yaml', cwd=temp_dir)
-            try:
-                self.observation = utils.parse_timeloop_output(output_stats_path)
-            except:
-                pass
-        finally:
-            if os.path.exists(temp_dir):
-                shutil.rmtree(temp_dir)
-        return self.judge()
+            # print("评估时间：", time.time()-solve_time)
+            self.observation = utils.parse_timeloop_output(output_stats_path)
+            values = self.judge()
+            values_list.append(values)
+        rewards = [sum(items) for items in zip(*values_list)]
+        # except Exception as e:
+        #     print(f"发生错误: {e}")
+        #     rewards = None
 
+        # finally:
+        #     if os.path.exists(temp_dir):
+        #         shutil.rmtree(temp_dir)
+        return rewards  
+    
     def run(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
         num_generations = num_generations
@@ -4351,339 +4370,20 @@ class MappingExplorer:
     # 映射与硬件协同优化(多层)
     def run_parameters5(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
-        def crossover_tile_h(parents, pop, alpha=0.5):
-            if len(parents) ==1:
+        def crossover(parents, pop, alpha=0.5):
+            if len(parents) == 1:
                 for idx in range(len(pop)):
                     pop[idx] = copy.deepcopy(parents[0])
             else:
                 for idx in range(0, len(pop), 2):
                     dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
                     mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
-                    if random.random() < alpha:
-                        col_cutoff = random.randint(1, len(dad)-1)
-                        dad[col_cutoff:], mom[col_cutoff:] = mom[col_cutoff:], dad[col_cutoff:]
 
-        def crossover_tile(parents, pop, alpha=0.5):
-            if len(parents) ==1:
-                for idx in range(len(pop)):
-                    pop[idx] = copy.deepcopy(parents[0])
-            else:
-                for idx in range(0, len(pop), 2):
-                    dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
-                    mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
-                    
-                    # 随机选择交叉策略
-                    crossover_type = random.choice(['row_column', 'multi_point', 'arithmetic'])
-                    
-                    if crossover_type == 'row_column':
-                        # 行/列交叉（原始实现）
-                        if random.random() < alpha:
-                            if dad.ndim == 2 and random.random() < 0.5:
-                                # 行交叉
-                                row_cutoff = random.randint(1, dad.shape[0]-1)
-                                dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
-                            else:
-                                # 列交叉
-                                if dad.ndim == 1:
-                                    col_cutoff = random.randint(1, len(dad)-1)
-                                else:
-                                    col_cutoff = random.randint(1, dad.shape[1]-1)
-                                dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
-                    
-                    elif crossover_type == 'multi_point':
-                        # 多点交叉
-                        if dad.ndim == 2:
-                            rows, cols = dad.shape
-                            for i in range(rows):
-                                if random.random() < alpha:
-                                    # 随机选择多个交叉点
-                                    num_points = random.randint(1, cols//2)
-                                    points = sorted(random.sample(range(1, cols), num_points))
-                                    for j in range(len(points)):
-                                        if j % 2 == 0:  # 交替交换片段
-                                            start = points[j]
-                                            end = points[j+1] if j+1 < len(points) else cols
-                                            dad[i, start:end], mom[i, start:end] = mom[i, start:end], dad[i, start:end]
-                        else:
-                            if random.random() < alpha:
-                                num_points = random.randint(1, len(dad)//2)
-                                points = sorted(random.sample(range(1, len(dad)), num_points))
-                                for j in range(len(points)):
-                                    if j % 2 == 0:
-                                        start = points[j]
-                                        end = points[j+1] if j+1 < len(points) else len(dad)
-                                        dad[start:end], mom[start:end] = mom[start:end], dad[start:end]
-                    
-                    elif crossover_type == 'arithmetic':
-                        # 算术交叉：生成介于父代之间的子代
-                        if dad.ndim == 2:
-                            rows, cols = dad.shape
-                            for i in range(rows):
-                                for j in range(cols):
-                                    if random.random() < alpha:
-                                        beta = random.uniform(0.3, 0.7)  # 控制混合比例
-                                        tmp = beta * dad[i, j] + (1-beta) * mom[i, j]
-                                        mom[i, j] = beta * mom[i, j] + (1-beta) * dad[i, j]
-                                        dad[i, j] = tmp
-                        else:
-                            for i in range(len(dad)):
-                                if random.random() < alpha:
-                                    beta = random.uniform(0.3, 0.7)
-                                    tmp = beta * dad[i] + (1-beta) * mom[i]
-                                    mom[i] = beta * mom[i] + (1-beta) * dad[i]
-                                    dad[i] = tmp
-                    
+                    dad.crossover(mom)
                     pop[idx] = dad
                     if idx + 1 < len(pop):
                         pop[idx+1] = mom
-
         
-        def shuffle_order(arr, alpha=0.5):
-            if arr.ndim == 1:
-                # 一维数组处理
-                if random.random() < alpha:
-                    np.random.shuffle(arr)
-
-            elif arr.ndim == 2:
-                # 二维数组处理
-                for row in arr:
-                    if random.random() < alpha:
-                        np.random.shuffle(row)
-
-            else:
-                raise ValueError("输入数组必须是一维或二维")
-            
-        def mutate_factor1(arr, alpha=0.5):
-            if arr.ndim == 1:
-                # 一维数组处理
-                for i in range(len(arr)):
-                    if random.random() < alpha:
-                        if random.random() < alpha:
-                            arr[i] *= 2
-                        else:
-                            arr[i] *= 0.5
-            elif arr.ndim == 2:
-                # 二维数组处理
-                rows, cols = arr.shape
-                for i in range(rows):
-                    for j in range(cols):
-                        if random.random() < alpha:
-                            if random.random() < alpha:
-                                arr[i][j] *= 2
-                            else:
-                                arr[i][j] *= 0.5
-            else:
-                raise ValueError("输入数组必须是一维或二维")
-
-        def mutate_factor(arr, alpha=0.5, generation=0, max_generations=100):
-            """带自适应幅度的因子变异"""
-            # 变异幅度随代数衰减（早期探索，后期开发）
-            decay_factor = 1.0 - (generation / max_generations) * 0.7
-            
-            if arr.ndim == 2:
-                rows, cols = arr.shape
-                for i in range(rows):
-                    for j in range(cols):
-                        if random.random() < alpha:
-                            # 随机选择变异方向（增大或减小）
-                            if random.random() < 0.5:
-                                # 增大因子（但幅度随迭代减小）
-                                arr[i, j] *= (1 + 0.5 * decay_factor)
-                            else:
-                                # 减小因子
-                                arr[i, j] *= (1 - 0.3 * decay_factor)
-            else:
-                for i in range(len(arr)):
-                    if random.random() < alpha:
-                        if random.random() < 0.5:
-                            arr[i] *= (1 + 0.5 * decay_factor)
-                        else:
-                            arr[i] *= (1 - 0.3 * decay_factor)
-            
-            return arr
- 
-        def gaussian_mutation(arr, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
-            """
-            带自适应步长的高斯变异算子
-            
-            参数:
-            - arr: 待变异的参数矩阵 (numpy array)
-            - alpha: 变异概率 (0.0-1.0)
-            - generation: 当前迭代代数
-            - max_generations: 总迭代代数
-            - sigma_base: 基础标准差，控制变异步长
-            
-            返回:
-            - 变异后的参数矩阵
-            """
-            # 自适应标准差：随迭代进行减小步长（早期探索，后期开发）
-            decay_factor = 1.0 - (generation / max_generations) * 0.7
-            sigma = sigma_base * decay_factor
-            
-            if arr.ndim == 2:
-                rows, cols = arr.shape
-                for i in range(rows):
-                    for j in range(cols):
-                        if random.random() < alpha:  # 以alpha概率进行变异
-                            # 添加高斯噪声
-                            arr[i, j] += np.random.normal(0, sigma)
-                            
-                            # 可选：限制参数范围（根据实际需求调整）
-                            # arr[i, j] = np.clip(arr[i, j], 0, 1)  # 例如限制在[0,1]
-            else:  # 一维数组处理
-                for i in range(len(arr)):
-                    if random.random() < alpha:
-                        arr[i] += np.random.normal(0, sigma)
-                        # arr[i] = np.clip(arr[i], 0, 1)
-            
-            return arr
-
-        def reverse_sign(arr, alpha=0.5):
-            if arr.ndim == 1:
-                # 一维数组处理
-                for i in range(len(arr)):
-                    if random.random() < alpha:  # 以alpha的概率反转符号
-                        arr[i] *= -1  # 乘以-1实现符号反转
-                return arr
-            elif arr.ndim == 2:
-                # 二维数组处理
-                rows, cols = arr.shape
-                for i in range(rows):
-                    for j in range(cols):
-                        if random.random() < alpha:  # 以alpha的概率反转符号
-                            arr[i, j] *= -1  # 乘以-1实现符号反转
-                return arr
-            else:
-                raise ValueError("输入数组必须是一维或二维")
-        
-        def shuffle_row(arr, alpha=0.5):
-            if random.random() < alpha:
-                rows = list(range(arr.shape[0]))
-                random.shuffle(rows)
-                arr[:] = arr[rows]
-        
-        def shuffle_col(arr, alpha=0.5):
-            if random.random() < alpha:
-                # print(arr.shape)
-                cols = list(range(arr.shape[1]))
-                # print(cols)
-                random.shuffle(cols)
-                arr[:] = arr[:, cols]
-
-        def adaptive_crossover_rate(generation, max_generations, initial_rate=0.8):
-            """自适应交叉率：随迭代减少探索"""
-            progress = generation / max_generations
-            return initial_rate * (1 - progress * 0.4)  # 从0.8降至0.4
-
-        def adaptive_mutation_rate(generation, max_generations, initial_rate=0.5):
-            """自适应变异率：随迭代增加开发"""
-            progress = generation / max_generations
-            return initial_rate * (0.5 + progress * 0.5)  # 从0.5降至0.25
-
-
-        def adaptive_parameters(g, max_generations, initial_alpha=0.5):
-            """根据迭代代数自适应调整参数"""
-            # 在进化后期减少探索，增加开发
-            progress = g / max_generations
-            alpha = initial_alpha * (1 - progress * 0.5)  # 从0.5逐渐降低到0.25
-            return alpha
-
-        def check_convergence1(best_reward_list, window_size=10, threshold=1e-3):
-            """检查是否收敛"""
-            if len(best_reward_list) < window_size * 2:
-                return False
-            
-            recent = np.array(best_reward_list[-window_size:])
-            older = np.array(best_reward_list[-window_size*2:-window_size])
-            
-            # 计算相对变化
-            relative_change = np.abs((np.mean(recent) - np.mean(older)) / np.mean(older))
-            
-            return relative_change < threshold
-
-        def calculate_population_diversity(pop):
-            """计算种群多样性（基于欧氏距离）"""
-            if len(pop) <= 1:
-                return 0
-            diversity = 0
-            for i in range(len(pop)):
-                for j in range(i+1, len(pop)):
-                    diversity += np.linalg.norm(pop[i].flatten() - pop[j].flatten())
-            return diversity / (len(pop) * (len(pop) - 1) / 2)
-        
-        def check_convergence(best_reward_list, window_size=10, threshold=1e-3):
-            """改进的收敛检测"""
-            if len(best_reward_list) < window_size * 2:
-                return False
-            recent = np.array([r[0] for r in best_reward_list[-window_size:]])
-            older = np.array([r[0] for r in best_reward_list[-window_size*2:-window_size]])
-            improvement = (np.mean(recent) - np.mean(older)) / (abs(np.mean(older)) + 1e-10)
-            return improvement < threshold
-        
-        def simulated_annealing(solution, evaluate_func, para_dim, max_iter=100, initial_temp=100.0, cooling_rate=0.95):
-            """
-            模拟退火局部搜索函数
-            
-            参数:
-            - solution: 当前解（参数矩阵）
-            - evaluate_func: 评估函数，返回适应度值（单值，如stage_idx对应的奖励）
-            - para_dim: 参数矩阵维度（1或2）
-            - max_iter: 最大迭代次数
-            - initial_temp: 初始温度
-            - cooling_rate: 降温速率
-            
-            返回:
-            - 优化后的解
-            """
-            current_sol = solution.copy()
-            current_fitness = evaluate_func(current_sol)
-            best_sol = current_sol.copy()
-            best_fitness = current_fitness
-            
-            temp = initial_temp
-            
-            for t in range(max_iter):
-                # 生成邻域解（根据维度选择变异方式）
-                if para_dim == 1:
-                    neighbor_sol = current_sol.copy()
-                    idx = np.random.randint(len(neighbor_sol))
-                    neighbor_sol[idx] += np.random.normal(0, 0.1)  # 高斯变异生成邻域解
-                    neighbor_sol[idx] = np.clip(neighbor_sol[idx], 0.0, 1.0)  # 限制参数范围
-                else:
-                    neighbor_sol = current_sol.copy()
-                    i, j = np.random.randint(0, neighbor_sol.shape[0]), np.random.randint(0, neighbor_sol.shape[1])
-                    neighbor_sol[i, j] += np.random.normal(0, 0.1)
-                    neighbor_sol[i, j] = np.clip(neighbor_sol[i, j], 0.0, 1.0)
-                
-                # 评估邻域解
-                neighbor_fitness = evaluate_func(neighbor_sol)
-                
-                # 计算接受概率
-                delta = neighbor_fitness - current_fitness
-                if delta > 0 or np.random.rand() < math.exp(delta / temp):
-                    current_sol = neighbor_sol
-                    current_fitness = neighbor_fitness
-                    
-                    # 更新最优解
-                    if current_fitness > best_fitness:
-                        best_sol = current_sol.copy()
-                        best_fitness = current_fitness
-                
-                # 降温
-                temp *= cooling_rate
-            
-            return best_sol
-
-        
-        def evaluate_solution(solution):
-            """辅助评估函数：返回当前解的适应度（单值）"""
-            reward = self.thread_fun_p(solution)
-            if reward is None or any(np.array(reward) >= 0):
-                return -float("Inf")
-            if stage_idx > 0 and any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
-                return -float("Inf")
-            return reward[stage_idx]
-    
         num_generations = num_generations
         num_population = num_population
         num_elite = int(num_population * elite_ratio)
@@ -4692,8 +4392,8 @@ class MappingExplorer:
         best_reward = [-float("Inf") for _ in range( len(self.fitness_obj))]
         best_sol = None
 
-        h = len(self.buffer_name_list) + len(self.spatial_level) - 1
-        population_h, population_p = self.create_genome_for_parameters3(num_population, h)
+       
+        population = self.create_genome_for_parameters3(num_population)
         # mapping, _ = self.generate_mapping(self.dimension, population[0])
         # exit()
         fitness = np.ones((num_population, len(self.fitness_obj)), float)
@@ -4712,48 +4412,28 @@ class MappingExplorer:
                     print("restart!")
                     return 
                 
-                parents_p = []
-                for p in range(len(population_p)):
-                    population_p[p], fitness, parents_p[p] = self.select_parents(population_p[p], fitness, num_parents, num_population,
+                population, fitness, parents = self.select_parents(population, fitness, num_parents, num_population,
                                                                   stage_idx, first_stage_value=prev_stage_value)
+
+                elite = copy.deepcopy(parents[:num_elite])
+                elite_fitness = copy.deepcopy(fitness[:(len(elite))])
 
                 
-                population_h, _, parents_h = self.select_parents(population_h, fitness, num_parents, num_population,
-                                                                  stage_idx, first_stage_value=prev_stage_value)
-                elite_p = copy.deepcopy(parents_p[:num_elite])
-                elite_h = copy.deepcopy(parents_h[:num_elite])
-                elite_fitness = copy.deepcopy(fitness[:(len(elite_p))])
+                crossover(parents, population, alpha=0.5)
 
-                # p
-                crossover_tile(parents_p, population_p, alpha=0.5)
-
-                # h
-                crossover_tile_h(parents_h, population_h, alpha=0.5)
-             
                 # 变异
-                for pop in population_p[num_elite:]:
+                for pop in population[num_elite:]:
                     # 选择一种主要变异策略
-                    if random.random() < 0.7:  # 70%概率使用高斯变异
-                        gaussian_mutation(pop, alpha=0.5, generation=g, max_generations=num_generations)
-                    else:  # 30%概率使用因子变异
-                        mutate_factor(pop, alpha=0.5, generation=g, max_generations=num_generations)
-                    shuffle_order(pop, alpha=0.1)
-                    # reverse_sign(pop, alpha=0.2)
-                    if self.para_dim == 2:
-                        shuffle_row(pop, alpha=0.1)
-                        shuffle_col(pop, alpha=0.1)
-                for pop in population_h[num_elite:]:
-                    mutate_factor(pop, alpha=0.5, generation=g, max_generations=num_generations)
-                    shuffle_order(pop, alpha=0.1)
+                    pop.mutation(alpha=0.5, generation=g, max_generations=num_generations)
+                
 
                 # 1. 更新种群（参数矩阵）thread_fun_pation长度一致
                 fitness = np.zeros((num_population, len(self.fitness_obj)))
                 fitness[:num_elite] = elite_fitness  # 前num_elite个位置填充精英的适应度
 
                 # 将两个参数打包成元组列表（每个元组对应一组参数）
-                args = list(zip(population_p, population_h))
-                reward_list = pool.starmap(self.thread_fun_p_h, args)
-                for i in range(len(population_p)):
+                reward_list = pool.map(self.thread_fun_hardware, population)
+                for i in range(len(population)):
                     reward =reward_list[i]
                     if reward is None or any(np.array(reward) >= 0):
                         reward = [float("-Inf") for _ in range(len(best_reward))]
@@ -4770,11 +4450,10 @@ class MappingExplorer:
                 judging_best_reward = best_reward[stage_idx]
                 if judging_best_reward < gen_best:
                     best_reward = copy.deepcopy(fitness[gen_best_idx])
-                    best_sol = copy.deepcopy(population_p[gen_best_idx])
-                    best_config = copy.deepcopy(population_h[gen_best_idx])
+                    best_sol = copy.deepcopy(population[gen_best_idx])
 
                 num_parents = int(num_population * parents_ratio)
-                num_parents = min(num_parents, len(population_p) - count_non_valid)
+                num_parents = min(num_parents, len(population) - count_non_valid)
                 parents_ratio *= ratio_decay
                 best_reward_list.append(best_reward)
                 chkpt = {
@@ -4792,455 +4471,27 @@ class MappingExplorer:
             elapsed_time = time.time() - start_time
             print("Generation {} 耗时: {:.3f}秒".format(g, elapsed_time))
         pool.close()
+        best_config = None
+        best_map = None
+        # remainders = {}
+        # outermost_idx = {}
+        # # print(best_sol)
+        # best_map, _, best_arch = self.generate_mapping_and_config(self.dimension, best_sol, best_config)
+        # best_map = Mapping(best_map)
+        # for d in best_map.factor_dict.keys():
+        #     T = self.dimension_dict[d]
+        #     F = best_map.factor_dict[d]
+        #     remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
+        # best_mapping = utils.generate_mapping(best_map.factor_dict, best_map.permutation_list, best_map.target_list, best_map.type_list, best_map.bypass_list, remainders, outermost_idx)
+        # map_path = f'{self.report_dir}/map.yaml'
+        # utils.store_yaml(map_path, best_mapping)
+        # prob_path = f'{self.report_dir}/problem.yaml'
+        # utils.store_yaml(prob_path, self.problem.problem)
+        # arch_path = f'{self.report_dir}/arch.yaml'
+        # utils.store_yaml(arch_path, best_arch)
 
-        remainders = {}
-        outermost_idx = {}
-        # print(best_sol)
-        best_map, _, best_arch = self.generate_mapping_and_config(self.dimension, best_sol, best_config)
-        best_map = Mapping(best_map)
-        for d in best_map.factor_dict.keys():
-            T = self.dimension_dict[d]
-            F = best_map.factor_dict[d]
-            remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
-        best_mapping = utils.generate_mapping(best_map.factor_dict, best_map.permutation_list, best_map.target_list, best_map.type_list, best_map.bypass_list, remainders, outermost_idx)
-        map_path = f'{self.report_dir}/map.yaml'
-        utils.store_yaml(map_path, best_mapping)
-        prob_path = f'{self.report_dir}/problem.yaml'
-        utils.store_yaml(prob_path, self.problem.problem)
-        arch_path = f'{self.report_dir}/arch.yaml'
-        utils.store_yaml(arch_path, best_arch)
-
-        # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
-        utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
+        # # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
+        # utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
 
         return best_map, best_config        
 
-
-''' # 豆包回复
-import random
-import copy
-import time
-import math
-import numpy as np
-from multiprocessing import Pool, cpu_count
-
-# 假设utils和Mapping是已定义的模块/类
-import utils
-from some_module import Mapping  # 根据实际路径调整
-
-
-def run_parameters4(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
-                   parents_ratio=0.15, ratio_decay=1, num_finetune=1):
-    def crossover_tile_h(parents, pop, alpha=0.5):
-        """适配多矩阵列表的交叉操作：对每个矩阵分别交叉"""
-        if len(parents) == 1:
-            for idx in range(len(pop)):
-                # 复制父代的多矩阵列表
-                pop[idx] = [copy.deepcopy(mat) for mat in parents[0]]
-        else:
-            for idx in range(0, len(pop), 2):
-                # 随机选择两个父代（每个父代是多矩阵列表）
-                dad = [copy.deepcopy(mat) for mat in parents[random.randint(0, len(parents)-1)]]
-                mom = [copy.deepcopy(mat) for mat in parents[random.randint(0, len(parents)-1)]]
-                
-                if random.random() < alpha:
-                    # 对每个对应位置的矩阵执行列交叉
-                    for d_mat, m_mat in zip(dad, mom):
-                        # 确保矩阵维度一致（假设父代矩阵结构相同）
-                        if d_mat.ndim == 1:
-                            col_cutoff = random.randint(1, len(d_mat)-1)
-                            d_mat[col_cutoff:], m_mat[col_cutoff:] = m_mat[col_cutoff:], d_mat[col_cutoff:]
-                        else:
-                            col_cutoff = random.randint(1, d_mat.shape[1]-1)
-                            d_mat[:, col_cutoff:], m_mat[:, col_cutoff:] = m_mat[:, col_cutoff:], d_mat[:, col_cutoff:]
-                
-                # 存入子代种群
-                pop[idx] = dad
-                if idx + 1 < len(pop):
-                    pop[idx+1] = mom
-
-    def crossover_tile(parents, pop, alpha=0.5):
-        """原交叉函数保持不变（适配单个矩阵）"""
-        if len(parents) == 1:
-            for idx in range(len(pop)):
-                pop[idx] = copy.deepcopy(parents[0])
-        else:
-            for idx in range(0, len(pop), 2):
-                dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
-                mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
-                
-                crossover_type = random.choice(['row_column', 'multi_point', 'arithmetic'])
-                
-                if crossover_type == 'row_column':
-                    if random.random() < alpha:
-                        if dad.ndim == 2 and random.random() < 0.5:
-                            row_cutoff = random.randint(1, dad.shape[0]-1)
-                            dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
-                        else:
-                            if dad.ndim == 1:
-                                col_cutoff = random.randint(1, len(dad)-1)
-                            else:
-                                col_cutoff = random.randint(1, dad.shape[1]-1)
-                            dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
-                
-                elif crossover_type == 'multi_point':
-                    if dad.ndim == 2:
-                        rows, cols = dad.shape
-                        for i in range(rows):
-                            if random.random() < alpha:
-                                num_points = random.randint(1, cols//2)
-                                points = sorted(random.sample(range(1, cols), num_points))
-                                for j in range(len(points)):
-                                    if j % 2 == 0:
-                                        start = points[j]
-                                        end = points[j+1] if j+1 < len(points) else cols
-                                        dad[i, start:end], mom[i, start:end] = mom[i, start:end], dad[i, start:end]
-                    else:
-                        if random.random() < alpha:
-                            num_points = random.randint(1, len(dad)//2)
-                            points = sorted(random.sample(range(1, len(dad)), num_points))
-                            for j in range(len(points)):
-                                if j % 2 == 0:
-                                    start = points[j]
-                                    end = points[j+1] if j+1 < len(points) else len(dad)
-                                    dad[start:end], mom[start:end] = mom[start:end], dad[start:end]
-                
-                elif crossover_type == 'arithmetic':
-                    if dad.ndim == 2:
-                        rows, cols = dad.shape
-                        for i in range(rows):
-                            for j in range(cols):
-                                if random.random() < alpha:
-                                    beta = random.uniform(0.3, 0.7)
-                                    tmp = beta * dad[i, j] + (1-beta) * mom[i, j]
-                                    mom[i, j] = beta * mom[i, j] + (1-beta) * dad[i, j]
-                                    dad[i, j] = tmp
-                    else:
-                        for i in range(len(dad)):
-                            if random.random() < alpha:
-                                beta = random.uniform(0.3, 0.7)
-                                tmp = beta * dad[i] + (1-beta) * mom[i]
-                                mom[i] = beta * mom[i] + (1-beta) * dad[i]
-                                dad[i] = tmp
-                
-                pop[idx] = dad
-                if idx + 1 < len(pop):
-                    pop[idx+1] = mom
-
-    def shuffle_order(arr, alpha=0.5):
-        """原顺序打乱函数保持不变（支持二维矩阵）"""
-        if arr.ndim == 1:
-            if random.random() < alpha:
-                np.random.shuffle(arr)
-        elif arr.ndim == 2:
-            for row in arr:
-                if random.random() < alpha:
-                    np.random.shuffle(row)
-        else:
-            raise ValueError("输入数组必须是一维或二维")
-
-    def mutate_factor(arr, alpha=0.5, generation=0, max_generations=100):
-        """原因子变异函数保持不变（支持二维矩阵）"""
-        decay_factor = 1.0 - (generation / max_generations) * 0.7
-        if arr.ndim == 2:
-            rows, cols = arr.shape
-            for i in range(rows):
-                for j in range(cols):
-                    if random.random() < alpha:
-                        if random.random() < 0.5:
-                            arr[i, j] *= (1 + 0.5 * decay_factor)
-                        else:
-                            arr[i, j] *= (1 - 0.3 * decay_factor)
-        else:
-            for i in range(len(arr)):
-                if random.random() < alpha:
-                    if random.random() < 0.5:
-                        arr[i] *= (1 + 0.5 * decay_factor)
-                    else:
-                        arr[i] *= (1 - 0.3 * decay_factor)
-        return arr
-
-    def gaussian_mutation(arr, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
-        """原高斯变异函数保持不变"""
-        decay_factor = 1.0 - (generation / max_generations) * 0.7
-        sigma = sigma_base * decay_factor
-        if arr.ndim == 2:
-            rows, cols = arr.shape
-            for i in range(rows):
-                for j in range(cols):
-                    if random.random() < alpha:
-                        arr[i, j] += np.random.normal(0, sigma)
-        else:
-            for i in range(len(arr)):
-                if random.random() < alpha:
-                    arr[i] += np.random.normal(0, sigma)
-        return arr
-
-    def reverse_sign(arr, alpha=0.5):
-        """原符号反转函数保持不变"""
-        if arr.ndim == 1:
-            for i in range(len(arr)):
-                if random.random() < alpha:
-                    arr[i] *= -1
-            return arr
-        elif arr.ndim == 2:
-            rows, cols = arr.shape
-            for i in range(rows):
-                for j in range(cols):
-                    if random.random() < alpha:
-                        arr[i, j] *= -1
-            return arr
-        else:
-            raise ValueError("输入数组必须是一维或二维")
-
-    def shuffle_row(arr, alpha=0.5):
-        """原行打乱函数保持不变"""
-        if random.random() < alpha:
-            rows = list(range(arr.shape[0]))
-            random.shuffle(rows)
-            arr[:] = arr[rows]
-
-    def shuffle_col(arr, alpha=0.5):
-        """原列打乱函数保持不变"""
-        if random.random() < alpha:
-            cols = list(range(arr.shape[1]))
-            random.shuffle(cols)
-            arr[:] = arr[:, cols]
-
-    def adaptive_crossover_rate(generation, max_generations, initial_rate=0.8):
-        progress = generation / max_generations
-        return initial_rate * (1 - progress * 0.4)
-
-    def adaptive_mutation_rate(generation, max_generations, initial_rate=0.5):
-        progress = generation / max_generations
-        return initial_rate * (0.5 + progress * 0.5)
-
-    def adaptive_parameters(g, max_generations, initial_alpha=0.5):
-        progress = g / max_generations
-        return initial_alpha * (1 - progress * 0.5)
-
-    def check_convergence1(best_reward_list, window_size=10, threshold=1e-3):
-        if len(best_reward_list) < window_size * 2:
-            return False
-        recent = np.array(best_reward_list[-window_size:])
-        older = np.array(best_reward_list[-window_size*2:-window_size])
-        relative_change = np.abs((np.mean(recent) - np.mean(older)) / np.mean(older))
-        return relative_change < threshold
-
-    def calculate_population_diversity(pop):
-        if len(pop) <= 1:
-            return 0
-        diversity = 0
-        for i in range(len(pop)):
-            for j in range(i+1, len(pop)):
-                # 对多矩阵列表的多样性计算：扁平化所有矩阵后求距离
-                flat_i = np.concatenate([mat.flatten() for mat in pop[i]])
-                flat_j = np.concatenate([mat.flatten() for mat in pop[j]])
-                diversity += np.linalg.norm(flat_i - flat_j)
-        return diversity / (len(pop) * (len(pop) - 1) / 2)
-
-    def check_convergence(best_reward_list, window_size=10, threshold=1e-3):
-        if len(best_reward_list) < window_size * 2:
-            return False
-        recent = np.array([r[0] for r in best_reward_list[-window_size:]])
-        older = np.array([r[0] for r in best_reward_list[-window_size*2:-window_size]])
-        improvement = (np.mean(recent) - np.mean(older)) / (abs(np.mean(older)) + 1e-10)
-        return improvement < threshold
-
-    def simulated_annealing(solution, evaluate_func, para_dim, max_iter=100, initial_temp=100.0, cooling_rate=0.95):
-        current_sol = solution.copy()
-        current_fitness = evaluate_func(current_sol)
-        best_sol = current_sol.copy()
-        best_fitness = current_fitness
-        temp = initial_temp
-        for t in range(max_iter):
-            if para_dim == 1:
-                neighbor_sol = current_sol.copy()
-                idx = np.random.randint(len(neighbor_sol))
-                neighbor_sol[idx] += np.random.normal(0, 0.1)
-                neighbor_sol[idx] = np.clip(neighbor_sol[idx], 0.0, 1.0)
-            else:
-                neighbor_sol = current_sol.copy()
-                i, j = np.random.randint(0, neighbor_sol.shape[0]), np.random.randint(0, neighbor_sol.shape[1])
-                neighbor_sol[i, j] += np.random.normal(0, 0.1)
-                neighbor_sol[i, j] = np.clip(neighbor_sol[i, j], 0.0, 1.0)
-            neighbor_fitness = evaluate_func(neighbor_sol)
-            delta = neighbor_fitness - current_fitness
-            if delta > 0 or np.random.rand() < math.exp(delta / temp):
-                current_sol = neighbor_sol
-                current_fitness = neighbor_fitness
-                if current_fitness > best_fitness:
-                    best_sol = current_sol.copy()
-                    best_fitness = current_fitness
-            temp *= cooling_rate
-        return best_sol
-
-    def evaluate_solution(solution):
-        reward = self.thread_fun_p(solution)
-        if reward is None or any(np.array(reward) >= 0):
-            return -float("Inf")
-        if stage_idx > 0 and any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
-            return -float("Inf")
-        return reward[stage_idx]
-
-    # 主逻辑开始
-    num_generations = num_generations
-    num_population = num_population
-    num_elite = int(num_population * elite_ratio)
-    pool = Pool(min(num_population + num_elite, cpu_count()))
-    best_reward_list = []
-    best_reward = [-float("Inf") for _ in range(len(self.fitness_obj))]
-    best_sol = None
-    best_config = None  # 新增：记录最佳population_h配置
-
-    h = len(self.buffer_name_list) + len(self.spatial_level) - 1
-    # 假设create_genome_for_parameters2已适配生成多矩阵列表结构的population_h
-    population_h, population_p = self.create_genome_for_parameters2(num_population, h)
-
-    fitness = np.ones((num_population, len(self.fitness_obj)), float)
-    num_parents = num_population
-    for g in range(num_generations):
-        start_time = time.time()
-        finetine_iter = 1 if g < num_generations // 2 else num_finetune
-        
-        for f in range(finetine_iter):
-            gen_best = -float("Inf")
-            gen_best_idx = 0
-            count_non_valid = 0
-            
-            if num_parents < 1:
-                print("restart!")
-                return 
-            
-            # 选择父代（保持原有逻辑，假设select_parents已适配多矩阵列表）
-            population_p, fitness, parents_p = self.select_parents(
-                population_p, fitness, num_parents, num_population,
-                stage_idx, first_stage_value=prev_stage_value
-            )
-            population_h, _, parents_h = self.select_parents(
-                population_h, fitness, num_parents, num_population,
-                stage_idx, first_stage_value=prev_stage_value
-            )
-            
-            # 保留精英（适配多矩阵列表的深拷贝）
-            elite_p = copy.deepcopy(parents_p[:num_elite])
-            elite_h = [copy.deepcopy(mat_list) for mat_list in parents_h[:num_elite]]  # 多矩阵列表深拷贝
-            elite_fitness = copy.deepcopy(fitness[:len(elite_p)])
-
-            # 交叉操作（population_p保持不变，population_h使用适配的crossover_tile_h）
-            crossover_tile(parents_p, population_p, alpha=0.5)
-            crossover_tile_h(parents_h, population_h, alpha=0.5)  # 适配多矩阵列表的交叉
-
-            # 变异操作：
-            # 1. population_p变异（保持原有逻辑）
-            for pop in population_p[num_elite:]:
-                if random.random() < 0.7:
-                    gaussian_mutation(pop, alpha=0.5, generation=g, max_generations=num_generations)
-                else:
-                    mutate_factor(pop, alpha=0.5, generation=g, max_generations=num_generations)
-                shuffle_order(pop, alpha=0.1)
-                if self.para_dim == 2:
-                    shuffle_row(pop, alpha=0.1)
-                    shuffle_col(pop, alpha=0.1)
-            
-            # 2. population_h变异（核心修改：适配多矩阵列表）
-            for pop_h in population_h[num_elite:]:  # pop_h是多个二维矩阵的列表
-                # 对列表中的每个二维矩阵执行因子变异
-                for mat in pop_h:
-                    mutate_factor(mat, alpha=0.5, generation=g, max_generations=num_generations)
-                
-                # 对列表中的每个二维矩阵执行顺序打乱
-                for mat in pop_h:
-                    shuffle_order(mat, alpha=0.1)
-                
-                # 可选：对每个矩阵执行行列单独打乱（增强多样性）
-                for mat in pop_h:
-                    if self.para_dim == 2:  # 确保是二维矩阵
-                        shuffle_row(mat, alpha=0.1)
-                        shuffle_col(mat, alpha=0.1)
-
-            # 评估与更新种群
-            fitness = np.zeros((num_population, len(self.fitness_obj)))
-            fitness[:num_elite] = elite_fitness  # 填充精英适应度
-
-            # 打包参数并评估（假设thread_fun_p_h已适配多矩阵列表的population_h）
-            args = list(zip(population_p, population_h))
-            reward_list = pool.starmap(self.thread_fun_p_h, args)
-            
-            for i in range(len(population_p)):
-                reward = reward_list[i]
-                if reward is None or any(np.array(reward) >= 0):
-                    reward = [float("-Inf") for _ in range(len(best_reward))]
-                    count_non_valid += 1
-                elif stage_idx > 0:
-                    if any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
-                        reward = [float("-Inf") for _ in range(len(best_reward))]
-                        count_non_valid += 1
-                judging_reward = reward[stage_idx]
-                fitness[i] = reward
-                if gen_best < judging_reward:
-                    gen_best = judging_reward
-                    gen_best_idx = i
-            
-            # 更新全局最优
-            judging_best_reward = best_reward[stage_idx]
-            if judging_best_reward < gen_best:
-                best_reward = copy.deepcopy(fitness[gen_best_idx])
-                best_sol = copy.deepcopy(population_p[gen_best_idx])
-                best_config = copy.deepcopy(population_h[gen_best_idx])  # 记录多矩阵列表的最优配置
-
-            # 调整父代数量
-            num_parents = int(num_population * parents_ratio)
-            num_parents = min(num_parents, len(population_p) - count_non_valid)
-            parents_ratio *= ratio_decay
-            best_reward_list.append(best_reward)
-            
-            # 保存检查点
-            chkpt = {
-                "best_reward": best_reward,
-                "best_reward_list": best_reward_list,
-                "best_sol": best_sol,
-                "best_config": best_config,  # 新增：保存多矩阵最优配置
-                "num_population": num_population,
-                "num_generations": num_generations,
-                "fitness_use": self.fitness_obj
-            }
-            
-            print(f"[Stage {stage_idx + 1}]Gen {g + 1}:  1st stage Reward: {np.abs(prev_stage_value)}, Best reward: {np.abs(best_reward)}")
-       
-        elapsed_time = time.time() - start_time
-        print(f"Generation {g} 耗时: {elapsed_time:.3f}秒")
-
-    # 后续处理
-    pool.close()
-    remainders = {}
-    outermost_idx = {}
-    best_map, _, best_arch = self.generate_mapping_and_config(self.dimension, best_sol, best_config)
-    best_map = Mapping(best_map)
-    
-    for d in best_map.factor_dict.keys():
-        T = self.dimension_dict[d]
-        F = best_map.factor_dict[d]
-        remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
-    
-    best_mapping = utils.generate_mapping(
-        best_map.factor_dict, best_map.permutation_list, 
-        best_map.target_list, best_map.type_list, 
-        best_map.bypass_list, remainders, outermost_idx
-    )
-    
-    # 保存结果
-    map_path = f'{self.report_dir}/map.yaml'
-    utils.store_yaml(map_path, best_mapping)
-    prob_path = f'{self.report_dir}/problem.yaml'
-    utils.store_yaml(prob_path, self.problem.problem)
-    arch_path = f'{self.report_dir}/arch.yaml'
-    utils.store_yaml(arch_path, best_arch)
-    
-    # 运行timeloop
-    utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
-
-    return best_map, best_config
-
-
-'''
