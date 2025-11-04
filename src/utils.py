@@ -527,6 +527,8 @@ def get_tensor_dimensions(problem):
 
 def generate_accelerator(config, hardware):
     arch_dict = {}
+    spatial_capacity = config[0]
+    buffer_capacity = config[1]
     if hardware.name == "Simba":
         arch_dict = {'arch': 
             {'arithmetic': {'instances': 1024, 'word-bits': 8}, 
@@ -538,19 +540,20 @@ def generate_accelerator(config, hardware):
                         {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
         
         # 并行容量：通过 .item() 将 NumPy 标量转为 Python 原生类型（如 int）
-        arch_dict['arch']['arithmetic']['instances'] = (config[0] * config[1]).item()
-        arch_dict['arch']['storage'][0]['instances'] = (config[0] * config[1]).item()
-        arch_dict['arch']['storage'][1]['instances'] = config[1].item()
-        arch_dict['arch']['storage'][2]['instances'] = config[1].item()
-        arch_dict['arch']['storage'][3]['instances'] = config[1].item()
-        arch_dict['arch']['storage'][4]['instances'] = 1  # 原生int，无需转换
+        arch_dict['arch']['arithmetic']['instances'] = (spatial_capacity[1] * spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4]).item()
+        arch_dict['arch']['storage'][0]['instances'] = (spatial_capacity[1] * spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4]).item()
+        arch_dict['arch']['storage'][1]['instances'] = (spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4]).item()
+        arch_dict['arch']['storage'][2]['instances'] = (spatial_capacity[3] * spatial_capacity[4]).item()
+        arch_dict['arch']['storage'][3]['instances'] = (spatial_capacity[4] * spatial_capacity[5]).item()
+        arch_dict['arch']['storage'][4]['instances'] = (spatial_capacity[5]).item()
+        arch_dict['arch']['storage'][5]['instances'] = 1  
         
         # 存储容量：同样用 .item() 转换 NumPy 标量
-        arch_dict['arch']['storage'][0]['entries'] = config[2].item()
-        arch_dict['arch']['storage'][1]['entries'] = config[3].item()
-        arch_dict['arch']['storage'][2]['entries'] = config[4].item()
-        arch_dict['arch']['storage'][3]['entries'] = config[5].item()
-        arch_dict['arch']['storage'][4]['entries'] = config[6].item()
+        arch_dict['arch']['storage'][0]['entries'] = buffer_capacity[0].item()
+        arch_dict['arch']['storage'][1]['entries'] = buffer_capacity[1].item()
+        arch_dict['arch']['storage'][2]['entries'] = buffer_capacity[2].item()
+        arch_dict['arch']['storage'][3]['entries'] = buffer_capacity[3].item()
+        arch_dict['arch']['storage'][4]['entries'] = buffer_capacity[4].item()
     else:
         print("目前不支持", hardware.name)
 
@@ -558,7 +561,9 @@ def generate_accelerator(config, hardware):
 
 def generate_mapping_for_lpsolver3(solution, p):
     non_all_ones = []
-    for idx, row in enumerate(solution):
+    spatial_tile = solution[0]
+    temporal_tile = solution[1]
+    for idx, row in enumerate(spatial_tile):
         # 检查行中是否存在非1的元素
         if isinstance(row, np.ndarray):
             # 对 numpy 数组使用 .all() 方法
@@ -571,12 +576,15 @@ def generate_mapping_for_lpsolver3(solution, p):
     buffer_hierarchy = p.buffer_hierarchy
     targets = []
     tile_type = []
+    tiles = []
     for i in range(len(buffer_hierarchy)):
         if i in non_all_ones:
             targets.append(buffer_hierarchy[i])
             tile_type.append('spatial')
+            tiles.append(spatial_tile[i])
         targets.append(buffer_hierarchy[i])
         tile_type.append('temporal')
+        tiles.append(temporal_tile[i])
     
     permutations = ['RSPQCKHN'] * len(targets)
     tensor_in_buffer = p.tensor_in_buffer
@@ -586,15 +594,15 @@ def generate_mapping_for_lpsolver3(solution, p):
         item = {}
         item['keep'] = tensor_in_buffer[buffer_hierarchy[i]]
         item['bypass'] = [x for x in ['Weights','Inputs','Outputs'] if x not in item['keep']]
-        item['target'] = i
+        item['target'] = buffer_hierarchy[i]
         item['type'] = 'datatype'
         bypass.append(item)
-    print(solution)
-    rounded_array = [[math.floor(num) for num in row] for row in solution]
-    print(rounded_array)
+
+    rounded_array = [[math.floor(num) for num in row] for row in tiles]
+  
     # 按列提取出来
     extracted_columns = [list(col) for col in zip(*rounded_array)]
-    print(extracted_columns)
+    
     factors_dict = {}
     factors_dict['R'] = extracted_columns[0]
     factors_dict['S'] = extracted_columns[1]

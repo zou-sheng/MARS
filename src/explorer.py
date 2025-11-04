@@ -806,7 +806,7 @@ class MappingExplorer:
     
     # 对于多层
     def HM_lpsolver_all_DNN(self, dimension_list, p):
-        rows = len(self.temporal_level)
+        rows = len(p.buffer_hierarchy)
         cols = 8 # 问题维度R, S, P, Q, C, K, H, N
 
         # 创建一个最大化问题
@@ -816,8 +816,8 @@ class MappingExplorer:
         spatial_tiles = [[[LpVariable(f"st_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
         temporal_tiles = [[[LpVariable(f"tt_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
         
-        buffer_capacity = [LpVariable(f"bc_{i}", lowBound=0) for i in range(cols-1)]
-        spatial_capacity = [LpVariable(f"sc_{i}", lowBound=0) for i in range(cols-1)]
+        buffer_capacity = [LpVariable(f"bc_{i}", lowBound=0) for i in range(rows)]
+        spatial_capacity = [LpVariable(f"sc_{i}", lowBound=0) for i in range(rows)]
         
         if self.accl_name == "Simba":
             # buffer_capacity限制
@@ -836,6 +836,8 @@ class MappingExplorer:
             # GlobalBuffer
             prob += buffer_capacity[4] <= 18
             prob += buffer_capacity[4] >= 15
+            # DRAM
+            prob += buffer_capacity[5] >= 0
 
             # spatial_capacity限制
             # Registers
@@ -853,6 +855,9 @@ class MappingExplorer:
             # GlobalBuffer
             prob += spatial_capacity[4] <= 5
             prob += spatial_capacity[4] >= 3
+            # DRAM
+            prob += spatial_capacity[5] <= 0
+            prob += spatial_capacity[5] >= 0
 
 
         # 定义目标函数：矩阵元素的加权和
@@ -885,18 +890,18 @@ class MappingExplorer:
                 for i in range(r+1):
                     for tensor in tensors_list:
                         for dim in self.tensor_dimensions[tensor]:
-                            buf_capacity += temporal_tiles[k][r][dim]
-                            buf_capacity += spatial_tiles[k][r][dim]
+                            buf_capacity += temporal_tiles[k][i][dim]
+                            buf_capacity += spatial_tiles[k][i][dim]
                 
                 prob += buf_capacity <= len(tensors_list)*(buffer_capacity[r] - math.log2(len(tensors_list)))
 
             
         # 并行容量约束
         for k in range(len(dimension_list)):
-            for r in range(len(p.buffer_hierarchy)-1):
+            for r in range(rows):
                 sp_capacity = 0
-                for i in range(r+1):
-                    sp_capacity += spatial_tiles[k][r][i]
+                for c in range(cols):
+                    sp_capacity += spatial_tiles[k][r][c]
                 prob += sp_capacity <= spatial_capacity[r]
 
         # 维度约束
@@ -916,16 +921,15 @@ class MappingExplorer:
         spatial_tiles_solution = [[[2**spatial_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
         temporal_tiles_solution = [[[2**temporal_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
         
-        buffer_capacity_solution = [2**buffer_capacity[i].value() for i in range(rows-1)]
-        spatial_capacity_solution = [2**spatial_capacity[i].value() for i in range(rows-1)]
-
+        buffer_capacity_solution = [2**buffer_capacity[i].value() for i in range(rows)]
+        spatial_capacity_solution = [2**spatial_capacity[i].value() for i in range(rows)]
         solutions = [spatial_tiles_solution, temporal_tiles_solution, buffer_capacity_solution, spatial_capacity_solution]
         # print(solution)
         # print("time1: ", time.time()-start_time)
         # 映射优先的调整
         solutions, config = self._integerize_with_staged_optimization_with_config_all_DNN(solutions, p)
-        # print(solution)
         # print("time2: ", time.time()-start_time)
+        
         return solutions, config
     
 
@@ -1606,27 +1610,24 @@ class MappingExplorer:
                 spatial_config = []
                 buffer_config = []
                 # 1. 并行容量约束
-                for r in range(len(p.buffer_hierarchy)-1):
-                    spatial_capacity = 1
-                    for i in range(r+1):
-                        spatial_capacity *= spatial_tiles_list[k][r][i]
+                for r in range(len(p.buffer_hierarchy)):
+                    spatial_capacity = np.prod(spatial_tiles_list[k][r])
                     spatial_config.append(spatial_capacity)
                 # 2. 除DRAM外的存储层次容量约束
                 # 去掉DRAM
                 for r in range(len(p.buffer_hierarchy)-1):
                     buffer_capacity = 0
                     tensors_list = p.tensor_in_buffer[p.buffer_hierarchy[r]]
-                    for i in range(r+1):
-                        for tensor in tensors_list:
-                            tensor_capacity = 1 
+                    for tensor in tensors_list:
+                        tensor_capacity = 1 
+                        for i in range(r+1):
                             for dim in self.tensor_dimensions[tensor]:
-                                tensor_capacity *= spatial_tiles_list[k][r][dim]
-                                tensor_capacity *= temporal_tiles_list[k][r][dim]
-                            buffer_capacity += tensor_capacity
+                                tensor_capacity *= spatial_tiles_list[k][i][dim]
+                                tensor_capacity *= temporal_tiles_list[k][i][dim]
+                        buffer_capacity += tensor_capacity
                     
                     buffer_config.append(buffer_capacity)
                 all_configs.append([spatial_config, buffer_config])
-            
             # 对每个约束维度取所有矩阵的最大值（即最小硬件配置）
             max_spatial = [max(col) for col in zip(*[cfg[0] for cfg in all_configs])]
             max_buffer = [max(col) for col in zip(*[cfg[1] for cfg in all_configs])]
@@ -1647,15 +1648,10 @@ class MappingExplorer:
             temporal_tiles_list.append(np.ceil(temporal_tiles_solution[i]).astype(int))
         
         config = min_hardware_config(spatial_tiles_list, temporal_tiles_list)
-
-        # 把spatial_tiles_list和temporal_tiles_list同时输出，到generate_mapping_for_lpsolver3中再处理而不是得到一个矩阵送到generate_mapping_for_lpsolver3中
         new_data = []
         for i in range(len(solutions[0])):
             last_row = compute_last_row(self.tensor_dimensions_list[i], spatial_tiles_list[i], temporal_tiles_list[i])
-
-            new_data.append(np.vstack((spatial_tiles_list[i], last_row)))#[spatial_tiles_list[i], temporal_tiles])
-            print("9999: ", new_data[0])
-            print("8888: ", spatial_tiles_list[i])
+            new_data.append((spatial_tiles_list[i], np.vstack((temporal_tiles_list[i][:-1], last_row))))
         return new_data, config
 
 
@@ -2157,39 +2153,39 @@ class MappingExplorer:
         temp_dir = f'{original_dir}/mars_tmp/temp_{uuid.uuid4()}'
         os.makedirs(temp_dir)
         rewards = []
-        # try:
-        mapping_list, _, arch = self.generate_mapping_and_config_for_all_DNN(self.tensor_dimensions_list, p)
-        
-        
-        values_list = []
-        utils.store_yaml(f'{temp_dir}/temp_arch.yaml', arch)
-        for i in mapping_list:
-            mapping = Mapping(i)
-            remainders = {}
-            outermost_idx = {}
-            for d in mapping.factor_dict.keys():
-                T = self.dimension_dict[d]
-                F = mapping.factor_dict[d]
-                remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
-            problem = self.problems_list[i]
-            # 需要根据探索的结果修改permutation_list，type_list， target_list和bypass_list
-            temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
-            output_stats_path = os.path.join(temp_dir, 'timeloop-model.stats.txt')
-            utils.store_yaml(f'{temp_dir}/temp.yaml', temp_mapping)
-            utils.store_yaml(f'{temp_dir}/temp_prob.yaml', problem)
-            utils.run_timeloop(f'{temp_dir}/temp_arch.yaml', f'{temp_dir}/temp_prob.yaml', f'{temp_dir}/temp.yaml', cwd=temp_dir)
-            # print("评估时间：", time.time()-solve_time)
-            self.observation = utils.parse_timeloop_output(output_stats_path)
-            values = self.judge()
-            values_list.append(values)
-        rewards = [sum(items) for items in zip(*values_list)]
-        # except Exception as e:
-        #     print(f"发生错误: {e}")
-        #     rewards = None
+        try:
+            mapping_list, _, arch = self.generate_mapping_and_config_for_all_DNN(self.tensor_dimensions_list, p)
+            
+            
+            values_list = []
+            utils.store_yaml(f'{temp_dir}/temp_arch.yaml', arch)
+            for i in range(len(mapping_list)):
+                mapping = Mapping(mapping_list[i])
+                remainders = {}
+                outermost_idx = {}
+                problem = self.problems_list[i]
+                for d in mapping.factor_dict.keys():
+                    T = problem['problem']['instance'][d]
+                    F = mapping.factor_dict[d]
+                    remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
+                # 需要根据探索的结果修改permutation_list，type_list， target_list和bypass_list
+                temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
+                output_stats_path = os.path.join(temp_dir, 'timeloop-model.stats.txt')
+                utils.store_yaml(f'{temp_dir}/{i}_temp.yaml', temp_mapping)
+                utils.store_yaml(f'{temp_dir}/{i}_temp_prob.yaml', problem)
+                utils.run_timeloop(f'{temp_dir}/temp_arch.yaml', f'{temp_dir}/{i}_temp_prob.yaml', f'{temp_dir}/{i}_temp.yaml', cwd=temp_dir)
+                # print("评估时间：", time.time()-solve_time)
+                self.observation = utils.parse_timeloop_output(output_stats_path)
+                values = self.judge()
+                values_list.append(values)
+            rewards = [sum(items) for items in zip(*values_list)]
+        except Exception as e:
+            print(f"发生错误: {e}")
+            rewards = None
 
-        # finally:
-        #     if os.path.exists(temp_dir):
-        #         shutil.rmtree(temp_dir)
+        finally:
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
         return rewards  
     
     def run(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
