@@ -96,7 +96,6 @@ def main():
                 problem['problem']['instance']['Hdilation'] = layer_problem['problem']['Hdilation']
 
             problems_list.append(problem)
-        print(problems_list)
         ME = MappingExplorer(problems_list, accelerator_dir, accelerator, mapper, type, version, report_dir, opt.optim_obj, expanded_scope, solver=solver, all_DNN=all_DNN)
         print(opt.population)
         chkpt = ME.run(num_population=opt.population, num_generations=opt.epochs)

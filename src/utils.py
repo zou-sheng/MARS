@@ -172,9 +172,9 @@ def find_remainders(A, T):
     return results, outermost_idx
 
 
-def find_remainders2(A, T):
-    # 保证不修改原始 A
-    A = A.copy()
+def find_remainders2(F, T):
+    # 保证不修改原始 F
+    A = F.copy()
     n = len(A) - 1  # 对应 b 的个数
 
     # 计算常量部分： (A[0]-1)*np.prod(A[1:])
@@ -248,12 +248,17 @@ def find_remainders2(A, T):
         return [], -1
 
     # 查找 outermost_idx: 从左到右第一个不为 1 且其后全为 1 的位置
-    lst = results[0]
+    # 由外层向内层
+    lst = F
     for i in range(len(lst)):
         if lst[i] != 1:
-            if all(x == 1 for x in lst[i + 1:]):
-                outermost_idx = i
-                break
+            outermost_idx = i
+            break
+    # for i in range(len(lst)):
+    #     if lst[i] != 1:
+    #         if all(x == 1 for x in lst[i + 1:]):
+    #             outermost_idx = i
+    #             break
 
     return results, outermost_idx
 
@@ -396,7 +401,6 @@ def generate_mapping(factors, permutations, targets, types, bypass_data, remaind
     # 构建结果列表
     mapping = {'mapping': []}
     # 遍历将因数、排列、目标和类型组合成字典
-    
     for i in range(len(permutations)):
         # 获取当前的因数组合
         current_permutation = permutations[i]
@@ -410,8 +414,9 @@ def generate_mapping(factors, permutations, targets, types, bypass_data, remaind
         # 组合成字符串形式
         factors_str_parts = []  # 使用列表来暂存每个部分
         for key in factors_values:
+            
             if key in remainders  and remainders[key] != [] and remainders[key][0][i] != factors_values[key]:
-                if i == outermost_idx[key]:
+                if i == (len(permutations) - 1 - outermost_idx[key]):
                     factors_str_parts.append(f'{key}={remainders[key][0][i]}')
                 else:
                     # 添加格式化字符串到列表
@@ -540,13 +545,16 @@ def generate_accelerator(config, hardware):
                         {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
         
         # 并行容量：通过 .item() 将 NumPy 标量转为 Python 原生类型（如 int）
-        arch_dict['arch']['arithmetic']['instances'] = (spatial_capacity[1] * spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4]).item()
-        arch_dict['arch']['storage'][0]['instances'] = (spatial_capacity[1] * spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4]).item()
-        arch_dict['arch']['storage'][1]['instances'] = (spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4]).item()
-        arch_dict['arch']['storage'][2]['instances'] = (spatial_capacity[3] * spatial_capacity[4]).item()
+        arch_dict['arch']['arithmetic']['instances'] = (spatial_capacity[1] * spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4] * spatial_capacity[5]).item()
+        arch_dict['arch']['storage'][0]['instances'] = (spatial_capacity[1] * spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4] * spatial_capacity[5]).item()
+        arch_dict['arch']['storage'][1]['instances'] = (spatial_capacity[2] * spatial_capacity[3] * spatial_capacity[4] * spatial_capacity[5]).item()
+        arch_dict['arch']['storage'][2]['instances'] = (spatial_capacity[3] * spatial_capacity[4] * spatial_capacity[5]).item()
         arch_dict['arch']['storage'][3]['instances'] = (spatial_capacity[4] * spatial_capacity[5]).item()
         arch_dict['arch']['storage'][4]['instances'] = (spatial_capacity[5]).item()
         arch_dict['arch']['storage'][5]['instances'] = 1  
+
+        assert spatial_capacity[0] == 1
+        assert arch_dict['arch']['storage'][4]['instances'] == 1
         
         # 存储容量：同样用 .item() 转换 NumPy 标量
         arch_dict['arch']['storage'][0]['entries'] = buffer_capacity[0].item()
@@ -554,6 +562,29 @@ def generate_accelerator(config, hardware):
         arch_dict['arch']['storage'][2]['entries'] = buffer_capacity[2].item()
         arch_dict['arch']['storage'][3]['entries'] = buffer_capacity[3].item()
         arch_dict['arch']['storage'][4]['entries'] = buffer_capacity[4].item()
+    elif hardware.name == "Gemmini":
+        arch_dict = {'arch':
+                     {'arithmetic': {'instances': 128, 'word-bits': 8}, 
+                    'storage': [{'name': 'Registers', 'entries': 1, 'instances': 128, 'word-bits': 8, 'n_rdwr_ports': 2, 'n_banks': 1}, 
+                                {'name': 'Accumulator', 'entries': 4096, 'depth': 1024, 'width': 512, 'instances': 16, 'word-bits': 32, 'network-word-bits': 16, 'n_rdwr_ports': 2, 'n_banks': 2}, 
+                                {'name': 'Scratchpad', 'class': 'SRAM', 'entries': 8196, 'depth': 16384, 'width': 128, 'instances': 1, 'word-bits': 8, 'n_rdwr_ports': 1, 'n_banks': 4}, 
+                                {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block_size': 64, 'bandwidth': 5.75}]}}
+
+        arch_dict['arch']['arithmetic']['instances'] = (spatial_capacity[1] * spatial_capacity[2]).item()
+        arch_dict['arch']['storage'][0]['instances'] = (spatial_capacity[1] * spatial_capacity[2]).item()
+        arch_dict['arch']['storage'][1]['instances'] = (spatial_capacity[2]).item()
+        arch_dict['arch']['storage'][2]['instances'] = 1
+        arch_dict['arch']['storage'][3]['instances'] = 1
+
+
+        assert spatial_capacity[0] == 1
+        assert arch_dict['arch']['storage'][2]['instances'] == 1
+        
+        # 存储容量：同样用 .item() 转换 NumPy 标量
+        arch_dict['arch']['storage'][0]['entries'] = buffer_capacity[0].item()
+        arch_dict['arch']['storage'][1]['entries'] = buffer_capacity[1].item()
+        arch_dict['arch']['storage'][2]['entries'] = buffer_capacity[2].item()
+
     else:
         print("目前不支持", hardware.name)
 
@@ -620,4 +651,4 @@ def generate_mapping_for_lpsolver3(solution, p):
 
 if __name__ == "__main__":
     print(find_remainders([7, 2, 2, 6, 5], 699))
-    print(find_remainders2([7, 2, 2, 6, 5], 699))
+    print(find_remainders2([1, 1, 1, 128, 2, 1], 192))
