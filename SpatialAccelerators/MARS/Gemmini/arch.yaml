@@ -1,43 +1,86 @@
+# bert
 arch:
   arithmetic:
-    instances: 128
-    meshX: 128 # 16
+    instances: 4096
+    # meshX: 128 # 16
     word-bits: 8
   storage:
   - name: Registers
     entries: 1
-    instances: 128
-    meshX: 128 # 16
+    instances: 4096
+    # meshX: 128 # 16
     word-bits: 8
     n_rdwr_ports: 2
     n_banks: 1
   - name: Accumulator
-    entries: 4096
-    depth: 1024
+    entries: 384
+    depth: 1570
     width: 512
-    instances: 16
-    meshX: 1
+    instances: 64
+    # meshX: 1
     word-bits: 32
     network-word-bits: 16
     n_rdwr_ports: 2
     n_banks: 2
   - name: Scratchpad 
-    class: SRAM
-    entries: 8196
-    depth: 16384
+    entries: 40960
+    depth: 7016
     width: 128
     instances: 1
-    meshX: 1
+    # meshX: 1
     word-bits: 8
     n_rdwr_ports: 1
     n_banks: 4
   - name: DRAM
-    technology: "DRAM"
+    technology: DRAM
     # reduction_supported: true
     instances: 1
     word-bits: 8
     block_size: 64
     bandwidth: 5.75
+
+
+# resnet50
+# arch:
+#   arithmetic:
+#     instances: 16384
+#     # meshX: 128 # 16
+#     word-bits: 8
+#   storage:
+#   - name: Registers
+#     entries: 1
+#     instances: 16384
+#     # meshX: 128 # 16
+#     word-bits: 8
+#     n_rdwr_ports: 2
+#     n_banks: 1
+#   - name: Accumulator
+#     entries: 1570
+#     depth: 1570
+#     width: 512
+#     instances: 128
+#     # meshX: 1
+#     word-bits: 32
+#     network-word-bits: 16
+#     n_rdwr_ports: 2
+#     n_banks: 2
+#   - name: Scratchpad 
+#     entries: 898048
+#     depth: 7016
+#     width: 128
+#     instances: 1
+#     # meshX: 1
+#     word-bits: 8
+#     n_rdwr_ports: 1
+#     n_banks: 4
+#   - name: DRAM
+#     technology: DRAM
+#     # reduction_supported: true
+#     instances: 1
+#     word-bits: 8
+#     block_size: 64
+#     bandwidth: 5.75
+
 
 
 # arch:

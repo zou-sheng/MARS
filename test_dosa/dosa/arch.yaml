@@ -1,0 +1,34 @@
+arch:
+  arithmetic:
+    instances: 4096
+    word-bits: 8
+  storage:
+  - entries: 1
+    instances: 4096
+    n_banks: 1
+    n_rdwr_ports: 2
+    name: Registers
+    word-bits: 8
+  - depth: 384
+    entries: 384
+    instances: 64
+    n_banks: 2
+    n_rdwr_ports: 2
+    name: Accumulator
+    network-word-bits: 16
+    width: 32
+    word-bits: 32
+  - depth: 640
+    entries: 40960
+    instances: 1
+    n_banks: 4
+    n_rdwr_ports: 1
+    name: Scratchpad
+    width: 512
+    word-bits: 8
+  - bandwidth: 8
+    block_size: 64
+    instances: 1
+    name: DRAM
+    technology: DRAM
+    word-bits: 8

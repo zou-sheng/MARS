@@ -3422,7 +3422,14 @@ class MappingExplorer:
             # 计算并打印本轮迭代耗时
             # elapsed_time = time.time() - start_time
             # print("Generation {} 耗时: {:.3f}秒".format(g, elapsed_time))
-
+            if archive:
+                best_idx = np.argmax([sum(fit) for sol, fit in archive])
+                best_sol = archive[best_idx][0]
+                # print("Generation {} 当前最优解: {}".format(g, best_sol))
+                print("Generation {} 当前最优解: {}".format(g, fitness[best_idx]))
+                # print("对应适应度: {}".format(fitness[best_idx]))
+            else:
+                best_sol = population[0]
         pool.close()
 
         # 最终从归档中选择一个折中解（例如：目标和最大的解）

@@ -155,12 +155,16 @@ cd ./src
 #     python main.py --optim_obj latency --population 100 --epochs 100 --accelerator Eyeriss --mapper MARS --type arch --version v1 --workload GCN_reddit --layer_id $layer_id --batch_size 1 --expanded_scope 0.1
 # done
 
-for layer_id in {4..4}
+# for layer_id in {0..0}
+# do
+#     printf "网络: resnet50, 层数: %d\n" $layer_id 
+#     python main.py --optim_obj EDP --population 100 --epochs 20 --accelerator Gemmini --mapper MARS --type arch --version v1 --workload resnet50 --layer_id $layer_id --batch_size 1 --expanded_scope 0.0 --solver lp
+# done
+for layer_id in {0..5}
 do
     printf "网络: bert, 层数: %d\n" $layer_id 
-    python main.py --optim_obj EDP --population 100 --epochs 20 --accelerator Gemmini --mapper MARS --type arch --version v1 --workload bert --layer_id $layer_id --batch_size 1 --expanded_scope 0.0 --solver lp
+    python main.py --optim_obj EDP --population 50 --epochs 50 --accelerator Gemmini --mapper MARS --type arch --version v1 --workload bert --layer_id $layer_id --batch_size 1 --expanded_scope 0.0 --solver lp
 done
-
 # for layer_id in {0..22}
 # do
 #     printf "网络: unet, 层数: %d\n" $layer_id 
