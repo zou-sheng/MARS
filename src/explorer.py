@@ -37,13 +37,13 @@ class HardwareConfig:
         self.buffer_spatial_orders = None
 
         
-    def mutation(self, alpha=0.5, generation=0, max_generations=100):
+    def mutation(self, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5, generation=0, max_generations=100):
         # self.mutate_noc()
         # self.mutate_tensor_in_buffer()
-        self.mutate_temporal_tile_weights(alpha=alpha, generation=generation, max_generations=max_generations)
-        self.mutate_spatial_tile_weights(alpha=alpha, generation=generation, max_generations=max_generations)
-        self.mutate_buffer_temporal_weights(alpha=alpha, generation=generation, max_generations=max_generations)
-        self.mutate_buffer_spatial_weights(alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_temporal_tile_weights(best_temporal_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_spatial_tile_weights(best_spatial_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_buffer_temporal_weights(best_buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_buffer_spatial_weights(best_buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         # self.mutate_buffer_temporal_order()
         # self.mutate_buffer_spatial_order()
 
@@ -53,31 +53,43 @@ class HardwareConfig:
     def mutate_tensor_in_buffer(self):
         pass
 
-    def mutate_temporal_tile_weights(self, alpha=0.5, generation=0, max_generations=100):
+    def mutate_temporal_tile_weights(self, best_temporal_tile_weights, alpha=0.5, generation=0, max_generations=100):
         layer_num = len(self.temporal_tile_weights)
         for i in range(layer_num):
-            if random.random() < 0.7:
-                self.gaussian_mutation(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+            if random.random() < 0.3:
+                self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
             else:
-                self.mutate_factor(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
-            self.shuffle_order(self.temporal_tile_weights[i], alpha=alpha)
+                if random.random() < 0.7:
+                    self.gaussian_mutation(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+                else:
+                    self.mutate_factor(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+                self.shuffle_order(self.temporal_tile_weights[i], alpha=alpha)
 
-    def mutate_spatial_tile_weights(self, alpha=0.5, generation=0, max_generations=100):
-        layer_num = len(self.temporal_tile_weights)
+    def mutate_spatial_tile_weights(self, best_spatial_tile_weights, alpha=0.5, generation=0, max_generations=100):
+        layer_num = len(self.spatial_tile_weights)
         for i in range(layer_num):
-            if random.random() < 0.7:
-                self.gaussian_mutation(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+            if random.random() < 0.3:
+                self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
             else:
-                self.mutate_factor(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
-            self.shuffle_order(self.temporal_tile_weights[i], alpha=alpha)
+                if random.random() < 0.7:
+                    self.gaussian_mutation(self.spatial_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+                else:
+                    self.mutate_factor(self.spatial_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
+                self.shuffle_order(self.spatial_tile_weights[i], alpha=alpha)
 
-    def mutate_buffer_temporal_weights(self, alpha=0.5, generation=0, max_generations=100):
-        self.mutate_factor(self.buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
-        self.shuffle_order(self.buffer_temporal_weights)
+    def mutate_buffer_temporal_weights(self, best_buffer_temporal_weights, alpha=0.5, generation=0, max_generations=100):
+        if random.random() < 0.3:
+            self.buffer_temporal_weights = random.choice(best_buffer_temporal_weights)
+        else:
+            self.mutate_factor(self.buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+            self.shuffle_order(self.buffer_temporal_weights)
 
-    def mutate_buffer_spatial_weights(self, alpha=0.5, generation=0, max_generations=100):
-        self.mutate_factor(self.buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
-        self.shuffle_order(self.buffer_temporal_weights)
+    def mutate_buffer_spatial_weights(self, best_buffer_spatial_weights, alpha=0.5, generation=0, max_generations=100):
+        if random.random() < 0.3:
+            self.buffer_spatial_weights = random.choice(best_buffer_spatial_weights)
+        else:
+            self.mutate_factor(self.buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+            self.shuffle_order(self.buffer_spatial_weights)
 
     def mutate_buffer_temporal_order(self):
         pass
@@ -163,74 +175,82 @@ class HardwareConfig:
         else:
             raise ValueError("输入数组必须是一维或二维")
         
-    def crossover_2D(self, dad, mom, alpha=0.5):
-        # 随机选择交叉策略
-        crossover_type = random.choice(['row_column', 'multi_point', 'arithmetic'])
-        
-        if crossover_type == 'row_column':
-            # 行/列交叉（原始实现）
-            if random.random() < alpha:
-                if dad.ndim == 2 and random.random() < 0.5:
-                    # 行交叉
-                    row_cutoff = random.randint(1, dad.shape[0]-1)
-                    dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
-                else:
-                    # 列交叉
-                    if dad.ndim == 1:
-                        col_cutoff = random.randint(1, len(dad)-1)
-                    else:
-                        col_cutoff = random.randint(1, dad.shape[1]-1)
-                    dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
-        
-        elif crossover_type == 'multi_point':
-            # 多点交叉
-            if dad.ndim == 2:
-                rows, cols = dad.shape
-                for i in range(rows):
-                    if random.random() < alpha:
-                        # 随机选择多个交叉点
-                        num_points = random.randint(1, cols//2)
-                        points = sorted(random.sample(range(1, cols), num_points))
-                        for j in range(len(points)):
-                            if j % 2 == 0:  # 交替交换片段
-                                start = points[j]
-                                end = points[j+1] if j+1 < len(points) else cols
-                                dad[i, start:end], mom[i, start:end] = mom[i, start:end], dad[i, start:end]
-            else:
+    def crossover_2D(self, dad, mom, best_matrix, alpha=0.5):
+        if random.random() < 0.3:
+            dad = best_matrix
+            mom = best_matrix
+        else:
+            # 随机选择交叉策略
+            crossover_type = random.choice(['row_column', 'multi_point', 'arithmetic'])
+            
+            if crossover_type == 'row_column':
+                # 行/列交叉（原始实现）
                 if random.random() < alpha:
-                    num_points = random.randint(1, len(dad)//2)
-                    points = sorted(random.sample(range(1, len(dad)), num_points))
-                    for j in range(len(points)):
-                        if j % 2 == 0:
-                            start = points[j]
-                            end = points[j+1] if j+1 < len(points) else len(dad)
-                            dad[start:end], mom[start:end] = mom[start:end], dad[start:end]
-        
-        elif crossover_type == 'arithmetic':
-            # 算术交叉：生成介于父代之间的子代
-            if dad.ndim == 2:
-                rows, cols = dad.shape
-                for i in range(rows):
-                    for j in range(cols):
+                    if dad.ndim == 2 and random.random() < 0.5:
+                        # 行交叉
+                        row_cutoff = random.randint(1, dad.shape[0]-1)
+                        dad[row_cutoff:], mom[row_cutoff:] = mom[row_cutoff:], dad[row_cutoff:]
+                    else:
+                        # 列交叉
+                        if dad.ndim == 1:
+                            col_cutoff = random.randint(1, len(dad)-1)
+                        else:
+                            col_cutoff = random.randint(1, dad.shape[1]-1)
+                        dad[:, col_cutoff:], mom[:, col_cutoff:] = mom[:, col_cutoff:], dad[:, col_cutoff:]
+            
+            elif crossover_type == 'multi_point':
+                # 多点交叉
+                if dad.ndim == 2:
+                    rows, cols = dad.shape
+                    for i in range(rows):
                         if random.random() < alpha:
-                            beta = random.uniform(0.3, 0.7)  # 控制混合比例
-                            tmp = beta * dad[i, j] + (1-beta) * mom[i, j]
-                            mom[i, j] = beta * mom[i, j] + (1-beta) * dad[i, j]
-                            dad[i, j] = tmp
-            else:
-                for i in range(len(dad)):
+                            # 随机选择多个交叉点
+                            num_points = random.randint(1, cols//2)
+                            points = sorted(random.sample(range(1, cols), num_points))
+                            for j in range(len(points)):
+                                if j % 2 == 0:  # 交替交换片段
+                                    start = points[j]
+                                    end = points[j+1] if j+1 < len(points) else cols
+                                    dad[i, start:end], mom[i, start:end] = mom[i, start:end], dad[i, start:end]
+                else:
                     if random.random() < alpha:
-                        beta = random.uniform(0.3, 0.7)
-                        tmp = beta * dad[i] + (1-beta) * mom[i]
-                        mom[i] = beta * mom[i] + (1-beta) * dad[i]
-                        dad[i] = tmp
+                        num_points = random.randint(1, len(dad)//2)
+                        points = sorted(random.sample(range(1, len(dad)), num_points))
+                        for j in range(len(points)):
+                            if j % 2 == 0:
+                                start = points[j]
+                                end = points[j+1] if j+1 < len(points) else len(dad)
+                                dad[start:end], mom[start:end] = mom[start:end], dad[start:end]
+        
+            elif crossover_type == 'arithmetic':
+                # 算术交叉：生成介于父代之间的子代
+                if dad.ndim == 2:
+                    rows, cols = dad.shape
+                    for i in range(rows):
+                        for j in range(cols):
+                            if random.random() < alpha:
+                                beta = random.uniform(0.3, 0.7)  # 控制混合比例
+                                tmp = beta * dad[i, j] + (1-beta) * mom[i, j]
+                                mom[i, j] = beta * mom[i, j] + (1-beta) * dad[i, j]
+                                dad[i, j] = tmp
+                else:
+                    for i in range(len(dad)):
+                        if random.random() < alpha:
+                            beta = random.uniform(0.3, 0.7)
+                            tmp = beta * dad[i] + (1-beta) * mom[i]
+                            mom[i] = beta * mom[i] + (1-beta) * dad[i]
+                            dad[i] = tmp
 
-    def crossover_1D(self, dad, mom, alpha=0.5):
-        if random.random() < alpha:
-            col_cutoff = random.randint(1, len(dad)-1)
-            dad[col_cutoff:], mom[col_cutoff:] = mom[col_cutoff:], dad[col_cutoff:]
+    def crossover_1D(self, dad, mom, best_array, alpha=0.5):
+        if random.random() < 0.3:
+            dad = random.choice(best_array)
+            mom = random.choice(best_array)
+        else:
+            if random.random() < alpha:
+                col_cutoff = random.randint(1, len(dad)-1)
+                dad[col_cutoff:], mom[col_cutoff:] = mom[col_cutoff:], dad[col_cutoff:]
 
-    def crossover(self, other):
+    def crossover(self, other, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5):
         # NoC
 
         # tensor_in_buffer
@@ -238,17 +258,17 @@ class HardwareConfig:
         # temporal_tile_weights
         layer_num = len(self.temporal_tile_weights)
         for i in range(layer_num):
-            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i])
+            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i], best_temporal_tile_weights)
 
         # spatial_tile_weights
         for i in range(layer_num):
-            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i])
+            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i], best_spatial_tile_weights)
 
         # buffer_temporal_weights
-        self.crossover_1D(self.buffer_temporal_weights, other.buffer_temporal_weights)
+        self.crossover_1D(self.buffer_temporal_weights, other.buffer_temporal_weights, best_buffer_temporal_weights)
 
         # buffer_spatial_weights
-        self.crossover_1D(self.buffer_spatial_weights, other.buffer_spatial_weights)
+        self.crossover_1D(self.buffer_spatial_weights, other.buffer_spatial_weights, best_buffer_spatial_weights)
 
         # buffer_temporal_order
 
@@ -2280,7 +2300,7 @@ class MappingExplorer:
         # finally:
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
-        return rewards  
+        return rewards, values_list  
     
     def run(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
@@ -4467,7 +4487,7 @@ class MappingExplorer:
     # 映射与硬件协同优化(多层)
     def run_parameters5(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
-        def crossover(parents, pop, alpha=0.5):
+        def crossover(parents, pop, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5):
             if len(parents) == 1:
                 for idx in range(len(pop)):
                     pop[idx] = copy.deepcopy(parents[0])
@@ -4476,7 +4496,7 @@ class MappingExplorer:
                     dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
                     mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
 
-                    dad.crossover(mom)
+                    dad.crossover(mom, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha)
                     pop[idx] = dad
                     if idx + 1 < len(pop):
                         pop[idx+1] = mom
@@ -4485,7 +4505,7 @@ class MappingExplorer:
         num_population = num_population
         num_elite = int(num_population * elite_ratio)
         pool = Pool(min(num_population + num_elite, cpu_count()))
-        best_reward_list = []
+
         best_reward = [-float("Inf") for _ in range( len(self.fitness_obj))]
         best_sol = None
 
@@ -4497,6 +4517,13 @@ class MappingExplorer:
         # exit()
         fitness = np.ones((num_population, len(self.fitness_obj)), float)
         num_parents = num_population
+        row = len(population[0].buffer_hierarchy)
+        col = 8
+        best_temporal_tile_weights = [np.random.uniform(low=1.0, high=100.0, size=(row, col)) for _ in range(len(self.problems_list))]
+        best_spatial_tile_weights = [np.random.uniform(low=1.0, high=100.0, size=(row, col)) for _ in range(len(self.problems_list))]
+        best_tile_weights_scores = [-float('inf') for _ in range(len(self.problems_list))]
+        best_buffer_temporal_weights = [np.random.randint(10, 100, size=row).astype(float) for _ in range(len(self.problems_list))]
+        best_buffer_spatial_weights = [np.random.randint(10, 100, size=row).astype(float) for _ in range(len(self.problems_list))]
         for g in range(num_generations):
             start_time = time.time()
             # alpha = adaptive_parameters(g, num_generations)
@@ -4518,20 +4545,43 @@ class MappingExplorer:
                 elite_fitness = copy.deepcopy(fitness[:(len(elite))])
 
                 
-                crossover(parents, population, alpha=0.5)
+                crossover(parents, population, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5)
 
                 # 变异
                 for pop in population[num_elite:]:
                     # 选择一种主要变异策略
-                    pop.mutation(alpha=0.5, generation=g, max_generations=num_generations)
+                    pop.mutation(best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5, generation=g, max_generations=num_generations)
                 
 
                 # 1. 更新种群（参数矩阵）thread_fun_pation长度一致
                 fitness = np.zeros((num_population, len(self.fitness_obj)))
                 fitness[:num_elite] = elite_fitness  # 前num_elite个位置填充精英的适应度
 
-                # 将两个参数打包成元组列表（每个元组对应一组参数）
-                reward_list = pool.map(self.thread_fun_hardware, population)
+                results = pool.map(self.thread_fun_hardware, population)
+                reward_list = [res[0] for res in results]
+                tile_value_list = [res[1] for res in results]
+                for idx_prob in range(len(self.problems_list)):
+                    current_tile_weights_scores = -float('inf')
+                    current_temporal_tile_weights = None
+                    current_spatial_tile_weights = None
+                    current_buffer_temporal_weights = None
+                    current_buffer_spatial_weights = None
+                    for idx_pop in range(len(population)):
+                        if tile_value_list[idx_pop][idx_prob][0] > current_tile_weights_scores:
+                            current_tile_weights_scores = tile_value_list[idx_pop][idx_prob][0]
+                            current_temporal_tile_weights = population[idx_pop].temporal_tile_weights[idx_prob]
+                            current_spatial_tile_weights = population[idx_pop].spatial_tile_weights[idx_prob]
+                            current_buffer_temporal_weights = population[idx_pop].buffer_temporal_weights
+                            current_buffer_spatial_weights = population[idx_pop].buffer_spatial_weights
+
+                    if current_tile_weights_scores > best_tile_weights_scores[idx_prob]:
+                        best_tile_weights_scores[idx_prob] = current_tile_weights_scores
+                        best_temporal_tile_weights[idx_prob] = current_temporal_tile_weights
+                        best_spatial_tile_weights[idx_prob] = current_spatial_tile_weights
+                        best_buffer_temporal_weights[idx_prob] = current_buffer_temporal_weights
+                        best_buffer_spatial_weights[idx_prob] = current_buffer_spatial_weights
+
+                print(best_tile_weights_scores)
                 for i in range(len(population)):
                     reward =reward_list[i]
                     if reward is None or any(np.array(reward) >= 0):
@@ -4550,19 +4600,13 @@ class MappingExplorer:
                 if judging_best_reward < gen_best:
                     best_reward = copy.deepcopy(fitness[gen_best_idx])
                     best_sol = copy.deepcopy(population[gen_best_idx])
+                print(tile_value_list[gen_best_idx])
 
                 num_parents = int(num_population * parents_ratio)
                 num_parents = min(num_parents, len(population) - count_non_valid)
                 parents_ratio *= ratio_decay
-                best_reward_list.append(best_reward)
-                chkpt = {
-                    "best_reward": best_reward,
-                    "best_reward_list": best_reward_list,
-                    "best_sol": best_sol,
-                    "num_population": num_population,
-                    "num_generations": num_generations,
-                    "fitness_use": self.fitness_obj
-                }
+
+                
                 
                 print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
        
