@@ -56,7 +56,7 @@ class HardwareConfig:
     def mutate_temporal_tile_weights(self, best_temporal_tile_weights, alpha=0.5, generation=0, max_generations=100):
         layer_num = len(self.temporal_tile_weights)
         for i in range(layer_num):
-            if random.random() < 0.3:
+            if random.random() < 0.7:
                 self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
             else:
                 if random.random() < 0.7:
@@ -68,7 +68,7 @@ class HardwareConfig:
     def mutate_spatial_tile_weights(self, best_spatial_tile_weights, alpha=0.5, generation=0, max_generations=100):
         layer_num = len(self.spatial_tile_weights)
         for i in range(layer_num):
-            if random.random() < 0.3:
+            if random.random() < 0.7:
                 self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
             else:
                 if random.random() < 0.7:
@@ -4508,6 +4508,7 @@ class MappingExplorer:
 
         best_reward = [-float("Inf") for _ in range( len(self.fitness_obj))]
         best_sol = None
+        best_values = []
 
         if self.accl_name == 'Simba':
             population = self.create_genome_for_parameters3(num_population)
@@ -4600,7 +4601,8 @@ class MappingExplorer:
                 if judging_best_reward < gen_best:
                     best_reward = copy.deepcopy(fitness[gen_best_idx])
                     best_sol = copy.deepcopy(population[gen_best_idx])
-                print(tile_value_list[gen_best_idx])
+                    best_values = copy.deepcopy(tile_value_list[gen_best_idx])
+                print(best_values)
 
                 num_parents = int(num_population * parents_ratio)
                 num_parents = min(num_parents, len(population) - count_non_valid)

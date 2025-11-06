@@ -400,8 +400,11 @@ def generate_mapping_for_lpsolver2(solution, targets, types, bypass_data):
 def generate_mapping(factors, permutations, targets, types, bypass_data, remainders={}, outermost_idx={}):
     # 构建结果列表
     mapping = {'mapping': []}
+    n = len(permutations)
+    
+    raw_factors = {'R': [], 'S': [], 'P': [], 'Q': [], 'C': [], 'K': [], 'H': [], 'N': [], }
     # 遍历将因数、排列、目标和类型组合成字典
-    for i in range(len(permutations)):
+    for i in range(len(permutations)-1, -1, -1):
         # 获取当前的因数组合
         current_permutation = permutations[i]
         current_target = targets[i]
@@ -414,15 +417,22 @@ def generate_mapping(factors, permutations, targets, types, bypass_data, remaind
         # 组合成字符串形式
         factors_str_parts = []  # 使用列表来暂存每个部分
         for key in factors_values:
-            
+            all_ones = False
+            if len(raw_factors[key]) == n-i-1 and all(v == 1 for v in raw_factors[key]):
+                all_ones = True
             if key in remainders  and remainders[key] != [] and remainders[key][0][i] != factors_values[key]:
                 if i == (len(permutations) - 1 - outermost_idx[key]):
                     factors_str_parts.append(f'{key}={remainders[key][0][i]}')
+                    raw_factors[key].append(remainders[key][0][i])
+                elif all_ones:
+                    factors_str_parts.append(f'{key}={remainders[key][0][i]}')
+                    raw_factors[key].append(remainders[key][0][i])
                 else:
                     # 添加格式化字符串到列表
                     factors_str_parts.append(f'{key}={factors_values[key]},{remainders[key][0][i]}')
             else:
                 factors_str_parts.append(f'{key}={factors_values[key]}')
+                raw_factors[key].append(factors_values[key])
 
         # 使用 join 方法将所有部分合并并去除末尾的空格
         factors_str = ' '.join(factors_str_parts)
@@ -433,6 +443,8 @@ def generate_mapping(factors, permutations, targets, types, bypass_data, remaind
             'target': current_target,
             'type': current_type
         })
+
+    mapping['mapping'].reverse()
 
     # 添加旁路信息
     mapping['mapping'].extend(bypass_data)
@@ -652,3 +664,13 @@ def generate_mapping_for_lpsolver3(solution, p):
 if __name__ == "__main__":
     print(find_remainders([7, 2, 2, 6, 5], 699))
     print(find_remainders2([1, 1, 1, 128, 2, 1], 192))
+    factor = {'P': [2,2,2,1,1,1]}
+    permutations = ['P', 'P', 'P', 'P', 'P', 'P']
+    targets = ['temporal', 'temporal', 'temporal', 'temporal', 'temporal', 'temporal']
+    types = ['temporal', 'temporal', 'temporal', 'temporal', 'temporal', 'temporal']
+    bypass = []
+    remainders ={'P': [[1, 1, 1, 1, 1, 1]]}
+    outermost_idx = {'P': 3}
+
+    mapping = generate_mapping(factor, permutations, targets, types, bypass, remainders, outermost_idx)
+    print(mapping)
