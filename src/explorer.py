@@ -907,6 +907,9 @@ class MappingExplorer:
             prob += spatial_capacity[3] <= 0
             prob += spatial_capacity[3] >= 0
 
+            # 正方形阵列
+            prob += spatial_capacity[2] == spatial_capacity[1]
+
         # 定义目标函数：矩阵元素的加权和
         objective = 0
         for k in range(len(dimension_list)):
@@ -2007,7 +2010,11 @@ class MappingExplorer:
                 mapping = self.run_parameters5(num_population=num_population, num_generations=num_generations)
             else:
                 mapping, hw_config = self.run_parameters4(num_population=num_population, num_generations=num_generations)
-            
+            print("耗时: ", time.time() - start_time)
+            exit()
+        elif self.mapper == "Random":
+            start_time = time.time()
+            mapping = self.run_random(num_population=num_population, num_generations=num_generations)
             print("耗时: ", time.time() - start_time)
             exit()
         else:
@@ -4660,4 +4667,92 @@ class MappingExplorer:
         # utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
 
         return best_map, best_config        
+
+    def run_random(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, num_finetune=1):
+        """随机搜索主函数，参数与遗传算法保持一致"""
+        num_evaluations = num_generations * num_population  
+        pool = Pool(min(num_population, cpu_count()))
+
+        best_reward = [-float("Inf") for _ in range(len(self.fitness_obj))]
+        best_sol = None
+        best_values = []
+
+        # 初始化种群（与遗传算法保持一致的创建方式）
+        if self.accl_name == 'Simba':
+            create_func = self.create_genome_for_parameters3
+        elif self.accl_name == 'Gemmini':
+            create_func = self.create_genome_for_gemmini
+        else:
+            raise ValueError(f"不支持的加速器类型: {self.accl_name}")
+
+        # 跟踪最优解
+        for g in range(num_generations):
+            start_time = time.time()
+            
+            # 每次迭代生成全新的随机种群
+            population = create_func(num_population)
+            
+            # 评估种群
+            results = pool.map(self.thread_fun_hardware, population)
+            reward_list = [res[0] for res in results]
+            tile_value_list = [res[1] for res in results]
+
+            # 更新最优解
+            gen_best = -float("Inf")
+            gen_best_idx = 0
+            count_non_valid = 0
+            
+            for i in range(len(population)):
+                reward = reward_list[i]
+                # 验证解的有效性
+                if reward is None or any(np.array(reward) >= 0):
+                    reward = [float("-Inf")] * len(best_reward)
+                    count_non_valid += 1
+                elif stage_idx > 0:
+                    if any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
+                        reward = [float("-Inf")] * len(best_reward)
+                        count_non_valid += 1
+                
+                # 跟踪当前代最优
+                judging_reward = reward[stage_idx]
+                if gen_best < judging_reward:
+                    gen_best = judging_reward
+                    gen_best_idx = i
+            
+            # 更新全局最优
+            if best_reward[stage_idx] < gen_best:
+                best_reward = copy.deepcopy(reward_list[gen_best_idx])
+                best_sol = copy.deepcopy(population[gen_best_idx])
+                best_values = copy.deepcopy(tile_value_list[gen_best_idx])
+
+            elapsed_time = time.time() - start_time
+            print(f"[Stage {stage_idx + 1}]Gen {g + 1}: 最优奖励: {np.abs(best_reward)}, 耗时: {elapsed_time:.3f}秒")
+
+        pool.close()
+
+        # 生成最终映射并运行评估（与遗传算法保持一致）
+        mapping_list, _, arch = self.generate_mapping_and_config_for_all_DNN(self.tensor_dimensions_list, best_sol)
+        for i in range(len(mapping_list)):
+            mapping = Mapping(mapping_list[i])
+            remainders = {}
+            outermost_idx = {}
+            problem = self.problems_list[i]
+            for d in mapping.factor_dict.keys():
+                T = problem['problem']['instance'][d]
+                F = mapping.factor_dict[d]
+                remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
+            
+            temp_mapping = utils.generate_mapping(
+                mapping.factor_dict, mapping.permutation_list, 
+                mapping.target_list, mapping.type_list, 
+                mapping.bypass_list, remainders, outermost_idx
+            )
+            report_dir = f'{self.report_dir}/layer-{i}'
+            os.makedirs(report_dir, exist_ok=True)
+            utils.store_yaml(f'{report_dir}/map.yaml', temp_mapping)
+            utils.store_yaml(f'{report_dir}/problem.yaml', problem)
+            utils.store_yaml(f'{report_dir}/arch.yaml', arch)
+            utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=report_dir)
+
+        return best_sol
 
