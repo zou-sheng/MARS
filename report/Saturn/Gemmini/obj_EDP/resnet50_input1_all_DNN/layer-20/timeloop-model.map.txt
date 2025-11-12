@@ -1,19 +1,19 @@
 DRAM [ Weights:65536 (65536) Inputs:100352 (100352) Outputs:401408 (401408) ] 
 -----------------------------------------------------------------------------
-| for C in [0:3)
+| for K in [0:5)
+|   for C in [0:2)
 
-Scratchpad [ Weights:26624 (26624) Inputs:40768 (40768) ] 
+Scratchpad [ Weights:12432 (12432) Inputs:87024 (87024) ] 
 ---------------------------------------------------------
-|   for C in [0:26,12)
-|     for K in [0:64) (Spatial-X)
+|     for K in [0:112,64) (Spatial-X)
 
-Accumulator [ Outputs:6272 (6272) ] 
------------------------------------
-|       for K in [0:8) (Spatial-X)
+Accumulator [ Outputs:784 (784) ] 
+---------------------------------
+|       for Q in [0:28)
+|         for P in [0:14)
+|           for C in [0:111,17) (Spatial-X)
+|             for P in [0:2) (Spatial-X)
 
-Registers [ Weights:2 (2) ] 
+Registers [ Weights:1 (1) ] 
 ---------------------------
-|         for C in [0:2)
-|           for Q in [0:28)
-|             for P in [0:28)
 |               << Compute >>

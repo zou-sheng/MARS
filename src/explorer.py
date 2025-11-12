@@ -899,17 +899,17 @@ class MappingExplorer:
             prob += spatial_capacity[0] >= 0
             # Accumulator
             prob += spatial_capacity[1] <= 6
-            prob += spatial_capacity[1] >= 4
+            prob += spatial_capacity[1] >= 2
             # Scratchpad
             prob += spatial_capacity[2] <= 6
-            prob += spatial_capacity[2] >= 4
+            prob += spatial_capacity[2] >= 2
             # DRAM
             prob += spatial_capacity[3] <= 0
             prob += spatial_capacity[3] >= 0
 
             # 正方形阵列
             prob += spatial_capacity[2] == spatial_capacity[1]
-
+            prob += spatial_capacity[2] == 5 #math.log2(112)
         # 定义目标函数：矩阵元素的加权和
         objective = 0
         for k in range(len(dimension_list)):
