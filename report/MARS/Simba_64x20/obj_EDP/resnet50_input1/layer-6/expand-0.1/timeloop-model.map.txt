@@ -1,0 +1,24 @@
+DRAM [ Weights:147456 (147456) Inputs:415872 (415872) Outputs:100352 (100352) ] 
+-------------------------------------------------------------------------------
+| for Q in [0:2)
+|   for P in [0:28)
+
+GlobalBuffer [ Inputs:14208 (14208) Outputs:2304 (2304) ] 
+---------------------------------------------------------
+|     for Q in [0:9,5)
+|       for C in [0:64) (Spatial-X)
+
+InputBuffer [ Inputs:30 (30) ] 
+WeightBuffer [ Weights:2304 (2304) ] 
+AccumulationBuffer [ Outputs:256 (256) ] 
+----------------------------------------
+|         for K in [0:128)
+|           for C in [0:2)
+|             for S in [0:3,1)
+|               for Q in [0:2) (Spatial-X)
+|                 for S in [0:3) (Spatial-X)
+|                   for R in [0:3) (Spatial-X)
+
+Registers [ Weights:1 (1) ] 
+---------------------------
+|                     << Compute >>

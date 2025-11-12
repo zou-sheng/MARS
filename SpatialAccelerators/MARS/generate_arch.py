@@ -195,8 +195,8 @@ def main():
     os.makedirs(main_output_dir, exist_ok=True)
     
     # 遍历a从16到64，b固定为64
-    for a in range(1, 65):  # 范围是[16, 64]，包含64
-        b = 64
+    for b in range(1, 65):  # 范围是[16, 64]，包含64
+        a = 64
         # 生成架构配置
         config = generate_architecture(a, b)
         # 为当前配置创建单独的子目录

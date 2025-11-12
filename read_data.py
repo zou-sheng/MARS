@@ -23,7 +23,7 @@ def extract_value_from_file(file_path):
 
 def main():
     # 配置参数
-    main_folder = "./report/MARS/TensorCore/obj_EDP/deepbench_input1"  # 主文件夹路径
+    main_folder = "./report/MARS/Simba_64x47/obj_EDP/resnet50_input1"  # 主文件夹路径
     target_file = "timeloop-model.stats.txt"  # 目标文件名
     output_excel = "extracted_cycles.xlsx"  # 输出Excel文件名
     
