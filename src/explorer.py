@@ -16,6 +16,10 @@ import numpy as np
 from collections import deque
 import time
 import cvxpy as cp
+from skopt import gp_minimize
+from skopt.space import Integer
+from skopt.utils import use_named_args
+from skopt.callbacks import VerboseCallback
 
 # 将各种硬件参数以及权重矩阵作为统一成基因
 # simba
@@ -23,7 +27,7 @@ import cvxpy as cp
 # weight: 0 , input: 1, output: 2
 # tensor_in_buffer: {'Registers': ['Weights'], 'AccumulationBuffer': ['Outputs'], 'WeightBuffer': ['Weights'], 'InputBuffer': ['Inputs'], 'GlobalBuffer': ['Inputs','Outputs'], 'DRAM': ['Weights','Inputs','Outputs']}
 class HardwareConfig:
-    def __init__(self, name, buffer_hierarchy, NoC, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights, buffer_spatial_weights):
+    def __init__(self, name, buffer_hierarchy, NoC, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights=None, buffer_spatial_weights=None, buffer_temporal_list=None, buffer_spatial_list=None):
         self.name = name
         self.buffer_hierarchy = buffer_hierarchy
         self.NoC = NoC
@@ -35,6 +39,8 @@ class HardwareConfig:
         # 有n个
         self.buffer_temporal_orders = None
         self.buffer_spatial_orders = None
+        self.buffer_capacity = buffer_temporal_list
+        self.spatial_capacity = buffer_spatial_list
 
         
     def mutation(self, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5, generation=0, max_generations=100):
@@ -44,6 +50,16 @@ class HardwareConfig:
         self.mutate_spatial_tile_weights(best_spatial_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         self.mutate_buffer_temporal_weights(best_buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         self.mutate_buffer_spatial_weights(best_buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        # self.mutate_buffer_temporal_order()
+        # self.mutate_buffer_spatial_order()
+
+    def mutation_for_DNN(self, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5, generation=0, max_generations=100):
+        # self.mutate_noc()
+        # self.mutate_tensor_in_buffer()
+        self.mutate_temporal_tile_weights(best_temporal_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_spatial_tile_weights(best_spatial_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        # self.mutate_buffer_temporal_weights(best_buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        # self.mutate_buffer_spatial_weights(best_buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         # self.mutate_buffer_temporal_order()
         # self.mutate_buffer_spatial_order()
 
@@ -274,6 +290,30 @@ class HardwareConfig:
 
         # buffer_spatial_order
 
+    def crossover_for_DNN(self, other, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5):
+        # NoC
+
+        # tensor_in_buffer
+
+        # temporal_tile_weights
+        layer_num = len(self.temporal_tile_weights)
+        for i in range(layer_num):
+            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i], best_temporal_tile_weights)
+
+        # spatial_tile_weights
+        for i in range(layer_num):
+            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i], best_spatial_tile_weights)
+
+        # # buffer_temporal_weights
+        # self.crossover_1D(self.buffer_temporal_weights, other.buffer_temporal_weights, best_buffer_temporal_weights)
+
+        # # buffer_spatial_weights
+        # self.crossover_1D(self.buffer_spatial_weights, other.buffer_spatial_weights, best_buffer_spatial_weights)
+
+        # buffer_temporal_order
+
+        # buffer_spatial_order
+
     def get_target(self):
         pass
 
@@ -380,6 +420,11 @@ class MappingExplorer:
             self.obj_level.append(self.temporal_level[buffer_name])
 
         self.para_dim = parameter_dimension
+
+
+        # 针对多层DNN的中间变量
+        self.buffer_temporal_list = None
+        self.buffer_spatial_list = None
 
     def shuffle_factor_order(self, mapping, alpha=0.5):
         if random.random() < alpha:
@@ -532,6 +577,17 @@ class MappingExplorer:
         for key in dimension_dict.keys():
             prob['problem']['instance'][key] = dimension_dict[key]
         return mapping_dict, prob, arch_dict
+
+    def generate_mapping_for_all_DNN(self, dimensions_list, p):
+        sols, cfg = self.lpsolver_all_DNN(dimensions_list, p)
+        mapping_list = []
+        for i in range(len(sols)):
+            # 如果要探索更多的配置，这部分需要修改
+            mapping_dict = utils.generate_mapping_for_lpsolver3(sols[i], p)
+            mapping_list.append(mapping_dict)
+        arch_dict = utils.generate_accelerator(cfg, p)
+        return mapping_list, None, arch_dict
+
 
     def generate_mapping_and_config_for_all_DNN(self, dimensions_list, p):
         sols, cfg = self.HM_lpsolver_all_DNN(dimensions_list, p)
@@ -824,6 +880,75 @@ class MappingExplorer:
         # print("time2: ", time.time()-start_time)
         return solution, config
     
+    # 一次性求多层的mapping
+    def lpsolver_all_DNN(self, dimension_list, p):
+        rows = len(p.buffer_hierarchy)
+        cols = 8 # 问题维度R, S, P, Q, C, K, H, N
+        # 创建一个最大化问题
+        prob = LpProblem("Matrix_Mapping_Problem", LpMaximize)
+
+        # 创建矩阵变量，每个元素是一个非负的连续变量
+        spatial_tiles = [[[LpVariable(f"st_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles = [[[LpVariable(f"tt_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        
+        # 定义目标函数：矩阵元素的加权和
+        objective = 0
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                for c in range(cols):
+                    objective += spatial_tiles[k][r][c] * p.spatial_tile_weights[k][r][c]
+
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                for c in range(cols):
+                    objective += temporal_tiles[k][r][c] * p.temporal_tile_weights[k][r][c]
+
+        prob += objective
+
+        # 除DRAM外每一个存储层次的存储容量约束
+        for k in range(len(dimension_list)):
+            # 去掉DRAM
+            for r in range(len(p.buffer_hierarchy)-1):
+                buf_capacity = 0
+                tensors_list = p.tensor_in_buffer[p.buffer_hierarchy[r]]
+                for i in range(r+1):
+                    for tensor in tensors_list:
+                        for dim in self.tensor_dimensions[tensor]:
+                            buf_capacity += temporal_tiles[k][i][dim]
+                            buf_capacity += spatial_tiles[k][i][dim]
+                
+                prob += buf_capacity <= len(tensors_list)*math.log2(p.buffer_capacity[r]/len(tensors_list))
+
+        # 并行容量约束
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                sp_capacity = 0
+                for c in range(cols):
+                    sp_capacity += spatial_tiles[k][r][c]
+                prob += sp_capacity <= math.log2(p.spatial_capacity[r])
+        
+        for k in range(len(dimension_list)):
+            for c in range(cols):
+                temporal_sum = sum(temporal_tiles[k][r][c] for r in range(rows))
+                spatial_sum = sum(spatial_tiles[k][r][c] for r in range(rows))
+                col_sum = temporal_sum + spatial_sum
+                for r in range(rows):
+                    prob += temporal_tiles[k][r][c] <= math.log2(dimension_list[k][c])
+                    prob += spatial_tiles[k][r][c] <= math.log2(dimension_list[k][c])
+                prob += col_sum == math.log2(dimension_list[k][c])
+
+        prob.solve(PULP_CBC_CMD(msg=0))
+        # print(prob)
+        
+        spatial_tiles_solution = [[[2**spatial_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles_solution = [[[2**temporal_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+
+        solutions = [spatial_tiles_solution, temporal_tiles_solution, None, None]
+
+        solutions, config = self._integerize_with_staged_optimization_with_config_all_DNN(solutions, p)
+
+        return solutions, config
+
     # 对于多层
     def HM_lpsolver_all_DNN(self, dimension_list, p):
         rows = len(p.buffer_hierarchy)
@@ -909,7 +1034,7 @@ class MappingExplorer:
 
             # 正方形阵列
             prob += spatial_capacity[2] == spatial_capacity[1]
-            prob += spatial_capacity[2] == 5 #math.log2(112)
+            # prob += spatial_capacity[2] == 5 #math.log2(112)
         # 定义目标函数：矩阵元素的加权和
         objective = 0
         for k in range(len(dimension_list)):
@@ -2014,7 +2139,12 @@ class MappingExplorer:
             exit()
         elif self.mapper == "Random":
             start_time = time.time()
-            mapping = self.run_random(num_population=num_population, num_generations=num_generations)
+            self.run_random()
+            print("耗时: ", time.time() - start_time)
+            exit()
+        elif self.mapper == "BO":
+            start_time = time.time()
+            self.run_BO()
             print("耗时: ", time.time() - start_time)
             exit()
         else:
@@ -2076,6 +2206,25 @@ class MappingExplorer:
             p = HardwareConfig("Simba", buffer_hierarchy, 0, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights, buffer_spatial_weights)
             pop.append(p)
         return pop
+
+    def create_genome_for_parameters4(self, num_population, buffer_temporal_list, buffer_spatial_list):
+        pop = []
+        buffer_hierarchy = ['Registers', 'AccumulationBuffer', 'WeightBuffer', 'InputBuffer', 'GlobalBuffer', 'DRAM']
+        tensor_in_buffer = {'Registers': ['Weights'], 'AccumulationBuffer': ['Outputs'], 'WeightBuffer': ['Weights'], 'InputBuffer': ['Inputs'], 'GlobalBuffer': ['Inputs','Outputs'], 'DRAM': ['Weights','Inputs','Outputs']}
+        layer_num = len(self.problems_list)
+        row = len(buffer_hierarchy)
+        col = 8
+        for i in range(num_population):
+            temporal_tile_weights = []
+            spatial_tile_weights = []
+            for n in range(layer_num): 
+                temporal_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+                spatial_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+            # buffer_temporal_weights = np.random.randint(10, 100, size=row).astype(float)
+            # buffer_spatial_weights = np.random.randint(10, 100, size=row).astype(float)
+            p = HardwareConfig("Simba", buffer_hierarchy, 0, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_list=buffer_temporal_list, buffer_spatial_list=buffer_spatial_list)
+            pop.append(p)
+        return pop
     
     # Gemmini
     def create_genome_for_gemmini(self, num_population):
@@ -2094,6 +2243,25 @@ class MappingExplorer:
             buffer_temporal_weights = np.random.randint(10, 100, size=row).astype(float)
             buffer_spatial_weights = np.random.randint(10, 100, size=row).astype(float)
             p = HardwareConfig("Gemmini", buffer_hierarchy, 0, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights, buffer_spatial_weights)
+            pop.append(p)
+        return pop
+
+    def create_genome_for_gemmini2(self, num_population, buffer_temporal_list, buffer_spatial_list):
+        pop = []
+        buffer_hierarchy = ['Registers', 'Accumulator', 'Scratchpad', 'DRAM']
+        tensor_in_buffer = {'Registers': ['Weights'], 'Accumulator': ['Outputs'], 'Scratchpad': ['Inputs', 'Weights'], 'DRAM': ['Weights','Inputs','Outputs']}
+        layer_num = len(self.problems_list)
+        row = len(buffer_hierarchy)
+        col = 8
+        for i in range(num_population):
+            temporal_tile_weights = []
+            spatial_tile_weights = []
+            for n in range(layer_num): 
+                temporal_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+                spatial_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+            buffer_temporal_weights = np.random.randint(10, 100, size=row).astype(float)
+            buffer_spatial_weights = np.random.randint(10, 100, size=row).astype(float)
+            p = HardwareConfig("Gemmini", buffer_hierarchy, 0, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_list=buffer_temporal_list, buffer_spatial_list=buffer_spatial_list)
             pop.append(p)
         return pop
 
@@ -2276,6 +2444,47 @@ class MappingExplorer:
         rewards = []
         # try:
         mapping_list, _, arch = self.generate_mapping_and_config_for_all_DNN(self.tensor_dimensions_list, p)
+        
+        
+        values_list = []
+        utils.store_yaml(f'{temp_dir}/temp_arch.yaml', arch)
+        for i in range(len(mapping_list)):
+            mapping = Mapping(mapping_list[i])
+            remainders = {}
+            outermost_idx = {}
+            problem = self.problems_list[i]
+            for d in mapping.factor_dict.keys():
+                T = problem['problem']['instance'][d]
+                F = mapping.factor_dict[d]
+                remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
+            # 需要根据探索的结果修改permutation_list，type_list， target_list和bypass_list
+            temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
+            output_stats_path = os.path.join(temp_dir, 'timeloop-model.stats.txt')
+            utils.store_yaml(f'{temp_dir}/{i}_temp.yaml', temp_mapping)
+            utils.store_yaml(f'{temp_dir}/{i}_temp_prob.yaml', problem)
+            utils.run_timeloop(f'{temp_dir}/temp_arch.yaml', f'{temp_dir}/{i}_temp_prob.yaml', f'{temp_dir}/{i}_temp.yaml', cwd=temp_dir)
+            # print("评估时间：", time.time()-solve_time)
+            self.observation = utils.parse_timeloop_output(output_stats_path)
+            values = self.judge()
+            values_list.append(values)
+        rewards = [sum(items) for items in zip(*values_list)]
+        # except Exception as e:
+        #     print(f"发生错误: {e}")
+        #     rewards = None
+
+        # finally:
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+        return rewards, values_list  
+    
+    def thread_fun_DNN(self, p):
+        original_dir = os.getcwd()
+        # 创建一个唯一的临时文件夹
+        temp_dir = f'{original_dir}/mars_tmp/temp_{uuid.uuid4()}'
+        os.makedirs(temp_dir)
+        rewards = []
+        # try:
+        mapping_list, _, arch = self.generate_mapping_for_all_DNN(self.tensor_dimensions_list, p)
         
         
         values_list = []
@@ -4667,71 +4876,144 @@ class MappingExplorer:
         # utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
 
         return best_map, best_config        
+   
+    # 映射(多层)
+    def run_parameters6(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
+                       parents_ratio=0.15, ratio_decay=1, num_finetune=1):
+        def crossover(parents, pop, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5):
+            if len(parents) == 1:
+                for idx in range(len(pop)):
+                    pop[idx] = copy.deepcopy(parents[0])
+            else:
+                for idx in range(0, len(pop), 2):
+                    dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
+                    mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
 
-    def run_random(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, num_finetune=1):
-        """随机搜索主函数，参数与遗传算法保持一致"""
-        num_evaluations = num_generations * num_population  
-        pool = Pool(min(num_population, cpu_count()))
+                    dad.crossover_for_DNN(mom, best_spatial_tile_weights, best_temporal_tile_weights, alpha)
+                    pop[idx] = dad
+                    if idx + 1 < len(pop):
+                        pop[idx+1] = mom
+        
+        num_generations = num_generations
+        num_population = num_population
+        num_elite = int(num_population * elite_ratio)
+        pool = Pool(min(num_population + num_elite, cpu_count()))
 
-        best_reward = [-float("Inf") for _ in range(len(self.fitness_obj))]
+        best_reward = [-float("Inf") for _ in range( len(self.fitness_obj))]
         best_sol = None
         best_values = []
-
-        # 初始化种群（与遗传算法保持一致的创建方式）
+        buffer_temporal_list = self.buffer_temporal_list
+        buffer_spatial_list = self.buffer_spatial_list
         if self.accl_name == 'Simba':
-            create_func = self.create_genome_for_parameters3
+            population = self.create_genome_for_parameters4(num_population, buffer_temporal_list, buffer_spatial_list)
         elif self.accl_name == 'Gemmini':
-            create_func = self.create_genome_for_gemmini
-        else:
-            raise ValueError(f"不支持的加速器类型: {self.accl_name}")
-
-        # 跟踪最优解
+            population = self.create_genome_for_gemmini2(num_population, buffer_temporal_list, buffer_spatial_list)
+        # mapping, _ = self.generate_mapping(self.dimension, population[0])
+        # exit()
+        fitness = np.ones((num_population, len(self.fitness_obj)), float)
+        num_parents = num_population
+        row = len(population[0].buffer_hierarchy)
+        col = 8
+        best_temporal_tile_weights = [np.random.uniform(low=1.0, high=100.0, size=(row, col)) for _ in range(len(self.problems_list))]
+        best_spatial_tile_weights = [np.random.uniform(low=1.0, high=100.0, size=(row, col)) for _ in range(len(self.problems_list))]
+        best_tile_weights_scores = [-float('inf') for _ in range(len(self.problems_list))]
+        # best_buffer_temporal_weights = [np.random.randint(10, 100, size=row).astype(float) for _ in range(len(self.problems_list))]
+        # best_buffer_spatial_weights = [np.random.randint(10, 100, size=row).astype(float) for _ in range(len(self.problems_list))]
         for g in range(num_generations):
             start_time = time.time()
+            # alpha = adaptive_parameters(g, num_generations)
             
-            # 每次迭代生成全新的随机种群
-            population = create_func(num_population)
-            
-            # 评估种群
-            results = pool.map(self.thread_fun_hardware, population)
-            reward_list = [res[0] for res in results]
-            tile_value_list = [res[1] for res in results]
-
-            # 更新最优解
-            gen_best = -float("Inf")
-            gen_best_idx = 0
-            count_non_valid = 0
-            
-            for i in range(len(population)):
-                reward = reward_list[i]
-                # 验证解的有效性
-                if reward is None or any(np.array(reward) >= 0):
-                    reward = [float("-Inf")] * len(best_reward)
-                    count_non_valid += 1
-                elif stage_idx > 0:
-                    if any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
-                        reward = [float("-Inf")] * len(best_reward)
-                        count_non_valid += 1
+        
+            finetine_iter = 1 if g < num_generations // 2 else num_finetune
+            for f in range(finetine_iter):
+                gen_best = -float("Inf")
+                gen_best_idx = 0
+                count_non_valid = 0
+                if num_parents < 1:  # restart
+                    print("restart!")
+                    return 
                 
-                # 跟踪当前代最优
-                judging_reward = reward[stage_idx]
-                if gen_best < judging_reward:
-                    gen_best = judging_reward
-                    gen_best_idx = i
-            
-            # 更新全局最优
-            if best_reward[stage_idx] < gen_best:
-                best_reward = copy.deepcopy(reward_list[gen_best_idx])
-                best_sol = copy.deepcopy(population[gen_best_idx])
-                best_values = copy.deepcopy(tile_value_list[gen_best_idx])
+                population, fitness, parents = self.select_parents(population, fitness, num_parents, num_population,
+                                                                  stage_idx, first_stage_value=prev_stage_value)
 
+                elite = copy.deepcopy(parents[:num_elite])
+                elite_fitness = copy.deepcopy(fitness[:(len(elite))])
+
+                
+                crossover(parents, population, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5)
+
+                # 变异
+                for pop in population[num_elite:]:
+                    # 选择一种主要变异策略
+                    pop.mutation_for_DNN(best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5, generation=g, max_generations=num_generations)
+                
+
+                # 1. 更新种群（参数矩阵）thread_fun_pation长度一致
+                fitness = np.zeros((num_population, len(self.fitness_obj)))
+                fitness[:num_elite] = elite_fitness  # 前num_elite个位置填充精英的适应度
+
+                results = pool.map(self.thread_fun_DNN, population)
+                reward_list = [res[0] for res in results]
+                tile_value_list = [res[1] for res in results]
+                for idx_prob in range(len(self.problems_list)):
+                    current_tile_weights_scores = -float('inf')
+                    current_temporal_tile_weights = None
+                    current_spatial_tile_weights = None
+                    # current_buffer_temporal_weights = None
+                    # current_buffer_spatial_weights = None
+                    for idx_pop in range(len(population)):
+                        if tile_value_list[idx_pop][idx_prob][0] > current_tile_weights_scores:
+                            current_tile_weights_scores = tile_value_list[idx_pop][idx_prob][0]
+                            current_temporal_tile_weights = population[idx_pop].temporal_tile_weights[idx_prob]
+                            current_spatial_tile_weights = population[idx_pop].spatial_tile_weights[idx_prob]
+                            # current_buffer_temporal_weights = population[idx_pop].buffer_temporal_weights
+                            # current_buffer_spatial_weights = population[idx_pop].buffer_spatial_weights
+
+                    if current_tile_weights_scores > best_tile_weights_scores[idx_prob]:
+                        best_tile_weights_scores[idx_prob] = current_tile_weights_scores
+                        best_temporal_tile_weights[idx_prob] = current_temporal_tile_weights
+                        best_spatial_tile_weights[idx_prob] = current_spatial_tile_weights
+                        # best_buffer_temporal_weights[idx_prob] = current_buffer_temporal_weights
+                        # best_buffer_spatial_weights[idx_prob] = current_buffer_spatial_weights
+
+                print(best_tile_weights_scores)
+                for i in range(len(population)):
+                    reward =reward_list[i]
+                    if reward is None or any(np.array(reward) >= 0):
+                        reward = [float("-Inf") for _ in range(len(best_reward))]
+                        count_non_valid += 1
+                    elif stage_idx > 0:
+                        if any([reward[kk] < prev_stage_value[kk] for kk in range(len(prev_stage_value))]):
+                            reward = [float("-Inf") for _ in range(len(best_reward))]
+                            count_non_valid += 1
+                    judging_reward = reward[stage_idx]
+                    fitness[i] = reward
+                    if gen_best < judging_reward:
+                        gen_best = judging_reward
+                        gen_best_idx = i
+                judging_best_reward = best_reward[stage_idx]
+                if judging_best_reward < gen_best:
+                    best_reward = copy.deepcopy(fitness[gen_best_idx])
+                    best_sol = copy.deepcopy(population[gen_best_idx])
+                    best_values = copy.deepcopy(tile_value_list[gen_best_idx])
+                print(best_values)
+
+                num_parents = int(num_population * parents_ratio)
+                num_parents = min(num_parents, len(population) - count_non_valid)
+                parents_ratio *= ratio_decay
+
+                
+                
+                print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
+       
+   
             elapsed_time = time.time() - start_time
-            print(f"[Stage {stage_idx + 1}]Gen {g + 1}: 最优奖励: {np.abs(best_reward)}, 耗时: {elapsed_time:.3f}秒")
-
+            print("Generation {} 耗时: {:.3f}秒".format(g, elapsed_time))
         pool.close()
+        best_config = None
+        best_map = None
 
-        # 生成最终映射并运行评估（与遗传算法保持一致）
-        mapping_list, _, arch = self.generate_mapping_and_config_for_all_DNN(self.tensor_dimensions_list, best_sol)
+        mapping_list, _, arch = self.generate_mapping_for_all_DNN(self.tensor_dimensions_list, best_sol)
         for i in range(len(mapping_list)):
             mapping = Mapping(mapping_list[i])
             remainders = {}
@@ -4741,18 +5023,239 @@ class MappingExplorer:
                 T = problem['problem']['instance'][d]
                 F = mapping.factor_dict[d]
                 remainders[d], outermost_idx[d] = utils.find_remainders2(F[::-1], T)
-            
-            temp_mapping = utils.generate_mapping(
-                mapping.factor_dict, mapping.permutation_list, 
-                mapping.target_list, mapping.type_list, 
-                mapping.bypass_list, remainders, outermost_idx
-            )
+            # 需要根据探索的结果修改permutation_list，type_list， target_list和bypass_list
+            temp_mapping = utils.generate_mapping(mapping.factor_dict, mapping.permutation_list, mapping.target_list, mapping.type_list, mapping.bypass_list, remainders, outermost_idx)
             report_dir = f'{self.report_dir}/layer-{i}'
-            os.makedirs(report_dir, exist_ok=True)
+            if not os.path.exists(report_dir):
+                os.makedirs(report_dir)
             utils.store_yaml(f'{report_dir}/map.yaml', temp_mapping)
             utils.store_yaml(f'{report_dir}/problem.yaml', problem)
             utils.store_yaml(f'{report_dir}/arch.yaml', arch)
             utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=report_dir)
 
-        return best_sol
+        # remainders = {}
+        # outermost_idx = {}
+        # # print(best_sol)
+        # best_map, _, best_arch = self.generate_mapping_and_config(self.dimension, best_sol, best_config)
+        # best_map = Mapping(best_map)
+        # for d in best_map.factor_dict.keys():
+        #     T = self.dimension_dict[d]
+        #     F = best_map.factor_dict[d]
+        #     remainders[d], outermost_idx[d] = utils.find_remainders(F[::-1], T)
+        # best_mapping = utils.generate_mapping(best_map.factor_dict, best_map.permutation_list, best_map.target_list, best_map.type_list, best_map.bypass_list, remainders, outermost_idx)
+        # map_path = f'{self.report_dir}/map.yaml'
+        # utils.store_yaml(map_path, best_mapping)
+        # prob_path = f'{self.report_dir}/problem.yaml'
+        # utils.store_yaml(prob_path, self.problem.problem)
+        # arch_path = f'{self.report_dir}/arch.yaml'
+        # utils.store_yaml(arch_path, best_arch)
 
+        # # 如果要使用cwd, 文件路径要么是绝对路径要么是cwd的相对路径
+        # utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=self.report_dir)
+
+        return np.abs(best_reward[0])    
+
+    def find_best_mapping(self, sample=1000):
+        buffer_temporal_list = self.buffer_temporal_list
+        buffer_spatial_list = self.buffer_spatial_list
+        pool = Pool(min(sample, cpu_count()))
+        if self.accl_name == 'Simba':
+            population = self.create_genome_for_parameters4(sample, buffer_temporal_list, buffer_spatial_list)
+        elif self.accl_name == 'Gemmini':
+            population = self.create_genome_for_gemmini2(sample, buffer_temporal_list, buffer_spatial_list)
+        results = pool.map(self.thread_fun_DNN, population)
+        gen_best = 0
+        for i in range(len(self.problems_list)):
+            temp = -float("Inf")
+            for j in range(len(population)):
+                if temp < results[j][1][i][0]:
+                    temp = results[j][1][i][0]
+            gen_best += temp
+        
+        # print(f"最优损失：{gen_best:.2f}")
+        return np.abs(gen_best)
+        
+
+    def run_random(self, n_samples=50, random_seed=42):
+        if self.accl_name == 'Gemmini':
+            param_candidates = {
+                'spatial0': [1],  
+                'spatial1': [8, 16, 32, 64, 128],               
+                'spatial3': [1],        
+                'temporal0': [1, 2],      
+                'temporal1': [1024, 1536, 2048, 3072, 4096],      
+                'temporal2': [4096, 8196, 16384, 32768, 65536],      
+                'temporal3': [1],
+            }
+
+            param_order = ['spatial0', 'spatial1', 'spatial3', 'temporal0', 'temporal1', 'temporal2', 'temporal3']
+
+        random.seed(random_seed)
+        np.random.seed(random_seed)
+        
+        best_loss = float('inf')
+        best_params = None
+        all_results = []  # 存储所有采样结果（可选）
+        
+        for i in range(n_samples):
+            # 从每个参数的候选列表中随机选择一个值
+            sample_params = [
+                random.choice(param_candidates[param])
+                for param in param_order
+            ]
+            if self.accl_name == 'Gemmini':
+                lst = sample_params[0:3]
+                lst.insert(2, lst[1])
+                self.buffer_spatial_list = lst
+                self.buffer_temporal_list = sample_params[3:]
+                print(self.buffer_spatial_list)
+            
+            # 计算损失
+            # current_loss = self.run_parameters6(num_population=20, num_generations=20)
+            current_loss = self.find_best_mapping(sample=200)
+            all_results.append((sample_params, current_loss))
+            
+            # 更新最优结果
+            if current_loss < best_loss:
+                best_loss = current_loss
+                best_params = sample_params
+        print(f"最优损失：{best_loss:.2f} | 最优参数：{best_params}")
+        
+        return best_params, best_loss, all_results
+
+    def run_BO(self, n_samples=50, random_seed=42, n_initial_points=10):
+        """
+        贝叶斯优化版本的参数搜索（使用skopt库）- 修复Integer空间边界问题
+        
+        Args:
+            n_samples: 总采样次数（包括初始随机采样）
+            random_seed: 随机种子
+            n_initial_points: 初始随机采样点数（贝叶斯优化需要初始样本）
+        
+        Returns:
+            best_params: 最优参数（与原param_order完全对应）
+            best_loss: 最优损失值
+            all_results: 所有采样结果列表 [(params, loss), ...]
+        """
+        # 1. 固定随机种子
+        random.seed(random_seed)
+        np.random.seed(random_seed)
+        
+        # 2. 定义参数配置（区分：需要搜索的参数 + 固定参数）
+        if self.accl_name == 'Gemmini':
+            # 固定参数（只有一个候选值，无需搜索）
+            fixed_params = {
+                'spatial0': 1,
+                'spatial3': 1,
+                'temporal3': 1,
+            }
+            
+            # 需要搜索的参数（多个候选值）
+            search_candidates = {
+                'spatial1': [8, 16, 32, 64, 128],
+                'temporal0': [1, 2],
+                'temporal1': [1024, 1536, 2048, 3072, 4096],
+                'temporal2': [4096, 8196, 16384, 32768, 65536],
+            }
+            
+            # 搜索参数的顺序（与参数空间对应）
+            search_order = ['spatial1', 'temporal0', 'temporal1', 'temporal2']
+            
+            # 原完整参数顺序（用于最终输出，与原代码一致）
+            full_param_order = ['spatial0', 'spatial1', 'spatial1', 'spatial3', 'temporal0', 'temporal1', 'temporal2', 'temporal3']
+            
+            # 定义贝叶斯优化的参数空间（只包含需要搜索的参数）
+            param_space = [
+                Integer(0, len(search_candidates['spatial1'])-1, name='spatial1'),  # 索引0-4
+                Integer(0, len(search_candidates['temporal0'])-1, name='temporal0'),# 索引0-1
+                Integer(0, len(search_candidates['temporal1'])-1, name='temporal1'),# 索引0-4
+                Integer(0, len(search_candidates['temporal2'])-1, name='temporal2'),# 索引0-4
+            ]
+        else:
+            raise ValueError(f"不支持的加速器类型: {self.accl_name}")
+        
+        # 3. 存储所有采样结果
+        all_results = []
+        
+        # 4. 定义目标函数（贝叶斯优化需要最小化的函数）
+        @use_named_args(param_space)
+        def objective(**search_indices):
+            """
+            目标函数：将搜索参数的索引映射为实际值，结合固定参数，计算损失
+            
+            Args:
+                search_indices: 搜索参数的索引值（由贝叶斯优化器生成）
+            
+            Returns:
+                current_loss: 计算得到的损失值
+            """
+            # 步骤1：解析搜索参数（索引→实际值）
+            search_params = {}
+            for param_name in search_order:
+                idx = search_indices[param_name]
+                search_params[param_name] = search_candidates[param_name][idx]
+            
+            # 步骤2：组合完整参数（固定参数 + 搜索参数，按原full_param_order顺序）
+            full_params = []
+            for param_name in full_param_order:
+                if param_name in fixed_params:
+                    full_params.append(fixed_params[param_name])
+                else:
+                    full_params.append(search_params[param_name])
+            
+            # 步骤3：与原代码逻辑一致，构造空间和时间缓冲列表
+            self.buffer_spatial_list = full_params[0:4] 
+            self.buffer_temporal_list = full_params[4:]  # temporal0-temporal3
+            
+            # 步骤4：计算损失
+            current_loss = self.find_best_mapping(sample=200)
+            
+            # 步骤5：保存结果（与原代码格式一致）
+            all_results.append((full_params.copy(), current_loss))
+            
+            # 步骤6：输出进度（每5次采样）
+            if len(all_results) % 5 == 0:
+                print(f"迭代 {len(all_results):4d} | 当前损失：{current_loss:.2f} | 当前参数：{full_params}")
+            
+            return current_loss
+        
+        # 5. 运行贝叶斯优化
+        print(f"开始贝叶斯优化（总采样数：{n_samples}，初始随机采样数：{n_initial_points}）")
+        print(f"搜索参数：{search_order}")
+        print(f"固定参数：{fixed_params}")
+        
+        result = gp_minimize(
+            func=objective,
+            dimensions=param_space,
+            n_calls=n_samples,          # 总采样次数
+            n_initial_points=n_initial_points,  # 初始随机采样点数
+            random_state=random_seed,   # 随机种子
+            verbose=False,              # 关闭默认输出（自定义进度输出）
+        )
+        
+        # 6. 解析最优结果
+        best_search_indices = result.x  # 最优搜索参数的索引
+        best_loss = result.fun          # 最优损失值
+        
+        # 映射搜索参数索引→实际值
+        best_search_params = {}
+        for i, param_name in enumerate(search_order):
+            best_search_params[param_name] = search_candidates[param_name][best_search_indices[i]]
+        
+        # 组合完整的最优参数（与原full_param_order一致）
+        best_params = []
+        for param_name in full_param_order:
+            if param_name in fixed_params:
+                best_params.append(fixed_params[param_name])
+            else:
+                best_params.append(best_search_params[param_name])
+        
+        # 7. 输出最终结果
+        print("\n" + "="*50)
+        print(f"贝叶斯优化完成！")
+        print(f"最优损失：{best_loss:.2f}")
+        print(f"最优参数（完整）：{best_params}")
+        print(f"参数说明：{dict(zip(full_param_order, best_params))}")
+        print("="*50)
+        
+        return best_params, best_loss, all_results
