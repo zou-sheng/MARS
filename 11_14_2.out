@@ -1,0 +1,1263 @@
+BO-llama2_34B.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：1286641814060.00 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：2172678385460.00 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：210856858860.00 | 当前参数：[1, 32, 1, 1, 32, 1, 2, 3072, 32768, 8096, 65536, 1]
+迭代   20 | 当前损失：238867402520.00 | 当前参数：[1, 16, 1, 1, 128, 1, 2, 8096, 8096, 1024, 1024, 1]
+迭代   25 | 当前损失：864622944910.00 | 当前参数：[1, 32, 1, 1, 32, 1, 2, 6096, 16384, 8096, 32768, 1]
+迭代   30 | 当前损失：308399249470.00 | 当前参数：[1, 64, 1, 1, 128, 1, 2, 8096, 32768, 1024, 1024, 1]
+迭代   35 | 当前损失：3143964858300.00 | 当前参数：[1, 128, 1, 1, 16, 1, 2, 1024, 1024, 1024, 16384, 1]
+迭代   40 | 当前损失：1327187625040.00 | 当前参数：[1, 128, 1, 1, 8, 1, 1, 6096, 2048, 65536, 65536, 1]
+迭代   45 | 当前损失：18535353000.00 | 当前参数：[1, 64, 1, 1, 128, 1, 1, 4096, 65536, 2048, 131072, 1]
+迭代   50 | 当前损失：143332344600.00 | 当前参数：[1, 8, 1, 1, 16, 1, 2, 8096, 131072, 65536, 131072, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：18535353000.00
+最优参数（完整）：[1, 64, 1, 1, 128, 1, 1, 4096, 65536, 2048, 131072, 1]
+参数说明：{'spatial0': 1, 'spatial1': 64, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 1, 'temporal1': 4096, 'temporal2': 65536, 'temporal3': 2048, 'temporal4': 131072, 'temporal5': 1}
+==================================================
+耗时:  162.77578783035278
+BO-llama2_13B.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：277502653000.00 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：483102446000.00 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：30710318000.00 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 1024, 131072, 65536, 262144, 1]
+迭代   20 | 当前损失：84952291000.00 | 当前参数：[1, 8, 1, 1, 8, 1, 2, 3072, 65536, 1024, 1024, 1]
+迭代   25 | 当前损失：14032856000.00 | 当前参数：[1, 8, 1, 1, 128, 1, 2, 3072, 65536, 65536, 262144, 1]
+迭代   30 | 当前损失：38320317000.00 | 当前参数：[1, 8, 1, 1, 128, 1, 1, 1024, 32768, 65536, 1024, 1]
+迭代   35 | 当前损失：10501420000.00 | 当前参数：[1, 8, 1, 1, 128, 1, 2, 3072, 65536, 65536, 4096, 1]
+迭代   40 | 当前损失：219072308000.00 | 当前参数：[1, 32, 1, 1, 128, 1, 1, 3072, 65536, 65536, 1024, 1]
+迭代   45 | 当前损失：148278336000.00 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 1024, 65536, 1024, 262144, 1]
+迭代   50 | 当前损失：204223091000.00 | 当前参数：[1, 128, 1, 1, 8, 1, 2, 8096, 1024, 65536, 262144, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：1423137000.00
+最优参数（完整）：[1, 64, 1, 1, 128, 1, 2, 1024, 131072, 65536, 262144, 1]
+参数说明：{'spatial0': 1, 'spatial1': 64, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 2, 'temporal1': 1024, 'temporal2': 131072, 'temporal3': 65536, 'temporal4': 262144, 'temporal5': 1}
+==================================================
+耗时:  124.30085015296936
+BO-llama2_7B.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：101701153900.00 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：195600975800.00 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：10665862900.00 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 2048, 131072, 1024, 8096, 1]
+迭代   20 | 当前损失：5564167000.00 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 4096, 131072, 1024, 262144, 1]
+迭代   25 | 当前损失：59091008600.00 | 当前参数：[1, 16, 1, 1, 64, 1, 1, 1024, 131072, 1024, 65536, 1]
+迭代   30 | 当前损失：6989042800.00 | 当前参数：[1, 128, 1, 1, 64, 1, 1, 1024, 131072, 1024, 262144, 1]
+迭代   35 | 当前损失：6046123500.00 | 当前参数：[1, 8, 1, 1, 128, 1, 2, 1536, 65536, 1024, 262144, 1]
+迭代   40 | 当前损失：13172075500.00 | 当前参数：[1, 8, 1, 1, 32, 1, 2, 2048, 131072, 8096, 16384, 1]
+迭代   45 | 当前损失：91282665100.00 | 当前参数：[1, 128, 1, 1, 8, 1, 1, 1024, 65536, 1024, 262144, 1]
+迭代   50 | 当前损失：24611181000.00 | 当前参数：[1, 32, 1, 1, 128, 1, 2, 8096, 2048, 16384, 262144, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：301729000.00
+最优参数（完整）：[1, 128, 1, 1, 128, 1, 2, 2048, 131072, 1024, 262144, 1]
+参数说明：{'spatial0': 1, 'spatial1': 128, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 2, 'temporal1': 2048, 'temporal2': 131072, 'temporal3': 1024, 'temporal4': 262144, 'temporal5': 1}
+==================================================
+耗时:  124.67801141738892
+BO-retinanet.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：217101.93 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：1484416.44 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：69847.91 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 1024, 4096, 65536, 262144, 1]
+迭代   20 | 当前损失：113998.99 | 当前参数：[1, 8, 1, 1, 128, 1, 1, 1024, 1024, 65536, 131072, 1]
+迭代   25 | 当前损失：63240.82 | 当前参数：[1, 8, 1, 1, 128, 1, 1, 8096, 2048, 1024, 262144, 1]
+迭代   30 | 当前损失：6105592.46 | 当前参数：[1, 16, 1, 1, 8, 1, 2, 1024, 131072, 16384, 1024, 1]
+迭代   35 | 当前损失：71591.68 | 当前参数：[1, 8, 1, 1, 128, 1, 2, 1024, 131072, 16384, 131072, 1]
+迭代   40 | 当前损失：152049.58 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 8096, 1024, 65536, 65536, 1]
+迭代   45 | 当前损失：52100.07 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 8096, 8096, 16384, 131072, 1]
+迭代   50 | 当前损失：74386.46 | 当前参数：[1, 16, 1, 1, 128, 1, 2, 8096, 131072, 32768, 16384, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：38777.50
+最优参数（完整）：[1, 128, 1, 1, 128, 1, 1, 8096, 1024, 16384, 262144, 1]
+参数说明：{'spatial0': 1, 'spatial1': 128, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 1, 'temporal1': 8096, 'temporal2': 1024, 'temporal3': 16384, 'temporal4': 262144, 'temporal5': 1}
+==================================================
+耗时:  501.3778352737427
+BO-unet.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：291192000.00 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：685720900.00 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：170692800.00 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 6096, 131072, 1024, 65536, 1]
+迭代   20 | 当前损失：78615300.00 | 当前参数：[1, 8, 1, 1, 128, 1, 1, 1024, 131072, 1024, 262144, 1]
+迭代   25 | 当前损失：94532700.00 | 当前参数：[1, 64, 1, 1, 128, 1, 2, 8096, 8096, 1024, 131072, 1]
+迭代   30 | 当前损失：103954100.00 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 8096, 1024, 1024, 131072, 1]
+迭代   35 | 当前损失：34174000.00 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 1024, 131072, 2048, 262144, 1]
+迭代   40 | 当前损失：37816600.00 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 1024, 131072, 8096, 262144, 1]
+迭代   45 | 当前损失：52589700.00 | 当前参数：[1, 8, 1, 1, 128, 1, 2, 1024, 8096, 4096, 262144, 1]
+迭代   50 | 当前损失：92324800.00 | 当前参数：[1, 128, 1, 1, 8, 1, 1, 1024, 131072, 1024, 262144, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：29547000.00
+最优参数（完整）：[1, 128, 1, 1, 128, 1, 2, 1024, 65536, 4096, 262144, 1]
+参数说明：{'spatial0': 1, 'spatial1': 128, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 2, 'temporal1': 1024, 'temporal2': 65536, 'temporal3': 4096, 'temporal4': 262144, 'temporal5': 1}
+==================================================
+耗时:  576.3268747329712
+BO-bert.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：17363.42 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：26299.51 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：10920.56 | 当前参数：[1, 16, 1, 1, 32, 1, 1, 2048, 16384, 2048, 131072, 1]
+迭代   20 | 当前损失：21647.44 | 当前参数：[1, 8, 1, 1, 8, 1, 2, 1024, 32768, 1024, 131072, 1]
+迭代   25 | 当前损失：12353.40 | 当前参数：[1, 128, 1, 1, 128, 1, 2, 8096, 1024, 65536, 131072, 1]
+迭代   30 | 当前损失：17262.50 | 当前参数：[1, 8, 1, 1, 128, 1, 2, 8096, 131072, 65536, 65536, 1]
+迭代   35 | 当前损失：10002.43 | 当前参数：[1, 128, 1, 1, 8, 1, 2, 1024, 131072, 1024, 262144, 1]
+迭代   40 | 当前损失：14897.42 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 8096, 2048, 1024, 262144, 1]
+迭代   45 | 当前损失：17359.46 | 当前参数：[1, 8, 1, 1, 128, 1, 2, 1024, 131072, 65536, 16384, 1]
+迭代   50 | 当前损失：13214.43 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 8096, 131072, 1024, 131072, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：8620.41
+最优参数（完整）：[1, 128, 1, 1, 128, 1, 1, 2048, 131072, 8096, 131072, 1]
+参数说明：{'spatial0': 1, 'spatial1': 128, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 1, 'temporal1': 2048, 'temporal2': 131072, 'temporal3': 8096, 'temporal4': 131072, 'temporal5': 1}
+==================================================
+耗时:  153.55182337760925
+BO-vgg16.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：6210010.00 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：9343680.00 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：2865860.00 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 1024, 131072, 4096, 262144, 1]
+迭代   20 | 当前损失：23676780.00 | 当前参数：[1, 128, 1, 1, 16, 1, 1, 1536, 131072, 1024, 4096, 1]
+迭代   25 | 当前损失：3115050.00 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 1024, 131072, 8096, 131072, 1]
+迭代   30 | 当前损失：2644220.00 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 1536, 16384, 65536, 262144, 1]
+迭代   35 | 当前损失：3189640.00 | 当前参数：[1, 32, 1, 1, 128, 1, 2, 1024, 1024, 65536, 131072, 1]
+迭代   40 | 当前损失：2635440.00 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 1024, 131072, 65536, 262144, 1]
+迭代   45 | 当前损失：2833090.00 | 当前参数：[1, 32, 1, 1, 128, 1, 1, 1024, 131072, 4096, 131072, 1]
+迭代   50 | 当前损失：63517430.00 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 6096, 8096, 2048, 2048, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：2635440.00
+最优参数（完整）：[1, 128, 1, 1, 128, 1, 1, 1024, 131072, 65536, 262144, 1]
+参数说明：{'spatial0': 1, 'spatial1': 128, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 1, 'temporal1': 1024, 'temporal2': 131072, 'temporal3': 65536, 'temporal4': 262144, 'temporal5': 1}
+==================================================
+耗时:  378.05989623069763
+BO-alexnet.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：376984.00 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：382297.80 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：358061.00 | 当前参数：[1, 128, 1, 1, 64, 1, 2, 8096, 1024, 65536, 262144, 1]
+迭代   20 | 当前损失：363139.00 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 4096, 1024, 1024, 131072, 1]
+迭代   25 | 当前损失：368520.00 | 当前参数：[1, 128, 1, 1, 8, 1, 1, 1024, 131072, 65536, 32768, 1]
+迭代   30 | 当前损失：400790.00 | 当前参数：[1, 8, 1, 1, 8, 1, 1, 6096, 4096, 1024, 32768, 1]
+迭代   35 | 当前损失：358285.00 | 当前参数：[1, 64, 1, 1, 64, 1, 2, 8096, 1024, 65536, 131072, 1]
+迭代   40 | 当前损失：364398.00 | 当前参数：[1, 8, 1, 1, 128, 1, 1, 8096, 1024, 65536, 131072, 1]
+迭代   45 | 当前损失：359056.00 | 当前参数：[1, 64, 1, 1, 128, 1, 2, 8096, 1024, 65536, 262144, 1]
+迭代   50 | 当前损失：358652.00 | 当前参数：[1, 128, 1, 1, 64, 1, 2, 8096, 1024, 8096, 262144, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：357496.80
+最优参数（完整）：[1, 64, 1, 1, 32, 1, 2, 8096, 1024, 65536, 262144, 1]
+参数说明：{'spatial0': 1, 'spatial1': 64, 'spatial2': 1, 'spatial3': 1, 'spatial4': 32, 'spatial5': 1, 'temporal0': 2, 'temporal1': 8096, 'temporal2': 1024, 'temporal3': 65536, 'temporal4': 262144, 'temporal5': 1}
+==================================================
+耗时:  195.01500344276428
+BO-resnet50.
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+开始贝叶斯优化（总采样数：50，初始随机采样数：10）
+搜索参数：['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+固定参数：{'spatial0': 1, 'spatial2': 1, 'spatial3': 1, 'spatial5': 1, 'temporal5': 1}
+迭代    5 | 当前损失：50304.10 | 当前参数：[1, 32, 1, 1, 64, 1, 2, 3072, 1024, 65536, 32768, 1]
+迭代   10 | 当前损失：91857.90 | 当前参数：[1, 128, 1, 1, 32, 1, 1, 2048, 2048, 1024, 8096, 1]
+迭代   15 | 当前损失：300468.20 | 当前参数：[1, 128, 1, 1, 8, 1, 1, 2048, 4096, 1024, 4096, 1]
+迭代   20 | 当前损失：31218.10 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 1024, 131072, 1024, 131072, 1]
+迭代   25 | 当前损失：37570.30 | 当前参数：[1, 64, 1, 1, 128, 1, 1, 1024, 1024, 65536, 262144, 1]
+迭代   30 | 当前损失：54807.90 | 当前参数：[1, 128, 1, 1, 32, 1, 2, 3072, 1024, 1024, 32768, 1]
+迭代   35 | 当前损失：31209.80 | 当前参数：[1, 16, 1, 1, 128, 1, 1, 1024, 1024, 1024, 262144, 1]
+迭代   40 | 当前损失：74528.00 | 当前参数：[1, 128, 1, 1, 8, 1, 1, 8096, 2048, 65536, 32768, 1]
+迭代   45 | 当前损失：30417.20 | 当前参数：[1, 128, 1, 1, 128, 1, 1, 3072, 1024, 1024, 262144, 1]
+迭代   50 | 当前损失：31459.30 | 当前参数：[1, 64, 1, 1, 128, 1, 2, 1024, 32768, 1024, 131072, 1]
+
+==================================================
+贝叶斯优化完成！
+最优损失：27700.90
+最优参数（完整）：[1, 128, 1, 1, 128, 1, 1, 1024, 2048, 1024, 131072, 1]
+参数说明：{'spatial0': 1, 'spatial1': 128, 'spatial2': 1, 'spatial3': 1, 'spatial4': 128, 'spatial5': 1, 'temporal0': 1, 'temporal1': 1024, 'temporal2': 2048, 'temporal3': 1024, 'temporal4': 131072, 'temporal5': 1}
+==================================================
+耗时:  1133.8178536891937
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+[-294.0, -0.422, -0.502, -284.0, -6020.0, -8280.0]
+[[-104000.0], [-1.19], [-251.0], [-845.0], [-12700.0], [-48200.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 1:  1st stage Reward: 0, Best reward: [165997.19]
+Generation 0 耗时: 1.081秒
+[-294.0, -0.339, -0.488, -282.0, -3700.0, -8280.0]
+[[-303.0], [-1.06], [-0.612], [-286.0], [-5030.0], [-8280.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 2:  1st stage Reward: 0, Best reward: [13900.672]
+Generation 1 耗时: 1.031秒
+[-286.0, -0.315, -0.488, -282.0, -3700.0, -5680.0]
+[[-303.0], [-0.321], [-0.612], [-286.0], [-4270.0], [-8280.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 3:  1st stage Reward: 0, Best reward: [13139.933]
+Generation 2 耗时: 1.009秒
+[-283.0, -0.217, -0.488, -223.0, -3700.0, -5120.0]
+[[-285.0], [-0.317], [-0.526], [-285.0], [-3890.0], [-5210.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 4:  1st stage Reward: 0, Best reward: [9670.843]
+Generation 3 耗时: 1.029秒
+[-282.0, -0.179, -0.361, -220.0, -3130.0, -5120.0]
+[[-285.0], [-50.3], [-0.581], [-232.0], [-3130.0], [-5250.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 5:  1st stage Reward: 0, Best reward: [8947.881]
+Generation 4 耗时: 0.991秒
+[-282.0, -0.171, -0.269, -220.0, -3100.0, -5120.0]
+[[-285.0], [-0.177], [-0.368], [-232.0], [-3130.0], [-5250.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 6:  1st stage Reward: 0, Best reward: [8897.545]
+Generation 5 耗时: 1.024秒
+[-282.0, -0.171, -0.258, -220.0, -3100.0, -5120.0]
+[[-285.0], [-0.177], [-0.27], [-232.0], [-3130.0], [-5250.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 7:  1st stage Reward: 0, Best reward: [8897.447]
+Generation 6 耗时: 1.037秒
+[-237.0, -0.171, -0.258, -220.0, -3100.0, -5120.0]
+[[-285.0], [-0.177], [-0.27], [-232.0], [-3130.0], [-5250.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 8:  1st stage Reward: 0, Best reward: [8897.447]
+Generation 7 耗时: 0.991秒
+[-234.0, -0.17, -0.258, -220.0, -3100.0, -3220.0]
+[[-234.0], [-0.17], [-0.507], [-231.0], [-3120.0], [-5190.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 9:  1st stage Reward: 0, Best reward: [8775.677]
+Generation 8 耗时: 0.996秒
+[-229.0, -0.169, -0.258, -220.0, -3100.0, -3170.0]
+[[-241.0], [-0.216], [-0.29], [-231.0], [-3130.0], [-3260.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 10:  1st stage Reward: 0, Best reward: [6862.506]
+Generation 9 耗时: 0.988秒
+[-229.0, -0.169, -0.258, -220.0, -3100.0, -3170.0]
+[[-241.0], [-0.176], [-0.268], [-231.0], [-3120.0], [-3260.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 11:  1st stage Reward: 0, Best reward: [6852.444]
+Generation 10 耗时: 0.989秒
+[-229.0, -0.168, -0.253, -220.0, -3100.0, -3170.0]
+[[-241.0], [-0.176], [-0.268], [-231.0], [-3120.0], [-3260.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 12:  1st stage Reward: 0, Best reward: [6852.444]
+Generation 11 耗时: 1.113秒
+[-229.0, -0.168, -0.253, -220.0, -3090.0, -3170.0]
+[[-241.0], [-0.176], [-0.268], [-231.0], [-3120.0], [-3260.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 13:  1st stage Reward: 0, Best reward: [6852.444]
+Generation 12 耗时: 1.076秒
+[-229.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-1.08], [-0.269], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 14:  1st stage Reward: 0, Best reward: [6700.349]
+Generation 13 耗时: 1.138秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-1.08], [-0.269], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 15:  1st stage Reward: 0, Best reward: [6700.349]
+Generation 14 耗时: 1.086秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 16:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 15 耗时: 1.047秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 17:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 16 耗时: 0.990秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 18:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 17 耗时: 0.997秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 19:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 18 耗时: 0.991秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 20:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 19 耗时: 1.033秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 21:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 20 耗时: 1.024秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 22:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 21 耗时: 1.013秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-236.0], [-0.176], [-0.267], [-223.0], [-3010.0], [-3230.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 23:  1st stage Reward: 0, Best reward: [6699.443]
+Generation 22 耗时: 1.016秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-20.9], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 24:  1st stage Reward: 0, Best reward: [6642.069]
+Generation 23 耗时: 1.052秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-20.9], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 25:  1st stage Reward: 0, Best reward: [6642.069]
+Generation 24 耗时: 0.999秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-0.34], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 26:  1st stage Reward: 0, Best reward: [6621.509]
+Generation 25 耗时: 1.056秒
+[-225.0, -0.168, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-0.34], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 27:  1st stage Reward: 0, Best reward: [6621.509]
+Generation 26 耗时: 1.008秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-0.34], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 28:  1st stage Reward: 0, Best reward: [6621.509]
+Generation 27 耗时: 0.990秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-0.34], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 29:  1st stage Reward: 0, Best reward: [6621.509]
+Generation 28 耗时: 1.005秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-0.34], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 30:  1st stage Reward: 0, Best reward: [6621.509]
+Generation 29 耗时: 1.031秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3160.0]
+[[-229.0], [-0.169], [-0.34], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 31:  1st stage Reward: 0, Best reward: [6621.509]
+Generation 30 耗时: 1.034秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3150.0]
+[[-229.0], [-0.169], [-0.34], [-222.0], [-3000.0], [-3170.0]]
+[False, False, False, False, False, False]
+[Stage 1]Gen 32:  1st stage Reward: 0, Best reward: [6621.509]
+Generation 31 耗时: 1.018秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3130.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 33:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 32 耗时: 0.987秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3130.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 34:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 33 耗时: 1.096秒
+[-225.0, -0.167, -0.253, -220.0, -2960.0, -3130.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 35:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 34 耗时: 1.023秒
+[-225.0, -0.167, -0.253, -219.0, -2950.0, -3120.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 36:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 35 耗时: 1.025秒
+[-225.0, -0.167, -0.253, -219.0, -2950.0, -3120.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 37:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 36 耗时: 1.012秒
+[-225.0, -0.167, -0.253, -219.0, -2950.0, -3120.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 38:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 37 耗时: 0.971秒
+[-225.0, -0.167, -0.253, -219.0, -2950.0, -3120.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 39:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 38 耗时: 0.999秒
+[-225.0, -0.167, -0.253, -219.0, -2950.0, -3120.0]
+[[-225.0], [-32.5], [-0.334], [-221.0], [-2990.0], [-3130.0]]
+[False, False, False, False, True, True]
+[Stage 1]Gen 40:  1st stage Reward: 0, Best reward: [6598.834]
+Generation 39 耗时: 0.993秒
+耗时:  41.34552788734436
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+[-1140.0, -37300.0, -5260.0, -31100.0, -639.0, -500.0, -1340.0, -1480.0, -12200.0, -24.0, -440.0, -498.0, -222.0, -1730.0, -10.1, -23500.0, -1.56, -151.0, -129.0, -2130.0, -4.18, -84.7, -1.12, -91.0, -95.2, -713.0, -2.0]
+[[-7610.0], [-1450000.0], [-41700.0], [-612000.0], [-1440.0], [-17800.0], [-4940.0], [-5630.0], [-133000.0], [-984.0], [-455.0], [-23900.0], [-456.0], [-130000.0], [-286.0], [-89500.0], [-1.75], [-3190.0], [-20700.0], [-23700.0], [-4.75], [-351.0], [-1.3], [-136.0], [-1310.0], [-1510.0], [-18.2]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 1:  1st stage Reward: 0, Best reward: [2570624.]
+Generation 0 耗时: 4.875秒
+[-483.0, -14900.0, -4660.0, -23700.0, -232.0, -218.0, -1340.0, -1420.0, -10000.0, -19.8, -236.0, -355.0, -222.0, -1550.0, -5.42, -13000.0, -1.5, -115.0, -113.0, -952.0, -4.0, -84.7, -1.11, -88.6, -87.5, -669.0, -1.98]
+[[-1370.0], [-45400.0], [-5650.0], [-32600.0], [-25000.0], [-603.0], [-1970.0], [-2740.0], [-12600.0], [-31.4], [-422.0], [-453.0], [-264.0], [-1840.0], [-10.5], [-22100.0], [-1.66], [-213.0], [-113.0], [-2400.0], [-5.19], [-93.5], [-1.2], [-94.2], [-339.0], [-705.0], [-2.19]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 2:  1st stage Reward: 0, Best reward: [157021.84]
+Generation 1 耗时: 4.765秒
+[-406.0, -3860.0, -4420.0, -18800.0, -158.0, -216.0, -1150.0, -678.0, -3770.0, -19.8, -203.0, -324.0, -187.0, -1510.0, -4.73, -8370.0, -1.4, -106.0, -103.0, -877.0, -2.77, -84.7, -1.03, -81.0, -82.3, -629.0, -1.98]
+[[-1290.0], [-16800.0], [-4870.0], [-27100.0], [-227.0], [-216.0], [-2440.0], [-891.0], [-11200.0], [-23.2], [-203.0], [-552.0], [-5470.0], [-1660.0], [-6.81], [-14400.0], [-1.53], [-1670.0], [-107.0], [-1680.0], [-4.27], [-311.0], [-1.05], [-82.0], [-82.3], [-758.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 3:  1st stage Reward: 0, Best reward: [92052.9]
+Generation 2 耗时: 5.119秒
+[-398.0, -3750.0, -4420.0, -12600.0, -136.0, -214.0, -946.0, -464.0, -3770.0, -19.8, -172.0, -308.0, -181.0, -1350.0, -4.62, -7420.0, -1.38, -106.0, -103.0, -780.0, -2.55, -83.2, -1.03, -80.3, -80.7, -624.0, -1.98]
+[[-515.0], [-8280.0], [-22700.0], [-18700.0], [-1020.0], [-216.0], [-1020.0], [-609.0], [-5070.0], [-596.0], [-371.0], [-321.0], [-341.0], [-1660.0], [-94.9], [-7910.0], [-2.2], [-110.0], [-107.0], [-1090.0], [-3.14], [-84.2], [-1.09], [-82.0], [-93.8], [-630.0], [-7.32]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 4:  1st stage Reward: 0, Best reward: [71634.65]
+Generation 3 耗时: 4.949秒
+[-398.0, -3550.0, -3410.0, -12200.0, -100.0, -156.0, -946.0, -464.0, -3620.0, -19.2, -172.0, -308.0, -181.0, -1350.0, -3.96, -6610.0, -1.38, -102.0, -99.7, -780.0, -2.55, -83.2, -1.03, -80.3, -80.7, -624.0, -1.98]
+[[-11900.0], [-3550.0], [-4310.0], [-12600.0], [-5670.0], [-176.0], [-1140.0], [-498.0], [-3790.0], [-23.9], [-195.0], [-342.0], [-195.0], [-1580.0], [-4.84], [-6710.0], [-1.41], [-102.0], [-1400.0], [-798.0], [-3.99], [-85.9], [-1.05], [-93.6], [-94.0], [-639.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 5:  1st stage Reward: 0, Best reward: [55905.81]
+Generation 4 耗时: 4.902秒
+[-380.0, -3020.0, -3410.0, -11100.0, -94.6, -146.0, -538.0, -463.0, -3620.0, -18.7, -140.0, -193.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -99.3, -763.0, -2.54, -80.8, -1.01, -79.3, -79.1, -621.0, -1.93]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 6:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 5 耗时: 4.893秒
+[-380.0, -2280.0, -2390.0, -11100.0, -94.6, -146.0, -536.0, -463.0, -3620.0, -18.3, -136.0, -159.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.93]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 7:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 6 耗时: 5.081秒
+[-380.0, -2280.0, -2380.0, -11100.0, -94.6, -146.0, -536.0, -463.0, -3620.0, -15.6, -136.0, -159.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.88]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 8:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 7 耗时: 5.242秒
+[-380.0, -2280.0, -2180.0, -11100.0, -94.6, -146.0, -536.0, -463.0, -3620.0, -15.5, -126.0, -159.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.88]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 9:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 8 耗时: 4.985秒
+[-380.0, -2280.0, -2160.0, -11100.0, -89.0, -146.0, -536.0, -463.0, -3620.0, -15.5, -122.0, -158.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.88]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 10:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 9 耗时: 4.918秒
+[-380.0, -2280.0, -2160.0, -11100.0, -85.9, -146.0, -491.0, -463.0, -3620.0, -15.4, -121.0, -153.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.87]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 11:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 10 耗时: 5.061秒
+[-380.0, -2280.0, -1980.0, -11100.0, -85.9, -146.0, -489.0, -451.0, -3500.0, -14.7, -120.0, -148.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.87]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 12:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 11 耗时: 5.058秒
+[-380.0, -2280.0, -1980.0, -11100.0, -84.2, -146.0, -488.0, -434.0, -2910.0, -14.4, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.85]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 13:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 12 耗时: 5.086秒
+[-334.0, -2280.0, -1960.0, -11100.0, -84.2, -146.0, -441.0, -434.0, -2910.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.85]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 14:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 13 耗时: 5.027秒
+[-303.0, -2280.0, -1960.0, -11100.0, -84.2, -146.0, -411.0, -434.0, -2910.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.3, -79.1, -621.0, -1.85]
+[[-1900.0], [-3550.0], [-4310.0], [-12600.0], [-514.0], [-1310.0], [-1140.0], [-497.0], [-3790.0], [-23.9], [-181.0], [-427.0], [-790.0], [-1390.0], [-66.5], [-6710.0], [-1.41], [-101.0], [-325.0], [-798.0], [-2.95], [-169.0], [-1.11], [-82.1], [-82.5], [-638.0], [-2.12]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 15:  1st stage Reward: 0, Best reward: [41402.59]
+Generation 14 耗时: 4.973秒
+[-303.0, -2280.0, -1960.0, -11100.0, -84.2, -146.0, -411.0, -434.0, -2910.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.2, -79.1, -621.0, -1.85]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 16:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 15 耗时: 4.856秒
+[-302.0, -2280.0, -1940.0, -11100.0, -84.2, -146.0, -411.0, -434.0, -2910.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.37, -80.8, -1.01, -79.0, -79.1, -621.0, -1.82]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 17:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 16 耗时: 4.999秒
+[-302.0, -2280.0, -1940.0, -11100.0, -78.0, -146.0, -411.0, -434.0, -2910.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.8, -1.01, -78.8, -79.1, -621.0, -1.82]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 18:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 17 耗时: 4.944秒
+[-302.0, -2200.0, -1940.0, -11100.0, -78.0, -146.0, -411.0, -434.0, -2890.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.8, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 19:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 18 耗时: 4.910秒
+[-302.0, -1770.0, -1910.0, -11100.0, -78.0, -146.0, -411.0, -434.0, -2890.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.8, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 20:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 19 耗时: 4.979秒
+[-302.0, -1770.0, -1910.0, -11100.0, -78.0, -146.0, -411.0, -434.0, -2890.0, -11.3, -119.0, -147.0, -171.0, -1300.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.8, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 21:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 20 耗时: 5.213秒
+[-302.0, -1770.0, -1910.0, -11100.0, -78.0, -146.0, -411.0, -434.0, -2890.0, -11.3, -119.0, -147.0, -171.0, -1250.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.8, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 22:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 21 耗时: 5.029秒
+[-302.0, -1750.0, -1910.0, -11100.0, -78.0, -146.0, -409.0, -434.0, -2890.0, -11.2, -119.0, -147.0, -171.0, -1240.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 23:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 22 耗时: 4.968秒
+[-302.0, -1750.0, -1910.0, -11100.0, -78.0, -146.0, -409.0, -434.0, -2890.0, -11.2, -119.0, -147.0, -171.0, -1240.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 24:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 23 耗时: 4.885秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -409.0, -434.0, -2890.0, -11.2, -119.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 25:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 24 耗时: 4.933秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -409.0, -434.0, -2890.0, -11.2, -119.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-2610.0], [-2000.0], [-11700.0], [-164.0], [-151.0], [-1450.0], [-883.0], [-2920.0], [-43.7], [-132.0], [-663.0], [-179.0], [-1420.0], [-4.15], [-6840.0], [-1.37], [-98.7], [-110.0], [-776.0], [-2.57], [-83.1], [-1.05], [-80.2], [-84.2], [-774.0], [-6.74]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 26:  1st stage Reward: 0, Best reward: [33488.78]
+Generation 25 耗时: 4.847秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -409.0, -434.0, -2890.0, -11.2, -118.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-1840.0], [-2010.0], [-11700.0], [-89.2], [-151.0], [-424.0], [-1370.0], [-2920.0], [-11.4], [-174.0], [-151.0], [-472.0], [-1270.0], [-4.21], [-6530.0], [-1.37], [-205.0], [-112.0], [-776.0], [-2.6], [-81.1], [-1.54], [-80.2], [-80.5], [-632.0], [-2.19]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 27:  1st stage Reward: 0, Best reward: [31402.31]
+Generation 26 耗时: 4.897秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -405.0, -434.0, -2890.0, -11.2, -118.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-1840.0], [-2010.0], [-11700.0], [-89.2], [-151.0], [-424.0], [-1370.0], [-2920.0], [-11.4], [-174.0], [-151.0], [-472.0], [-1270.0], [-4.21], [-6530.0], [-1.37], [-205.0], [-112.0], [-776.0], [-2.6], [-81.1], [-1.54], [-80.2], [-80.5], [-632.0], [-2.19]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 28:  1st stage Reward: 0, Best reward: [31402.31]
+Generation 27 耗时: 4.785秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -405.0, -434.0, -2890.0, -11.2, -118.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-1840.0], [-2010.0], [-11700.0], [-89.2], [-151.0], [-424.0], [-1370.0], [-2920.0], [-11.4], [-174.0], [-151.0], [-472.0], [-1270.0], [-4.21], [-6530.0], [-1.37], [-205.0], [-112.0], [-776.0], [-2.6], [-81.1], [-1.54], [-80.2], [-80.5], [-632.0], [-2.19]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 29:  1st stage Reward: 0, Best reward: [31402.31]
+Generation 28 耗时: 5.000秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -405.0, -434.0, -2890.0, -11.2, -118.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-1840.0], [-2010.0], [-11700.0], [-89.2], [-151.0], [-424.0], [-1370.0], [-2920.0], [-11.4], [-174.0], [-151.0], [-472.0], [-1270.0], [-4.21], [-6530.0], [-1.37], [-205.0], [-112.0], [-776.0], [-2.6], [-81.1], [-1.54], [-80.2], [-80.5], [-632.0], [-2.19]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 30:  1st stage Reward: 0, Best reward: [31402.31]
+Generation 29 耗时: 4.951秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -404.0, -434.0, -2890.0, -11.2, -118.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-1840.0], [-2010.0], [-11700.0], [-89.2], [-151.0], [-424.0], [-1370.0], [-2920.0], [-11.4], [-174.0], [-151.0], [-472.0], [-1270.0], [-4.21], [-6530.0], [-1.37], [-205.0], [-112.0], [-776.0], [-2.6], [-81.1], [-1.54], [-80.2], [-80.5], [-632.0], [-2.19]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 31:  1st stage Reward: 0, Best reward: [31402.31]
+Generation 30 耗时: 4.860秒
+[-300.0, -1750.0, -1890.0, -11100.0, -78.0, -146.0, -404.0, -434.0, -2890.0, -11.2, -118.0, -147.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-311.0], [-1840.0], [-2010.0], [-11700.0], [-89.2], [-151.0], [-424.0], [-1370.0], [-2920.0], [-11.4], [-174.0], [-151.0], [-472.0], [-1270.0], [-4.21], [-6530.0], [-1.37], [-205.0], [-112.0], [-776.0], [-2.6], [-81.1], [-1.54], [-80.2], [-80.5], [-632.0], [-2.19]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 32:  1st stage Reward: 0, Best reward: [31402.31]
+Generation 31 耗时: 4.804秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -404.0, -429.0, -2890.0, -11.2, -117.0, -143.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.79]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 33:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 32 耗时: 4.906秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -404.0, -428.0, -2890.0, -11.2, -117.0, -140.0, -169.0, -1230.0, -3.96, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -621.0, -1.78]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 34:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 33 耗时: 5.227秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -404.0, -428.0, -2890.0, -11.2, -117.0, -138.0, -163.0, -1230.0, -3.92, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -619.0, -1.75]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 35:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 34 耗时: 4.977秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -404.0, -426.0, -2890.0, -11.2, -117.0, -136.0, -163.0, -1230.0, -3.92, -6420.0, -1.35, -97.1, -98.0, -763.0, -2.36, -80.2, -1.01, -78.8, -79.1, -619.0, -1.75]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 36:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 35 耗时: 4.991秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -404.0, -426.0, -2890.0, -11.2, -117.0, -135.0, -128.0, -1200.0, -3.89, -6420.0, -1.35, -97.1, -98.0, -761.0, -2.36, -80.2, -1.01, -78.8, -79.1, -619.0, -1.72]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 37:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 36 耗时: 4.935秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -404.0, -426.0, -2890.0, -11.2, -117.0, -135.0, -128.0, -1200.0, -3.89, -6420.0, -1.35, -97.1, -98.0, -761.0, -2.36, -80.2, -1.01, -78.8, -79.1, -619.0, -1.71]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 38:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 37 耗时: 4.861秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -404.0, -426.0, -2890.0, -11.2, -117.0, -135.0, -127.0, -1200.0, -3.89, -6420.0, -1.35, -97.1, -98.0, -760.0, -2.36, -80.2, -1.01, -78.8, -79.1, -619.0, -1.71]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 39:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 38 耗时: 4.959秒
+[-300.0, -1750.0, -1890.0, -11100.0, -77.3, -146.0, -401.0, -426.0, -2890.0, -11.2, -117.0, -135.0, -125.0, -1200.0, -3.89, -6420.0, -1.35, -97.1, -98.0, -760.0, -2.36, -80.2, -1.01, -78.8, -79.1, -619.0, -1.71]
+[[-539.0], [-1810.0], [-1950.0], [-11400.0], [-77.3], [-150.0], [-414.0], [-445.0], [-2890.0], [-34.4], [-117.0], [-150.0], [-171.0], [-1230.0], [-5.09], [-6470.0], [-1.61], [-98.0], [-99.0], [-771.0], [-2.37], [-82.0], [-1.02], [-79.5], [-79.9], [-633.0], [-7.03]]
+[False, True, True, True, False, False, False, False, True, False, False, False, False, True, False, True, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 40:  1st stage Reward: 0, Best reward: [29707.22]
+Generation 39 耗时: 4.834秒
+耗时:  199.66460132598877
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+[-641.0, -80.0, -1200.0, -530.0, -907.0, -938.0, -606.0, -1320.0, -554.0, -506.0, -448.0, -2360.0, -3070.0, -536.0, -2990.0, -972.0, -565.0, -819.0, -948.0, -699.0, -529.0, -731.0, -1120.0, -261.0, -1150.0, -1780.0, -1110.0, -10800.0, -424.0, -1580.0, -349.0, -216.0, -2070.0, -40400.0, -499.0, -931.0, -235.0, -837.0, -2450.0, -332.0, -341.0, -1860.0, -283.0, -1520.0, -8260.0, -1410.0, -5290.0, -1440.0, -6120.0, -5830.0, -2350.0, -4750.0, -1140.0, -999.0]
+[[-114000.0], [-162.0], [-899000.0], [-1390.0], [-4740.0], [-1030.0], [-3120.0], [-49000.0], [-6030.0], [-6690.0], [-1400.0], [-777000.0], [-7080.0], [-3520.0], [-39000.0], [-7710.0], [-917.0], [-5890.0], [-69400.0], [-8830.0], [-5570.0], [-731.0], [-31600.0], [-81000.0], [-1690.0], [-3140.0], [-133000.0], [-14700.0], [-1120000.0], [-2220.0], [-9300.0], [-4530.0], [-48600.0], [-1500000.0], [-151000.0], [-4370.0], [-291.0], [-1410000.0], [-86800.0], [-470.0], [-449.0], [-46900.0], [-119000.0], [-250000.0], [-36600.0], [-16000.0], [-197000.0], [-1440.0], [-124000.0], [-24600.0], [-169000.0], [-152000.0], [-1990.0], [-1450.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 1:  1st stage Reward: 0, Best reward: [7755350.]
+Generation 0 耗时: 9.519秒
+[-641.0, -78.8, -525.0, -530.0, -868.0, -938.0, -606.0, -831.0, -554.0, -483.0, -439.0, -2240.0, -3070.0, -519.0, -2720.0, -718.0, -463.0, -511.0, -748.0, -579.0, -292.0, -523.0, -731.0, -222.0, -928.0, -1700.0, -294.0, -10200.0, -410.0, -1240.0, -301.0, -216.0, -1350.0, -2980.0, -453.0, -835.0, -235.0, -449.0, -1390.0, -329.0, -341.0, -1750.0, -283.0, -1340.0, -8260.0, -1410.0, -4730.0, -1000.0, -5980.0, -1800.0, -2350.0, -4750.0, -1100.0, -969.0]
+[[-740.0], [-185.0], [-1200.0], [-609.0], [-908.0], [-3590.0], [-712.0], [-1320.0], [-901.0], [-510.0], [-448.0], [-2360.0], [-3100.0], [-618.0], [-3200.0], [-1030.0], [-988.0], [-3480.0], [-1120.0], [-713.0], [-545.0], [-726.0], [-1120.0], [-261.0], [-1150.0], [-3320.0], [-1170.0], [-11600.0], [-424.0], [-2210.0], [-356.0], [-15100.0], [-2110.0], [-46800.0], [-1140.0], [-835.0], [-312.0], [-1000.0], [-2410.0], [-394.0], [-449.0], [-53300.0], [-346.0], [-1580.0], [-18100.0], [-2110.0], [-7240.0], [-1440.0], [-38100.0], [-31600.0], [-2670.0], [-5250.0], [-3950.0], [-1180.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 2:  1st stage Reward: 0, Best reward: [288030.]
+Generation 1 耗时: 9.678秒
+[-616.0, -46.3, -256.0, -530.0, -511.0, -698.0, -240.0, -469.0, -501.0, -239.0, -344.0, -1220.0, -1050.0, -265.0, -900.0, -422.0, -442.0, -331.0, -338.0, -263.0, -239.0, -433.0, -323.0, -222.0, -484.0, -943.0, -143.0, -7280.0, -207.0, -842.0, -156.0, -206.0, -862.0, -162.0, -440.0, -699.0, -154.0, -248.0, -746.0, -181.0, -228.0, -1740.0, -283.0, -745.0, -7140.0, -720.0, -4730.0, -696.0, -3470.0, -1600.0, -785.0, -3830.0, -635.0, -935.0]
+[[-740.0], [-185.0], [-1200.0], [-609.0], [-908.0], [-3590.0], [-712.0], [-1320.0], [-901.0], [-510.0], [-448.0], [-2360.0], [-3100.0], [-618.0], [-3200.0], [-1030.0], [-988.0], [-3480.0], [-1120.0], [-713.0], [-545.0], [-726.0], [-1120.0], [-261.0], [-1150.0], [-3320.0], [-1170.0], [-11600.0], [-424.0], [-2210.0], [-356.0], [-15100.0], [-2110.0], [-46800.0], [-1140.0], [-835.0], [-312.0], [-1000.0], [-2410.0], [-394.0], [-449.0], [-53300.0], [-346.0], [-1580.0], [-18100.0], [-2110.0], [-7240.0], [-1440.0], [-38100.0], [-31600.0], [-2670.0], [-5250.0], [-3950.0], [-1180.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 3:  1st stage Reward: 0, Best reward: [288030.]
+Generation 2 耗时: 9.835秒
+[-597.0, -42.3, -246.0, -530.0, -497.0, -593.0, -230.0, -385.0, -496.0, -231.0, -344.0, -1100.0, -938.0, -207.0, -791.0, -403.0, -393.0, -331.0, -185.0, -263.0, -239.0, -260.0, -285.0, -222.0, -473.0, -943.0, -137.0, -7280.0, -199.0, -842.0, -150.0, -179.0, -658.0, -136.0, -400.0, -699.0, -139.0, -224.0, -628.0, -157.0, -221.0, -1740.0, -268.0, -668.0, -6370.0, -625.0, -4730.0, -696.0, -3380.0, -1260.0, -683.0, -3830.0, -616.0, -934.0]
+[[-652.0], [-101.0], [-293.0], [-574.0], [-566.0], [-673.0], [-255.0], [-523.0], [-958.0], [-277.0], [-364.0], [-1290.0], [-1050.0], [-302.0], [-832.0], [-725.0], [-483.0], [-2510.0], [-398.0], [-487.0], [-260.0], [-674.0], [-319.0], [-5160.0], [-544.0], [-948.0], [-1400.0], [-8100.0], [-237.0], [-925.0], [-176.0], [-187.0], [-806.0], [-163.0], [-850.0], [-763.0], [-163.0], [-761.0], [-4350.0], [-185.0], [-521.0], [-1910.0], [-315.0], [-1790.0], [-7450.0], [-774.0], [-5140.0], [-751.0], [-3820.0], [-1710.0], [-2070.0], [-4130.0], [-704.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 4:  1st stage Reward: 0, Best reward: [72309.]
+Generation 3 耗时: 10.119秒
+[-578.0, -42.3, -246.0, -530.0, -475.0, -592.0, -230.0, -385.0, -496.0, -231.0, -344.0, -1100.0, -938.0, -207.0, -791.0, -305.0, -367.0, -331.0, -185.0, -263.0, -223.0, -241.0, -285.0, -222.0, -473.0, -943.0, -137.0, -7280.0, -199.0, -842.0, -150.0, -179.0, -658.0, -136.0, -400.0, -683.0, -139.0, -224.0, -628.0, -155.0, -221.0, -1490.0, -161.0, -668.0, -6150.0, -625.0, -4220.0, -563.0, -3380.0, -1220.0, -683.0, -3830.0, -616.0, -934.0]
+[[-652.0], [-101.0], [-293.0], [-574.0], [-566.0], [-673.0], [-255.0], [-523.0], [-958.0], [-277.0], [-364.0], [-1290.0], [-1050.0], [-302.0], [-832.0], [-725.0], [-483.0], [-2510.0], [-398.0], [-487.0], [-260.0], [-674.0], [-319.0], [-5160.0], [-544.0], [-948.0], [-1400.0], [-8100.0], [-237.0], [-925.0], [-176.0], [-187.0], [-806.0], [-163.0], [-850.0], [-763.0], [-163.0], [-761.0], [-4350.0], [-185.0], [-521.0], [-1910.0], [-315.0], [-1790.0], [-7450.0], [-774.0], [-5140.0], [-751.0], [-3820.0], [-1710.0], [-2070.0], [-4130.0], [-704.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 5:  1st stage Reward: 0, Best reward: [72309.]
+Generation 4 耗时: 10.011秒
+[-578.0, -42.3, -242.0, -423.0, -458.0, -572.0, -230.0, -361.0, -496.0, -222.0, -344.0, -1100.0, -929.0, -202.0, -791.0, -295.0, -367.0, -331.0, -185.0, -246.0, -205.0, -216.0, -285.0, -222.0, -466.0, -943.0, -135.0, -3820.0, -195.0, -842.0, -150.0, -179.0, -644.0, -134.0, -394.0, -643.0, -139.0, -221.0, -615.0, -147.0, -221.0, -1100.0, -160.0, -655.0, -6150.0, -615.0, -2760.0, -539.0, -3300.0, -1150.0, -683.0, -3830.0, -608.0, -932.0]
+[[-652.0], [-101.0], [-293.0], [-574.0], [-566.0], [-673.0], [-255.0], [-523.0], [-958.0], [-277.0], [-364.0], [-1290.0], [-1050.0], [-302.0], [-832.0], [-725.0], [-483.0], [-2510.0], [-398.0], [-487.0], [-260.0], [-674.0], [-319.0], [-5160.0], [-544.0], [-948.0], [-1400.0], [-8100.0], [-237.0], [-925.0], [-176.0], [-187.0], [-806.0], [-163.0], [-850.0], [-763.0], [-163.0], [-761.0], [-4350.0], [-185.0], [-521.0], [-1910.0], [-315.0], [-1790.0], [-7450.0], [-774.0], [-5140.0], [-751.0], [-3820.0], [-1710.0], [-2070.0], [-4130.0], [-704.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 6:  1st stage Reward: 0, Best reward: [72309.]
+Generation 5 耗时: 9.995秒
+[-571.0, -42.3, -242.0, -411.0, -443.0, -572.0, -230.0, -361.0, -496.0, -222.0, -344.0, -1100.0, -929.0, -202.0, -791.0, -264.0, -367.0, -331.0, -184.0, -246.0, -205.0, -216.0, -285.0, -222.0, -466.0, -943.0, -135.0, -2930.0, -195.0, -842.0, -150.0, -179.0, -644.0, -134.0, -329.0, -643.0, -114.0, -221.0, -615.0, -147.0, -221.0, -632.0, -157.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2970.0, -1020.0, -683.0, -3450.0, -608.0, -932.0]
+[[-652.0], [-101.0], [-293.0], [-574.0], [-566.0], [-673.0], [-255.0], [-523.0], [-958.0], [-277.0], [-364.0], [-1290.0], [-1050.0], [-302.0], [-832.0], [-725.0], [-483.0], [-2510.0], [-398.0], [-487.0], [-260.0], [-674.0], [-319.0], [-5160.0], [-544.0], [-948.0], [-1400.0], [-8100.0], [-237.0], [-925.0], [-176.0], [-187.0], [-806.0], [-163.0], [-850.0], [-763.0], [-163.0], [-761.0], [-4350.0], [-185.0], [-521.0], [-1910.0], [-315.0], [-1790.0], [-7450.0], [-774.0], [-5140.0], [-751.0], [-3820.0], [-1710.0], [-2070.0], [-4130.0], [-704.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 7:  1st stage Reward: 0, Best reward: [72309.]
+Generation 6 耗时: 10.021秒
+[-570.0, -42.3, -242.0, -396.0, -443.0, -545.0, -230.0, -361.0, -496.0, -216.0, -344.0, -1100.0, -929.0, -196.0, -791.0, -249.0, -361.0, -331.0, -184.0, -246.0, -205.0, -216.0, -285.0, -222.0, -466.0, -941.0, -135.0, -2810.0, -195.0, -842.0, -150.0, -179.0, -644.0, -134.0, -312.0, -449.0, -104.0, -221.0, -615.0, -147.0, -221.0, -632.0, -146.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2930.0, -728.0, -683.0, -3220.0, -608.0, -932.0]
+[[-652.0], [-101.0], [-293.0], [-574.0], [-566.0], [-673.0], [-255.0], [-523.0], [-958.0], [-277.0], [-364.0], [-1290.0], [-1050.0], [-302.0], [-832.0], [-725.0], [-483.0], [-2510.0], [-398.0], [-487.0], [-260.0], [-674.0], [-319.0], [-5160.0], [-544.0], [-948.0], [-1400.0], [-8100.0], [-237.0], [-925.0], [-176.0], [-187.0], [-806.0], [-163.0], [-850.0], [-763.0], [-163.0], [-761.0], [-4350.0], [-185.0], [-521.0], [-1910.0], [-315.0], [-1790.0], [-7450.0], [-774.0], [-5140.0], [-751.0], [-3820.0], [-1710.0], [-2070.0], [-4130.0], [-704.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 8:  1st stage Reward: 0, Best reward: [72309.]
+Generation 7 耗时: 9.796秒
+[-570.0, -42.3, -242.0, -396.0, -443.0, -545.0, -230.0, -361.0, -496.0, -214.0, -344.0, -1100.0, -929.0, -182.0, -791.0, -249.0, -361.0, -331.0, -184.0, -246.0, -205.0, -216.0, -267.0, -222.0, -466.0, -941.0, -135.0, -2810.0, -195.0, -842.0, -150.0, -179.0, -644.0, -134.0, -304.0, -425.0, -104.0, -221.0, -615.0, -147.0, -124.0, -582.0, -146.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2760.0, -646.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 9:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 8 耗时: 9.874秒
+[-568.0, -42.3, -241.0, -375.0, -443.0, -542.0, -230.0, -361.0, -486.0, -201.0, -344.0, -1100.0, -929.0, -182.0, -791.0, -217.0, -268.0, -229.0, -180.0, -246.0, -200.0, -216.0, -264.0, -222.0, -466.0, -941.0, -135.0, -1880.0, -195.0, -579.0, -146.0, -179.0, -644.0, -134.0, -218.0, -425.0, -101.0, -221.0, -615.0, -147.0, -120.0, -582.0, -133.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 10:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 9 耗时: 10.198秒
+[-568.0, -42.3, -241.0, -375.0, -421.0, -542.0, -230.0, -361.0, -486.0, -201.0, -344.0, -1100.0, -929.0, -182.0, -791.0, -217.0, -264.0, -229.0, -180.0, -246.0, -199.0, -216.0, -264.0, -222.0, -466.0, -941.0, -135.0, -1740.0, -195.0, -579.0, -146.0, -148.0, -644.0, -134.0, -218.0, -425.0, -101.0, -221.0, -615.0, -147.0, -120.0, -582.0, -123.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 11:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 10 耗时: 9.869秒
+[-568.0, -42.3, -241.0, -375.0, -404.0, -542.0, -230.0, -361.0, -486.0, -201.0, -344.0, -1100.0, -929.0, -182.0, -791.0, -217.0, -256.0, -229.0, -180.0, -246.0, -199.0, -216.0, -264.0, -222.0, -466.0, -941.0, -135.0, -1740.0, -195.0, -579.0, -146.0, -132.0, -644.0, -134.0, -218.0, -425.0, -101.0, -221.0, -615.0, -147.0, -120.0, -582.0, -123.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 12:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 11 耗时: 10.051秒
+[-568.0, -42.3, -241.0, -375.0, -398.0, -542.0, -230.0, -361.0, -486.0, -201.0, -344.0, -1100.0, -929.0, -182.0, -791.0, -217.0, -251.0, -229.0, -180.0, -246.0, -199.0, -216.0, -264.0, -222.0, -466.0, -941.0, -135.0, -1740.0, -195.0, -579.0, -146.0, -121.0, -644.0, -134.0, -160.0, -298.0, -101.0, -221.0, -615.0, -147.0, -120.0, -582.0, -123.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 13:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 12 耗时: 9.923秒
+[-568.0, -42.3, -241.0, -375.0, -386.0, -542.0, -230.0, -361.0, -486.0, -195.0, -344.0, -943.0, -929.0, -178.0, -791.0, -217.0, -251.0, -229.0, -153.0, -246.0, -199.0, -216.0, -264.0, -222.0, -466.0, -939.0, -135.0, -1700.0, -195.0, -579.0, -133.0, -120.0, -644.0, -134.0, -156.0, -289.0, -101.0, -221.0, -615.0, -147.0, -120.0, -576.0, -119.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 14:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 13 耗时: 9.907秒
+[-568.0, -41.9, -241.0, -375.0, -385.0, -542.0, -230.0, -361.0, -486.0, -195.0, -344.0, -856.0, -929.0, -178.0, -791.0, -217.0, -244.0, -228.0, -147.0, -246.0, -198.0, -216.0, -264.0, -220.0, -466.0, -939.0, -135.0, -1670.0, -195.0, -579.0, -127.0, -120.0, -644.0, -134.0, -154.0, -289.0, -101.0, -221.0, -615.0, -147.0, -120.0, -576.0, -119.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 15:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 14 耗时: 9.899秒
+[-568.0, -41.1, -241.0, -375.0, -371.0, -511.0, -230.0, -361.0, -486.0, -195.0, -344.0, -856.0, -798.0, -178.0, -791.0, -217.0, -238.0, -226.0, -146.0, -246.0, -184.0, -216.0, -264.0, -220.0, -466.0, -939.0, -135.0, -1670.0, -195.0, -579.0, -127.0, -119.0, -644.0, -134.0, -154.0, -289.0, -101.0, -221.0, -615.0, -147.0, -119.0, -576.0, -117.0, -655.0, -3370.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -3010.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 16:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 15 耗时: 9.909秒
+[-568.0, -35.7, -221.0, -375.0, -371.0, -511.0, -230.0, -361.0, -486.0, -194.0, -344.0, -798.0, -480.0, -178.0, -791.0, -217.0, -237.0, -226.0, -146.0, -246.0, -184.0, -216.0, -260.0, -220.0, -466.0, -939.0, -135.0, -1670.0, -195.0, -579.0, -98.5, -119.0, -644.0, -134.0, -154.0, -289.0, -101.0, -221.0, -615.0, -147.0, -119.0, -576.0, -117.0, -655.0, -3110.0, -615.0, -2760.0, -539.0, -2630.0, -630.0, -683.0, -2940.0, -608.0, -932.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 17:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 16 耗时: 10.244秒
+[-568.0, -33.4, -214.0, -375.0, -371.0, -490.0, -230.0, -355.0, -473.0, -194.0, -344.0, -798.0, -479.0, -178.0, -791.0, -211.0, -227.0, -226.0, -146.0, -246.0, -184.0, -213.0, -257.0, -220.0, -466.0, -939.0, -135.0, -1410.0, -194.0, -579.0, -98.5, -119.0, -644.0, -134.0, -154.0, -289.0, -101.0, -218.0, -615.0, -147.0, -119.0, -576.0, -117.0, -655.0, -3070.0, -615.0, -2760.0, -539.0, -2620.0, -618.0, -669.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 18:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 17 耗时: 10.038秒
+[-562.0, -33.4, -214.0, -375.0, -371.0, -490.0, -230.0, -355.0, -473.0, -194.0, -344.0, -798.0, -470.0, -178.0, -791.0, -211.0, -212.0, -226.0, -146.0, -246.0, -184.0, -213.0, -257.0, -220.0, -466.0, -939.0, -135.0, -1290.0, -194.0, -579.0, -98.5, -119.0, -644.0, -134.0, -120.0, -289.0, -101.0, -218.0, -615.0, -147.0, -119.0, -576.0, -117.0, -583.0, -3070.0, -615.0, -2760.0, -539.0, -2620.0, -618.0, -669.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 19:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 18 耗时: 9.923秒
+[-555.0, -32.7, -214.0, -375.0, -366.0, -490.0, -228.0, -355.0, -433.0, -191.0, -341.0, -778.0, -355.0, -174.0, -786.0, -211.0, -210.0, -222.0, -146.0, -246.0, -180.0, -213.0, -257.0, -220.0, -465.0, -939.0, -135.0, -1290.0, -194.0, -565.0, -92.4, -118.0, -642.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -117.0, -513.0, -2760.0, -615.0, -2740.0, -537.0, -2620.0, -618.0, -642.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 20:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 19 耗时: 10.269秒
+[-555.0, -30.0, -214.0, -375.0, -366.0, -490.0, -228.0, -355.0, -413.0, -162.0, -341.0, -778.0, -331.0, -174.0, -786.0, -211.0, -210.0, -221.0, -146.0, -246.0, -180.0, -213.0, -257.0, -220.0, -465.0, -939.0, -135.0, -771.0, -194.0, -565.0, -92.4, -118.0, -642.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -117.0, -513.0, -2760.0, -615.0, -2740.0, -537.0, -2620.0, -618.0, -642.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 21:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 20 耗时: 9.947秒
+[-555.0, -30.0, -214.0, -375.0, -366.0, -490.0, -228.0, -355.0, -408.0, -162.0, -341.0, -778.0, -331.0, -174.0, -786.0, -211.0, -204.0, -191.0, -146.0, -246.0, -180.0, -213.0, -257.0, -220.0, -465.0, -939.0, -135.0, -660.0, -194.0, -565.0, -92.4, -118.0, -642.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -94.8, -513.0, -2760.0, -615.0, -2740.0, -537.0, -2620.0, -618.0, -642.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 22:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 21 耗时: 9.944秒
+[-555.0, -29.2, -214.0, -375.0, -366.0, -490.0, -228.0, -355.0, -408.0, -161.0, -341.0, -778.0, -327.0, -174.0, -786.0, -211.0, -186.0, -188.0, -146.0, -246.0, -180.0, -213.0, -257.0, -220.0, -465.0, -939.0, -135.0, -660.0, -194.0, -565.0, -92.4, -118.0, -642.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -90.2, -513.0, -2260.0, -615.0, -2740.0, -537.0, -2620.0, -618.0, -642.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 23:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 22 耗时: 10.206秒
+[-555.0, -29.2, -214.0, -353.0, -366.0, -490.0, -228.0, -355.0, -408.0, -161.0, -341.0, -778.0, -327.0, -174.0, -786.0, -211.0, -186.0, -188.0, -146.0, -246.0, -180.0, -213.0, -238.0, -220.0, -465.0, -939.0, -135.0, -660.0, -194.0, -565.0, -92.4, -118.0, -603.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -90.2, -513.0, -2250.0, -615.0, -2740.0, -537.0, -2620.0, -618.0, -642.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 24:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 23 耗时: 9.758秒
+[-555.0, -29.2, -214.0, -332.0, -366.0, -490.0, -228.0, -355.0, -408.0, -157.0, -341.0, -778.0, -327.0, -174.0, -786.0, -211.0, -186.0, -184.0, -146.0, -246.0, -180.0, -213.0, -218.0, -220.0, -465.0, -824.0, -135.0, -660.0, -194.0, -565.0, -92.4, -118.0, -583.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -90.2, -513.0, -2250.0, -615.0, -2650.0, -537.0, -2620.0, -618.0, -642.0, -2660.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 25:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 24 耗时: 9.902秒
+[-555.0, -29.1, -214.0, -332.0, -366.0, -490.0, -228.0, -355.0, -395.0, -157.0, -341.0, -778.0, -327.0, -174.0, -786.0, -211.0, -186.0, -182.0, -146.0, -246.0, -180.0, -213.0, -206.0, -220.0, -465.0, -784.0, -135.0, -634.0, -194.0, -565.0, -92.4, -118.0, -564.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -90.2, -511.0, -2220.0, -615.0, -2560.0, -537.0, -2460.0, -618.0, -642.0, -2200.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 26:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 25 耗时: 10.068秒
+[-555.0, -29.1, -214.0, -332.0, -366.0, -490.0, -228.0, -355.0, -393.0, -157.0, -341.0, -778.0, -327.0, -174.0, -786.0, -211.0, -186.0, -182.0, -146.0, -246.0, -180.0, -213.0, -206.0, -220.0, -465.0, -784.0, -135.0, -634.0, -194.0, -565.0, -92.4, -118.0, -564.0, -134.0, -118.0, -284.0, -100.0, -218.0, -614.0, -139.0, -118.0, -562.0, -90.2, -511.0, -2220.0, -615.0, -2560.0, -537.0, -2390.0, -618.0, -642.0, -2190.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 27:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 26 耗时: 10.036秒
+[-555.0, -29.1, -214.0, -332.0, -366.0, -490.0, -228.0, -355.0, -393.0, -157.0, -341.0, -778.0, -327.0, -174.0, -786.0, -211.0, -186.0, -182.0, -146.0, -246.0, -180.0, -213.0, -206.0, -220.0, -465.0, -784.0, -135.0, -634.0, -194.0, -565.0, -92.4, -118.0, -564.0, -134.0, -118.0, -284.0, -100.0, -208.0, -600.0, -135.0, -118.0, -562.0, -90.2, -511.0, -2220.0, -615.0, -2560.0, -537.0, -2390.0, -618.0, -642.0, -2180.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 28:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 27 耗时: 10.661秒
+[-555.0, -29.1, -214.0, -329.0, -366.0, -490.0, -228.0, -355.0, -393.0, -157.0, -340.0, -778.0, -324.0, -174.0, -786.0, -211.0, -186.0, -182.0, -145.0, -246.0, -180.0, -213.0, -206.0, -220.0, -465.0, -782.0, -135.0, -634.0, -194.0, -565.0, -92.4, -118.0, -564.0, -134.0, -118.0, -284.0, -100.0, -208.0, -600.0, -133.0, -118.0, -562.0, -90.2, -511.0, -2220.0, -615.0, -2560.0, -537.0, -2380.0, -618.0, -642.0, -2180.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 29:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 28 耗时: 8.184秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -355.0, -393.0, -157.0, -340.0, -778.0, -324.0, -174.0, -786.0, -211.0, -186.0, -180.0, -145.0, -246.0, -180.0, -213.0, -205.0, -211.0, -465.0, -733.0, -135.0, -634.0, -194.0, -556.0, -92.4, -118.0, -562.0, -93.9, -118.0, -284.0, -100.0, -208.0, -585.0, -130.0, -118.0, -562.0, -90.1, -511.0, -2220.0, -615.0, -2560.0, -537.0, -2380.0, -618.0, -642.0, -2170.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 30:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 29 耗时: 8.533秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -343.0, -393.0, -157.0, -340.0, -778.0, -324.0, -174.0, -786.0, -211.0, -186.0, -180.0, -145.0, -246.0, -180.0, -213.0, -205.0, -199.0, -465.0, -733.0, -135.0, -634.0, -194.0, -556.0, -92.4, -118.0, -561.0, -93.9, -118.0, -284.0, -100.0, -208.0, -585.0, -130.0, -118.0, -562.0, -90.1, -511.0, -2220.0, -615.0, -2560.0, -537.0, -2380.0, -618.0, -642.0, -2170.0, -608.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 31:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 30 耗时: 8.593秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -335.0, -393.0, -156.0, -340.0, -778.0, -324.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -246.0, -180.0, -213.0, -205.0, -186.0, -465.0, -732.0, -135.0, -628.0, -194.0, -556.0, -92.2, -118.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -118.0, -562.0, -90.1, -511.0, -2210.0, -614.0, -2550.0, -536.0, -2370.0, -618.0, -642.0, -2170.0, -607.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 32:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 31 耗时: 8.474秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -335.0, -393.0, -106.0, -340.0, -778.0, -324.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -246.0, -180.0, -213.0, -205.0, -186.0, -465.0, -732.0, -135.0, -628.0, -194.0, -556.0, -92.2, -118.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -118.0, -562.0, -90.1, -511.0, -2210.0, -614.0, -2550.0, -536.0, -2370.0, -618.0, -642.0, -2170.0, -607.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 33:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 32 耗时: 8.393秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -333.0, -393.0, -104.0, -340.0, -778.0, -324.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -236.0, -180.0, -213.0, -205.0, -186.0, -410.0, -732.0, -135.0, -628.0, -194.0, -556.0, -92.2, -118.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -118.0, -562.0, -90.1, -511.0, -2210.0, -614.0, -2550.0, -536.0, -2370.0, -618.0, -642.0, -2170.0, -607.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 34:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 33 耗时: 8.262秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -333.0, -383.0, -101.0, -340.0, -778.0, -324.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -224.0, -180.0, -213.0, -205.0, -186.0, -401.0, -732.0, -135.0, -628.0, -194.0, -556.0, -91.1, -118.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -118.0, -562.0, -90.1, -511.0, -2210.0, -614.0, -2550.0, -536.0, -2370.0, -618.0, -642.0, -2170.0, -607.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 35:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 34 耗时: 8.568秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -333.0, -368.0, -101.0, -340.0, -778.0, -324.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -221.0, -180.0, -213.0, -205.0, -185.0, -396.0, -732.0, -135.0, -628.0, -194.0, -556.0, -91.1, -118.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -118.0, -562.0, -90.1, -511.0, -2210.0, -614.0, -2550.0, -536.0, -2370.0, -618.0, -642.0, -2170.0, -607.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 36:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 35 耗时: 8.238秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -322.0, -368.0, -101.0, -340.0, -778.0, -324.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -221.0, -180.0, -213.0, -205.0, -163.0, -362.0, -732.0, -135.0, -628.0, -194.0, -556.0, -91.1, -118.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -118.0, -562.0, -90.1, -504.0, -2210.0, -614.0, -2550.0, -536.0, -2370.0, -618.0, -642.0, -2160.0, -607.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 37:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 36 耗时: 8.291秒
+[-551.0, -28.8, -214.0, -315.0, -366.0, -490.0, -228.0, -322.0, -364.0, -96.7, -340.0, -778.0, -305.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -221.0, -180.0, -213.0, -205.0, -163.0, -335.0, -732.0, -135.0, -628.0, -194.0, -538.0, -88.9, -115.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -115.0, -562.0, -90.1, -504.0, -2160.0, -614.0, -2550.0, -488.0, -2370.0, -618.0, -642.0, -2160.0, -607.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 38:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 37 耗时: 8.368秒
+[-551.0, -28.8, -214.0, -315.0, -365.0, -490.0, -228.0, -319.0, -364.0, -96.7, -340.0, -778.0, -305.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -220.0, -180.0, -213.0, -205.0, -160.0, -335.0, -732.0, -135.0, -628.0, -194.0, -538.0, -88.9, -115.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -115.0, -562.0, -90.1, -476.0, -2160.0, -614.0, -2550.0, -483.0, -2370.0, -618.0, -642.0, -2160.0, -604.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 39:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 38 耗时: 7.762秒
+[-551.0, -28.8, -214.0, -315.0, -365.0, -490.0, -228.0, -319.0, -364.0, -96.7, -340.0, -778.0, -305.0, -174.0, -784.0, -211.0, -186.0, -180.0, -145.0, -220.0, -180.0, -213.0, -205.0, -160.0, -335.0, -732.0, -135.0, -628.0, -124.0, -538.0, -88.9, -115.0, -560.0, -92.3, -118.0, -284.0, -99.5, -207.0, -583.0, -130.0, -115.0, -562.0, -90.1, -461.0, -2160.0, -614.0, -2550.0, -463.0, -2370.0, -618.0, -642.0, -2160.0, -604.0, -931.0]
+[[-1900.0], [-43.4], [-6670.0], [-403.0], [-462.0], [-580.0], [-246.0], [-749.0], [-559.0], [-752.0], [-361.0], [-1840.0], [-6130.0], [-210.0], [-826.0], [-4410.0], [-379.0], [-361.0], [-186.0], [-307.0], [-271.0], [-258.0], [-552.0], [-389.0], [-543.0], [-946.0], [-163.0], [-2950.0], [-237.0], [-1180.0], [-175.0], [-184.0], [-803.0], [-162.0], [-333.0], [-1800.0], [-107.0], [-1110.0], [-748.0], [-175.0], [-258.0], [-2170.0], [-158.0], [-783.0], [-3610.0], [-717.0], [-3150.0], [-589.0], [-2980.0], [-718.0], [-778.0], [-4860.0], [-703.0], [-940.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 40:  1st stage Reward: 0, Best reward: [62874.4]
+Generation 39 耗时: 8.138秒
+耗时:  381.542601108551
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+[-245.0, -45800.0, -648.0, -2090.0, -438.0, -319000.0, -60700.0, -3800.0]
+[[-1910.0], [-45800.0], [-78300.0], [-354000.0], [-76900.0], [-381000.0], [-64200.0], [-4490.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 1:  1st stage Reward: 0, Best reward: [1006600.]
+Generation 0 耗时: 1.117秒
+[-131.0, -2810.0, -482.0, -1850.0, -351.0, -311000.0, -59100.0, -3630.0]
+[[-859.0], [-2810.0], [-23600.0], [-1850.0], [-351.0], [-327000.0], [-61100.0], [-3890.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 2:  1st stage Reward: 0, Best reward: [421460.]
+Generation 1 耗时: 1.107秒
+[-76.7, -1220.0, -480.0, -1700.0, -306.0, -311000.0, -59100.0, -3630.0]
+[[-146.0], [-2710.0], [-582.0], [-1840.0], [-306.0], [-315000.0], [-61100.0], [-3820.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 3:  1st stage Reward: 0, Best reward: [385504.]
+Generation 2 耗时: 1.081秒
+[-70.4, -1140.0, -459.0, -1670.0, -302.0, -311000.0, -59100.0, -3620.0]
+[[-93.7], [-1400.0], [-581.0], [-1840.0], [-306.0], [-315000.0], [-61100.0], [-3640.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 4:  1st stage Reward: 0, Best reward: [383960.7]
+Generation 3 耗时: 1.181秒
+[-70.4, -788.0, -459.0, -958.0, -302.0, -311000.0, -59100.0, -3610.0]
+[[-93.7], [-1400.0], [-581.0], [-1840.0], [-306.0], [-315000.0], [-61100.0], [-3640.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 5:  1st stage Reward: 0, Best reward: [383960.7]
+Generation 4 耗时: 1.225秒
+[-70.4, -680.0, -451.0, -912.0, -302.0, -307000.0, -59100.0, -3480.0]
+[[-109.0], [-852.0], [-628.0], [-915.0], [-340.0], [-307000.0], [-59100.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 6:  1st stage Reward: 0, Best reward: [372424.]
+Generation 5 耗时: 1.142秒
+[-70.4, -673.0, -451.0, -871.0, -302.0, -307000.0, -58600.0, -3480.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 7:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 6 耗时: 1.219秒
+[-70.2, -500.0, -443.0, -677.0, -302.0, -303000.0, -58600.0, -3480.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 8:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 7 耗时: 1.212秒
+[-67.2, -496.0, -443.0, -677.0, -302.0, -303000.0, -58400.0, -3480.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 9:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 8 耗时: 1.235秒
+[-66.4, -496.0, -443.0, -677.0, -302.0, -303000.0, -58400.0, -3480.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 10:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 9 耗时: 1.209秒
+[-66.4, -496.0, -443.0, -677.0, -286.0, -303000.0, -58400.0, -3480.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 11:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 10 耗时: 1.224秒
+[-66.4, -478.0, -409.0, -677.0, -282.0, -303000.0, -58400.0, -3470.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 12:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 11 耗时: 1.259秒
+[-65.4, -478.0, -363.0, -677.0, -282.0, -303000.0, -58000.0, -3450.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 13:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 12 耗时: 1.229秒
+[-65.4, -478.0, -363.0, -677.0, -282.0, -303000.0, -58000.0, -3450.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 14:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 13 耗时: 1.379秒
+[-61.9, -478.0, -363.0, -677.0, -282.0, -303000.0, -58000.0, -3450.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 15:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 14 耗时: 1.315秒
+[-61.9, -478.0, -363.0, -677.0, -282.0, -303000.0, -58000.0, -3450.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 16:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 15 耗时: 1.281秒
+[-61.9, -478.0, -363.0, -677.0, -282.0, -303000.0, -58000.0, -3450.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 17:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 16 耗时: 1.294秒
+[-61.9, -478.0, -363.0, -677.0, -282.0, -303000.0, -58000.0, -3450.0]
+[[-92.5], [-748.0], [-729.0], [-911.0], [-313.0], [-307000.0], [-58800.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 18:  1st stage Reward: 0, Best reward: [372073.5]
+Generation 17 耗时: 1.348秒
+[-60.5, -478.0, -363.0, -677.0, -282.0, -303000.0, -58000.0, -3450.0]
+[[-62.6], [-481.0], [-403.0], [-997.0], [-294.0], [-308000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 19:  1st stage Reward: 0, Best reward: [372047.6]
+Generation 18 耗时: 1.424秒
+[-60.5, -478.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-62.6], [-481.0], [-403.0], [-997.0], [-294.0], [-308000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 20:  1st stage Reward: 0, Best reward: [372047.6]
+Generation 19 耗时: 1.203秒
+[-58.1, -478.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 21:  1st stage Reward: 0, Best reward: [368374.]
+Generation 20 耗时: 1.271秒
+[-58.1, -476.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 22:  1st stage Reward: 0, Best reward: [368374.]
+Generation 21 耗时: 1.289秒
+[-58.1, -476.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 23:  1st stage Reward: 0, Best reward: [368374.]
+Generation 22 耗时: 1.234秒
+[-58.1, -476.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 24:  1st stage Reward: 0, Best reward: [368374.]
+Generation 23 耗时: 1.175秒
+[-58.1, -476.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 25:  1st stage Reward: 0, Best reward: [368374.]
+Generation 24 耗时: 1.362秒
+[-58.1, -476.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 26:  1st stage Reward: 0, Best reward: [368374.]
+Generation 25 耗时: 1.231秒
+[-58.1, -476.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 27:  1st stage Reward: 0, Best reward: [368374.]
+Generation 26 耗时: 1.167秒
+[-58.1, -476.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-65.0], [-663.0], [-424.0], [-1760.0], [-282.0], [-303000.0], [-58700.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 28:  1st stage Reward: 0, Best reward: [368374.]
+Generation 27 耗时: 1.184秒
+[-58.1, -474.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-62.6], [-478.0], [-455.0], [-723.0], [-279.0], [-303000.0], [-58600.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 29:  1st stage Reward: 0, Best reward: [367077.6]
+Generation 28 耗时: 1.247秒
+[-58.1, -474.0, -363.0, -677.0, -275.0, -303000.0, -58000.0, -3450.0]
+[[-62.6], [-478.0], [-455.0], [-723.0], [-279.0], [-303000.0], [-58600.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 30:  1st stage Reward: 0, Best reward: [367077.6]
+Generation 29 耗时: 1.266秒
+[-58.1, -474.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-62.6], [-478.0], [-455.0], [-723.0], [-279.0], [-303000.0], [-58600.0], [-3480.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 31:  1st stage Reward: 0, Best reward: [367077.6]
+Generation 30 耗时: 1.249秒
+[-58.1, -474.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-108.0], [-486.0], [-419.0], [-734.0], [-329.0], [-298000.0], [-59000.0], [-3520.0]]
+[False, False, False, False, False, False, False, False]
+[Stage 1]Gen 32:  1st stage Reward: 0, Best reward: [362596.]
+Generation 31 耗时: 1.192秒
+[-58.1, -474.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-108.0], [-486.0], [-419.0], [-734.0], [-329.0], [-298000.0], [-59000.0], [-3520.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 33:  1st stage Reward: 0, Best reward: [362596.]
+Generation 32 耗时: 1.226秒
+[-58.1, -473.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-87.3], [-474.0], [-399.0], [-713.0], [-278.0], [-294000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 34:  1st stage Reward: 0, Best reward: [357761.3]
+Generation 33 耗时: 1.285秒
+[-58.1, -473.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-87.3], [-474.0], [-399.0], [-713.0], [-278.0], [-294000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 35:  1st stage Reward: 0, Best reward: [357761.3]
+Generation 34 耗时: 1.260秒
+[-58.1, -451.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-87.3], [-474.0], [-399.0], [-713.0], [-278.0], [-294000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 36:  1st stage Reward: 0, Best reward: [357761.3]
+Generation 35 耗时: 1.242秒
+[-58.1, -419.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-87.3], [-474.0], [-399.0], [-713.0], [-278.0], [-294000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 37:  1st stage Reward: 0, Best reward: [357761.3]
+Generation 36 耗时: 1.260秒
+[-58.1, -415.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-87.3], [-474.0], [-399.0], [-713.0], [-278.0], [-294000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 38:  1st stage Reward: 0, Best reward: [357761.3]
+Generation 37 耗时: 1.291秒
+[-58.1, -415.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-87.3], [-474.0], [-399.0], [-713.0], [-278.0], [-294000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 39:  1st stage Reward: 0, Best reward: [357761.3]
+Generation 38 耗时: 1.218秒
+[-58.1, -406.0, -363.0, -677.0, -275.0, -294000.0, -58000.0, -3450.0]
+[[-87.3], [-474.0], [-399.0], [-713.0], [-278.0], [-294000.0], [-58200.0], [-3610.0]]
+[False, False, False, False, False, True, True, False]
+[Stage 1]Gen 40:  1st stage Reward: 0, Best reward: [357761.3]
+Generation 39 耗时: 1.376秒
+耗时:  50.131205558776855
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20
+[-6320.0, -630000.0, -38500.0, -1110000.0, -150000.0, -75800.0, -226000.0, -63400.0, -513000.0, -206000.0, -14700.0, -10000.0, -22300.0, -2370000.0, -63900.0, -3810.0]
+[[-22200.0], [-821000.0], [-8550000.0], [-38400000.0], [-6310000.0], [-20200000.0], [-230000.0], [-159000.0], [-71100000.0], [-206000.0], [-1680000.0], [-145000.0], [-114000.0], [-2470000.0], [-90200.0], [-5390.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 1:  1st stage Reward: 0, Best reward: [1.5050279e+08]
+Generation 0 耗时: 2.637秒
+[-5660.0, -510000.0, -28900.0, -121000.0, -133000.0, -63900.0, -189000.0, -57700.0, -382000.0, -83800.0, -14700.0, -7980.0, -18800.0, -2330000.0, -63100.0, -3710.0]
+[[-10200.0], [-1950000.0], [-70000.0], [-1160000.0], [-156000.0], [-77500.0], [-5790000.0], [-73800.0], [-509000.0], [-410000.0], [-20900.0], [-9990.0], [-309000.0], [-2390000.0], [-63700.0], [-5630.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 2:  1st stage Reward: 0, Best reward: [13005720.]
+Generation 1 耗时: 2.759秒
+[-5660.0, -235000.0, -15000.0, -94100.0, -30600.0, -59000.0, -48100.0, -23700.0, -191000.0, -59600.0, -14700.0, -7490.0, -18200.0, -2280000.0, -61700.0, -3630.0]
+[[-5980.0], [-695000.0], [-29200.0], [-94100.0], [-151000.0], [-60900.0], [-204000.0], [-97400.0], [-335000.0], [-430000.0], [-1500000.0], [-7550.0], [-28500.0], [-2370000.0], [-68300.0], [-3770.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 3:  1st stage Reward: 0, Best reward: [6080700.]
+Generation 2 耗时: 2.589秒
+[-5580.0, -89400.0, -10400.0, -94100.0, -30400.0, -59000.0, -48100.0, -11400.0, -120000.0, -55300.0, -14700.0, -7490.0, -15400.0, -2280000.0, -61700.0, -3630.0]
+[[-6320.0], [-171000.0], [-89200.0], [-121000.0], [-30400.0], [-76200.0], [-206000.0], [-24100.0], [-194000.0], [-688000.0], [-18500.0], [-1220000.0], [-59600.0], [-2350000.0], [-63400.0], [-3740.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 4:  1st stage Reward: 0, Best reward: [5321460.]
+Generation 3 耗时: 2.367秒
+[-5580.0, -80100.0, -10400.0, -71200.0, -22200.0, -59000.0, -41600.0, -11400.0, -120000.0, -55300.0, -9950.0, -7490.0, -15400.0, -2280000.0, -61700.0, -3630.0]
+[[-6320.0], [-94300.0], [-15100.0], [-121000.0], [-30400.0], [-76200.0], [-51000.0], [-12500.0], [-120000.0], [-468000.0], [-18500.0], [-10800.0], [-18100.0], [-2350000.0], [-61800.0], [-3740.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 5:  1st stage Reward: 0, Best reward: [3457760.]
+Generation 4 耗时: 2.499秒
+[-5580.0, -68100.0, -10400.0, -52700.0, -10100.0, -59000.0, -18200.0, -11400.0, -94400.0, -55300.0, -7940.0, -7250.0, -15200.0, -2280000.0, -61700.0, -3630.0]
+[[-11000.0], [-71400.0], [-13600.0], [-63000.0], [-10100.0], [-69900.0], [-21100.0], [-14100.0], [-107000.0], [-73300.0], [-9510.0], [-8880.0], [-19700.0], [-2380000.0], [-63400.0], [-4200.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 6:  1st stage Reward: 0, Best reward: [2940190.]
+Generation 5 耗时: 2.503秒
+[-5580.0, -46700.0, -10400.0, -50500.0, -7740.0, -59000.0, -14100.0, -11400.0, -89300.0, -55300.0, -7860.0, -7250.0, -9370.0, -2280000.0, -61700.0, -3630.0]
+[[-11000.0], [-71400.0], [-13600.0], [-63000.0], [-10100.0], [-69900.0], [-21100.0], [-14100.0], [-107000.0], [-73300.0], [-9510.0], [-8880.0], [-19700.0], [-2380000.0], [-63400.0], [-4200.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 7:  1st stage Reward: 0, Best reward: [2940190.]
+Generation 6 耗时: 2.749秒
+[-4780.0, -44500.0, -10400.0, -34000.0, -7740.0, -59000.0, -12800.0, -11400.0, -70800.0, -55300.0, -7860.0, -7250.0, -9370.0, -2280000.0, -61700.0, -3630.0]
+[[-11000.0], [-71400.0], [-13600.0], [-63000.0], [-10100.0], [-69900.0], [-21100.0], [-14100.0], [-107000.0], [-73300.0], [-9510.0], [-8880.0], [-19700.0], [-2380000.0], [-63400.0], [-4200.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 8:  1st stage Reward: 0, Best reward: [2940190.]
+Generation 7 耗时: 2.500秒
+[-4680.0, -33000.0, -10400.0, -23300.0, -6940.0, -59000.0, -11000.0, -9980.0, -58500.0, -55300.0, -7860.0, -7250.0, -9140.0, -2280000.0, -61700.0, -3630.0]
+[[-11000.0], [-71400.0], [-13600.0], [-63000.0], [-10100.0], [-69900.0], [-21100.0], [-14100.0], [-107000.0], [-73300.0], [-9510.0], [-8880.0], [-19700.0], [-2380000.0], [-63400.0], [-4200.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 9:  1st stage Reward: 0, Best reward: [2940190.]
+Generation 8 耗时: 2.463秒
+[-4330.0, -33000.0, -10400.0, -16700.0, -6940.0, -59000.0, -11000.0, -9980.0, -32800.0, -39600.0, -7860.0, -7110.0, -7730.0, -2280000.0, -61600.0, -3630.0]
+[[-11000.0], [-71400.0], [-13600.0], [-63000.0], [-10100.0], [-69900.0], [-21100.0], [-14100.0], [-107000.0], [-73300.0], [-9510.0], [-8880.0], [-19700.0], [-2380000.0], [-63400.0], [-4200.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 10:  1st stage Reward: 0, Best reward: [2940190.]
+Generation 9 耗时: 2.653秒
+[-4330.0, -30900.0, -10300.0, -15200.0, -6940.0, -58300.0, -10400.0, -9380.0, -25100.0, -30500.0, -7440.0, -6950.0, -7390.0, -2280000.0, -61600.0, -3630.0]
+[[-11000.0], [-71400.0], [-13600.0], [-63000.0], [-10100.0], [-69900.0], [-21100.0], [-14100.0], [-107000.0], [-73300.0], [-9510.0], [-8880.0], [-19700.0], [-2380000.0], [-63400.0], [-4200.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 11:  1st stage Reward: 0, Best reward: [2940190.]
+Generation 10 耗时: 2.569秒
+[-4330.0, -30800.0, -10200.0, -14900.0, -6940.0, -58300.0, -10400.0, -9380.0, -24800.0, -27100.0, -7420.0, -6580.0, -7370.0, -2280000.0, -61600.0, -3630.0]
+[[-13800.0], [-30800.0], [-10300.0], [-15400.0], [-7250.0], [-67300.0], [-11700.0], [-11500.0], [-41200.0], [-29900.0], [-7420.0], [-9940.0], [-7370.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 12:  1st stage Reward: 0, Best reward: [2649480.]
+Generation 11 耗时: 2.621秒
+[-4330.0, -30800.0, -10200.0, -14900.0, -6270.0, -57400.0, -10400.0, -9380.0, -24800.0, -27100.0, -7420.0, -6560.0, -7370.0, -2280000.0, -61600.0, -3630.0]
+[[-13800.0], [-30800.0], [-10300.0], [-15400.0], [-7250.0], [-67300.0], [-11700.0], [-11500.0], [-41200.0], [-29900.0], [-7420.0], [-9940.0], [-7370.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 13:  1st stage Reward: 0, Best reward: [2649480.]
+Generation 12 耗时: 2.585秒
+[-4330.0, -30800.0, -10200.0, -14900.0, -6270.0, -47300.0, -10400.0, -9380.0, -24800.0, -27100.0, -7310.0, -6560.0, -7370.0, -2280000.0, -61600.0, -3630.0]
+[[-13800.0], [-30800.0], [-10300.0], [-15400.0], [-7250.0], [-67300.0], [-11700.0], [-11500.0], [-41200.0], [-29900.0], [-7420.0], [-9940.0], [-7370.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 14:  1st stage Reward: 0, Best reward: [2649480.]
+Generation 13 耗时: 2.679秒
+[-4230.0, -24500.0, -10200.0, -14900.0, -6270.0, -45700.0, -10400.0, -9380.0, -24500.0, -27000.0, -7040.0, -6460.0, -7370.0, -2280000.0, -61600.0, -3630.0]
+[[-13800.0], [-30800.0], [-10300.0], [-15400.0], [-7250.0], [-67300.0], [-11700.0], [-11500.0], [-41200.0], [-29900.0], [-7420.0], [-9940.0], [-7370.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 15:  1st stage Reward: 0, Best reward: [2649480.]
+Generation 14 耗时: 2.605秒
+[-4040.0, -24100.0, -8510.0, -14900.0, -6270.0, -42500.0, -10400.0, -9380.0, -17600.0, -27000.0, -6970.0, -6460.0, -7370.0, -2280000.0, -61600.0, -3630.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 16:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 15 耗时: 2.683秒
+[-4040.0, -24100.0, -8390.0, -14900.0, -6270.0, -27400.0, -10400.0, -9380.0, -17200.0, -27000.0, -6840.0, -6460.0, -7370.0, -2240000.0, -59800.0, -3570.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 17:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 16 耗时: 2.670秒
+[-3410.0, -24100.0, -8390.0, -14900.0, -6270.0, -23400.0, -10400.0, -9380.0, -16300.0, -27000.0, -6840.0, -6460.0, -7370.0, -2230000.0, -59400.0, -3550.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 18:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 17 耗时: 2.639秒
+[-3250.0, -24000.0, -8300.0, -14900.0, -6270.0, -23400.0, -10400.0, -9380.0, -16300.0, -27000.0, -6840.0, -6450.0, -7110.0, -2230000.0, -59400.0, -3550.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 19:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 18 耗时: 2.999秒
+[-3250.0, -24000.0, -7600.0, -14900.0, -6270.0, -23200.0, -10400.0, -9380.0, -16200.0, -26000.0, -6800.0, -6450.0, -6250.0, -2220000.0, -59200.0, -3530.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 20:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 19 耗时: 2.880秒
+[-3250.0, -23300.0, -7520.0, -14900.0, -6270.0, -23200.0, -10400.0, -9380.0, -16200.0, -26000.0, -6800.0, -6450.0, -6040.0, -2220000.0, -59200.0, -3530.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 21:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 20 耗时: 2.838秒
+[-3250.0, -23300.0, -7260.0, -14900.0, -6270.0, -12500.0, -10400.0, -9380.0, -16200.0, -25900.0, -6720.0, -6400.0, -6040.0, -2220000.0, -59200.0, -3520.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 22:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 21 耗时: 2.954秒
+[-3250.0, -23300.0, -7230.0, -14900.0, -6270.0, -12100.0, -10400.0, -9380.0, -16200.0, -25900.0, -6720.0, -6400.0, -6040.0, -2220000.0, -59200.0, -3520.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 23:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 22 耗时: 2.900秒
+[-3240.0, -23200.0, -7200.0, -14900.0, -6270.0, -12100.0, -10400.0, -9380.0, -16200.0, -25100.0, -6600.0, -6400.0, -6020.0, -2220000.0, -59200.0, -3510.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 24:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 23 耗时: 3.012秒
+[-3160.0, -23200.0, -7200.0, -14900.0, -6270.0, -11900.0, -10400.0, -9380.0, -16200.0, -25100.0, -6580.0, -6260.0, -6020.0, -2220000.0, -59200.0, -3510.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 25:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 24 耗时: 3.375秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -6270.0, -11700.0, -9310.0, -9380.0, -14900.0, -25100.0, -6580.0, -6260.0, -5950.0, -2220000.0, -59200.0, -3510.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 26:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 25 耗时: 3.413秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -6270.0, -11700.0, -9310.0, -9380.0, -14900.0, -25100.0, -6580.0, -6260.0, -5950.0, -2220000.0, -59200.0, -3510.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 27:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 26 耗时: 2.965秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -6270.0, -11700.0, -9310.0, -9380.0, -14900.0, -25100.0, -6530.0, -6200.0, -5950.0, -2220000.0, -59200.0, -3510.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 28:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 27 耗时: 3.223秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -6270.0, -11700.0, -9310.0, -9380.0, -14900.0, -25000.0, -6530.0, -6200.0, -5950.0, -2220000.0, -58600.0, -3510.0]
+[[-4480.0], [-24200.0], [-10500.0], [-15500.0], [-14600.0], [-54100.0], [-15700.0], [-13300.0], [-41300.0], [-27400.0], [-7090.0], [-6530.0], [-7430.0], [-2320000.0], [-61900.0], [-3700.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 29:  1st stage Reward: 0, Best reward: [2627730.]
+Generation 28 耗时: 2.971秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -6270.0, -11700.0, -9310.0, -9380.0, -14900.0, -25000.0, -6530.0, -6120.0, -5950.0, -2220000.0, -58600.0, -3510.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 30:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 29 耗时: 3.113秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -5250.0, -11700.0, -9310.0, -9380.0, -14900.0, -25000.0, -6530.0, -6060.0, -5950.0, -2210000.0, -58600.0, -3510.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 31:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 30 耗时: 2.995秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4700.0, -11700.0, -9310.0, -9380.0, -14900.0, -25000.0, -6300.0, -6060.0, -5950.0, -2210000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]
+[Stage 1]Gen 32:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 31 耗时: 3.175秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4700.0, -11700.0, -9310.0, -9380.0, -14900.0, -25000.0, -6170.0, -6050.0, -5950.0, -2210000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 33:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 32 耗时: 2.982秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4700.0, -11700.0, -9310.0, -9380.0, -14900.0, -25000.0, -6170.0, -6050.0, -5950.0, -2210000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 34:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 33 耗时: 3.065秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4650.0, -11700.0, -9130.0, -9380.0, -14900.0, -25000.0, -5980.0, -6050.0, -5950.0, -2210000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 35:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 34 耗时: 3.097秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4650.0, -11700.0, -8180.0, -9380.0, -14900.0, -25000.0, -5980.0, -6050.0, -5950.0, -2210000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 36:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 35 耗时: 3.134秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4650.0, -11700.0, -8120.0, -9380.0, -14900.0, -25000.0, -5980.0, -6050.0, -5950.0, -2210000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 37:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 36 耗时: 2.970秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4650.0, -11700.0, -8120.0, -9380.0, -14900.0, -25000.0, -5980.0, -6010.0, -5950.0, -2210000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 38:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 37 耗时: 3.110秒
+[-3160.0, -23100.0, -7010.0, -14700.0, -4650.0, -11700.0, -8110.0, -9380.0, -14900.0, -25000.0, -5980.0, -6010.0, -5950.0, -2200000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 39:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 38 耗时: 3.195秒
+[-3140.0, -22900.0, -7010.0, -14600.0, -4650.0, -11700.0, -8110.0, -9380.0, -14900.0, -25000.0, -5980.0, -6010.0, -5940.0, -2200000.0, -58300.0, -3490.0]
+[[-3260.0], [-23700.0], [-7390.0], [-15400.0], [-7120.0], [-12400.0], [-11500.0], [-10900.0], [-17200.0], [-25300.0], [-6780.0], [-6120.0], [-6200.0], [-2320000.0], [-61900.0], [-3680.0]]
+[False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False]
+[Stage 1]Gen 40:  1st stage Reward: 0, Best reward: [2538850.]
+Generation 39 耗时: 3.347秒
+耗时:  115.333247423172
+{'arch': {'arithmetic': {'instances': 1024, 'word-bits': 8}, 'storage': [{'name': 'Registers', 'entries': 1, 'instances': 1024, 'word-bits': 8, 'cluster-size': 1, 'num-ports': 2, 'num-banks': 8}, {'name': 'AccumulationBuffer', 'entries': 3072, 'instances': 16, 'word-bits': 24, 'cluster-size': 1, 'network-word-bits': 16, 'num-ports': 2, 'num-banks': 2}, {'name': 'WeightBuffer', 'entries': 32768, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 1, 'num-banks': 8}, {'name': 'InputBuffer', 'entries': 8192, 'instances': 16, 'word-bits': 8, 'block-size': 4, 'num-ports': 2, 'num-banks': 1}, {'name': 'GlobalBuffer', 'entries': 65536, 'instances': 1, 'word-bits': 8, 'block-size': 8, 'num-ports': 2, 'num-banks': 256}, {'name': 'DRAM', 'technology': 'DRAM', 'instances': 1, 'word-bits': 8, 'block-size': 64, 'bandwidth': 1}]}}
+['DRAM', 'GlobalBuffer', 'InputBuffer', 'WeightBuffer', 'AccumulationBuffer', 'Registers'] [1, 1, 16, 16, 16, 1024, 1024] [inf, 65536, 8192, 32768, 3072, 1]
+[1, 16, 1, 1, 64, 1]
+20

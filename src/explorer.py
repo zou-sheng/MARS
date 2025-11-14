@@ -43,11 +43,11 @@ class HardwareConfig:
         self.spatial_capacity = buffer_spatial_list
 
         
-    def mutation(self, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5, generation=0, max_generations=100):
+    def mutation(self, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, no_mutation, alpha=0.5, generation=0, max_generations=100):
         # self.mutate_noc()
         # self.mutate_tensor_in_buffer()
-        self.mutate_temporal_tile_weights(best_temporal_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
-        self.mutate_spatial_tile_weights(best_spatial_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_temporal_tile_weights(best_temporal_tile_weights, no_mutation, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_spatial_tile_weights(best_spatial_tile_weights, no_mutation, alpha=alpha, generation=generation, max_generations=max_generations)
         self.mutate_buffer_temporal_weights(best_buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         self.mutate_buffer_spatial_weights(best_buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         # self.mutate_buffer_temporal_order()
@@ -69,9 +69,12 @@ class HardwareConfig:
     def mutate_tensor_in_buffer(self):
         pass
 
-    def mutate_temporal_tile_weights(self, best_temporal_tile_weights, alpha=0.5, generation=0, max_generations=100):
+    def mutate_temporal_tile_weights(self, best_temporal_tile_weights, no_mutation, alpha=0.5, generation=0, max_generations=100):
         layer_num = len(self.temporal_tile_weights)
         for i in range(layer_num):
+            if no_mutation[i] == True:
+                self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
+                continue
             if random.random() < 0.7:
                 self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
             else:
@@ -81,9 +84,12 @@ class HardwareConfig:
                     self.mutate_factor(self.temporal_tile_weights[i], alpha=alpha, generation=generation, max_generations=max_generations)
                 self.shuffle_order(self.temporal_tile_weights[i], alpha=alpha)
 
-    def mutate_spatial_tile_weights(self, best_spatial_tile_weights, alpha=0.5, generation=0, max_generations=100):
+    def mutate_spatial_tile_weights(self, best_spatial_tile_weights, no_mutation, alpha=0.5, generation=0, max_generations=100):
         layer_num = len(self.spatial_tile_weights)
         for i in range(layer_num):
+            if no_mutation[i] == True:
+                self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
+                continue
             if random.random() < 0.7:
                 self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
             else:
@@ -191,8 +197,11 @@ class HardwareConfig:
         else:
             raise ValueError("输入数组必须是一维或二维")
         
-    def crossover_2D(self, dad, mom, best_matrix, alpha=0.5):
-        if random.random() < 0.3:
+    def crossover_2D(self, dad, mom, best_matrix, no_mutation, alpha=0.5):
+        if no_mutation:
+            dad = best_matrix
+            mom = best_matrix
+        elif random.random() < 0.3:
             dad = best_matrix
             mom = best_matrix
         else:
@@ -266,7 +275,7 @@ class HardwareConfig:
                 col_cutoff = random.randint(1, len(dad)-1)
                 dad[col_cutoff:], mom[col_cutoff:] = mom[col_cutoff:], dad[col_cutoff:]
 
-    def crossover(self, other, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5):
+    def crossover(self, other, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, no_mutation, alpha=0.5):
         # NoC
 
         # tensor_in_buffer
@@ -274,11 +283,11 @@ class HardwareConfig:
         # temporal_tile_weights
         layer_num = len(self.temporal_tile_weights)
         for i in range(layer_num):
-            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i], best_temporal_tile_weights)
+            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i], best_temporal_tile_weights, no_mutation[i])
 
         # spatial_tile_weights
         for i in range(layer_num):
-            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i], best_spatial_tile_weights)
+            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i], best_spatial_tile_weights, no_mutation[i])
 
         # buffer_temporal_weights
         self.crossover_1D(self.buffer_temporal_weights, other.buffer_temporal_weights, best_buffer_temporal_weights)
@@ -974,13 +983,13 @@ class MappingExplorer:
             prob += buffer_capacity[1] >= 10
             # WeightBuffer
             prob += buffer_capacity[2] <= 17
-            prob += buffer_capacity[2] >= 13
+            prob += buffer_capacity[2] >= 10
             # InputBuffer
             prob += buffer_capacity[3] <= 16
-            prob += buffer_capacity[3] >= 12
+            prob += buffer_capacity[3] >= 10
             # GlobalBuffer
             prob += buffer_capacity[4] <= 18
-            prob += buffer_capacity[4] >= 15
+            prob += buffer_capacity[4] >= 10
             # DRAM
             prob += buffer_capacity[5] >= 0
 
@@ -990,7 +999,7 @@ class MappingExplorer:
             prob += spatial_capacity[0] >= 0
             # AccumulationBuffer
             prob += spatial_capacity[1] <= 7
-            prob += spatial_capacity[1] >= 5
+            prob += spatial_capacity[1] >= 3
             # WeightBuffer
             prob += spatial_capacity[2] <= 0
             prob += spatial_capacity[2] >= 0
@@ -998,7 +1007,7 @@ class MappingExplorer:
             prob += spatial_capacity[3] <= 0
             prob += spatial_capacity[3] >= 0
             # GlobalBuffer
-            prob += spatial_capacity[4] <= 5
+            prob += spatial_capacity[4] <= 7
             prob += spatial_capacity[4] >= 3
             # DRAM
             prob += spatial_capacity[5] <= 0
@@ -1013,7 +1022,7 @@ class MappingExplorer:
             prob += buffer_capacity[1] <= 14
             prob += buffer_capacity[1] >= 10
             # Scratchpad
-            prob += buffer_capacity[2] <= 16
+            prob += buffer_capacity[2] <= 20
             prob += buffer_capacity[2] >= 12
             # DRAM
             prob += buffer_capacity[3] >= 0
@@ -1876,6 +1885,355 @@ class MappingExplorer:
             new_data.append((spatial_tiles_list[i], np.vstack((temporal_tiles_list[i][:-1], last_row))))
         return new_data, config
 
+    def _integerize_with_staged_optimization(self, solution, p):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """计算存储层次剩余容量"""
+            result = {}
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
+                if buffer_name == 'DRAM':
+                    continue
+                all_involved_rows = list(range(buffer_level + 1))
+                used_capacity = 0
+                for tensor in self.buffer_tensor_dict[buffer_name]:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            tensor_capacity *= data[l][dim] if l in fixed_rows else 1
+                    used_capacity += tensor_capacity
+                result[buffer_name] = used_capacity
+            return result
+
+        def remaining_capacity_constraint(data, fixed_rows):
+            """检查容量约束"""
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > self.buffer_size_list[buffer_key]:
+                    return False
+            return True
+
+        def compute_column_upper_bound(data, row, col, fixed_rows, columns_processed, constraint_func, target):
+            """计算列的有效上界（不超过原始值，且未处理列设为1）"""
+            original_value = data[row][col]
+            test_data = data.copy()
+            
+            # 未处理的列设为1（包括当前列未处理时，但当前列会被单独设置）
+            for c in range(len(data[row])):
+                if c != col and c not in columns_processed:
+                    test_data[row][c] = 1
+            
+            # low, high = 1, math.floor(original_value * 1.1)
+            low, high = 1, original_value
+            best_valid = 1
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_data[row][col] = mid  # 设置当前列的值
+                
+                if constraint_func(test_data) <= target and remaining_capacity_constraint(test_data, fixed_rows + [row]):
+                    best_valid = mid
+                    low = mid + 1  # 尝试更大的值，但不超过original_value
+                else:
+                    high = mid - 1
+            
+            # 确保上界不超过原始值
+            return min(best_valid, original_value)
+
+    def _integerize_with_staged_optimization_for_DNN(self, solution, p):
+        def calculate_remaining_capacity(data, fixed_rows):
+            """计算存储层次剩余容量"""
+            result = {}
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                buffer_level = self.temporal_level[buffer_name]
+                if buffer_name == 'DRAM':
+                    continue
+                all_involved_rows = list(range(buffer_level + 1))
+                used_capacity = 0
+                for tensor in self.buffer_tensor_dict[buffer_name]:
+                    tensor_capacity = 1
+                    for l in all_involved_rows:
+                        for dim in self.tensor_dimensions[tensor]:
+                            tensor_capacity *= data[l][dim] if l in fixed_rows else 1
+                    used_capacity += tensor_capacity
+                result[buffer_name] = used_capacity
+            return result
+
+        def remaining_capacity_constraint(data, fixed_rows):
+            """检查容量约束"""
+            capacities = calculate_remaining_capacity(data, fixed_rows)
+            for buffer_key in sorted(self.buffer_name_list.keys()):
+                buffer_name = self.buffer_name_list[buffer_key]
+                if buffer_name == 'DRAM':
+                    continue
+                if capacities[buffer_name] > self.buffer_size_list[buffer_key]:
+                    return False
+            return True
+
+        def compute_column_upper_bound(data, row, col, fixed_rows, columns_processed, constraint_func, target):
+            """计算列的有效上界（不超过原始值，且未处理列设为1）"""
+            original_value = data[row][col]
+            test_data = data.copy()
+            
+            # 未处理的列设为1（包括当前列未处理时，但当前列会被单独设置）
+            for c in range(len(data[row])):
+                if c != col and c not in columns_processed:
+                    test_data[row][c] = 1
+            
+            # low, high = 1, math.floor(original_value * 1.1)
+            low, high = 1, original_value
+            best_valid = 1
+            
+            while low <= high:
+                mid = (low + high) // 2
+                test_data[row][col] = mid  # 设置当前列的值
+                
+                if constraint_func(test_data) <= target and remaining_capacity_constraint(test_data, fixed_rows + [row]):
+                    best_valid = mid
+                    low = mid + 1  # 尝试更大的值，但不超过original_value
+                else:
+                    high = mid - 1
+            
+            # 确保上界不超过原始值
+            return min(best_valid, original_value)
+
+        def maximize_row_with_constraint(data, row, constraint_func, target, fixed_rows, p_row):
+            """带约束的行最大化（DFS+上界优化）"""
+            fixed_positions = np.where(data[row] == 1)[0]
+            columns_to_process = [j for j in range(len(data[row])) if j not in fixed_positions]
+            columns_to_process.sort(key=lambda j: data[row][j], reverse=True)
+            best_data = data.copy()
+            best_objective = 0
+            iterations = [0]
+
+            def bfs(current_data, col_index, columns_processed):
+                iterations[0] += 1
+                nonlocal best_data, best_objective
+                
+                if constraint_func(current_data) <= target and remaining_capacity_constraint(current_data, fixed_rows + [row]):
+                    current_objective = np.sum(p_row * current_data[row])
+                    # current_objective = np.sum(p_row * np.log2(current_data[row]) + a * np.log2(current_data[row])**2)
+                    if current_objective > best_objective:
+                        best_data = current_data.copy()
+                        best_objective = current_objective
+                    return True
+
+                if col_index >= len(columns_to_process):
+                    return False
+
+                actual_col = columns_to_process[col_index]
+                original_value = data[row][actual_col]
+                columns_processed_current = columns_processed.union({actual_col})
+                
+                # 计算上界并限制不超过原始值
+                upper_bound = compute_column_upper_bound(
+                    current_data, row, actual_col, fixed_rows, columns_processed, constraint_func, target
+                )
+                
+                for value in range(upper_bound, 0, -1):
+                    new_data = current_data.copy()
+                    new_data[row][actual_col] = value
+                    if bfs(new_data, col_index + 1, columns_processed_current):
+                        return True  # 找到最优解后提前终止
+            
+            bfs(data.copy(), 0, set())
+            return best_data
+        
+        # 固定行优化流程
+        fixed_rows = []
+        data = np.ceil(solution).astype(int)
+        
+        # 空间层次优化
+        for spatial_name in self.spatial_level:
+            sp_level = self.spatial_level[spatial_name]
+            spatial_capacity = self.spatial_size_list[spatial_name]
+            p_row = p[sp_level]  # 获取当前行的权重
+            data = maximize_row_with_constraint(
+                data, sp_level, 
+                lambda x: np.prod(x[sp_level]), 
+                spatial_capacity, 
+                fixed_rows,
+                p_row
+            )
+            fixed_rows.append(sp_level)
+        
+        # 存储层次优化
+        def create_buffer_constraint(buffer_name):
+            return lambda x: sum(
+                np.prod(x[self.temporal_level[buffer_name]][self.tensor_dimensions[tensor]]) 
+                for tensor in self.buffer_tensor_dict[buffer_name]
+            )
+                
+        for buffer_key in sorted(self.buffer_name_list.keys()):
+            buffer_name = self.buffer_name_list[buffer_key]
+            if buffer_name == 'DRAM':
+                continue
+            buffer_level = self.temporal_level[buffer_name]
+            buffer_capacity = self.buffer_size_list[buffer_key]
+            p_row = p[buffer_level]  # 获取当前行的权重
+            constraint_func = create_buffer_constraint(buffer_name)
+            data = maximize_row_with_constraint(
+                data, buffer_level, 
+                constraint_func, 
+                buffer_capacity, 
+                fixed_rows,
+                p_row
+            )
+            fixed_rows.append(buffer_level)
+        
+        # 计算最后一行
+        def compute_last_row(data):
+            product = np.prod(data[:-1], axis=0, dtype=np.float64)
+            last_row = np.ceil(np.array(self.dimension) / product).astype(int)
+            return np.vstack([data[:-1], np.maximum(last_row, 1)])
+        
+        return compute_last_row(data)
+
+    # 固定硬件，调mapping
+    def _integerize_with_staged_optimization_with_config_all_DNN2(self, solutions, p, m):
+        
+        
+        # 计算第m大的硬件开销
+        def mth_hardware_config(spatial_tiles_list, temporal_tiles_list, m):
+            """
+            计算多个矩阵对应的最小硬件配置（每个约束维度取所有矩阵的最小值）
+            
+            参数:
+                data_list: 包含多个矩阵的列表（每个元素是一个矩阵，对应原data）
+            返回:
+                最小硬件配置列表（每个元素对应一个约束的最小值）
+            """
+            # 先收集每个矩阵的硬件配置
+            all_configs = []
+            for k in range(len(spatial_tiles_list)):
+
+                spatial_config = []
+                buffer_config = []
+                # 1. 并行容量约束
+                for r in range(len(p.buffer_hierarchy)):
+                    spatial_capacity = np.prod(spatial_tiles_list[k][r])
+                    spatial_config.append(spatial_capacity)
+                # 2. 除DRAM外的存储层次容量约束
+                # 去掉DRAM
+                for r in range(len(p.buffer_hierarchy)-1):
+                    buffer_capacity = 0
+                    tensors_list = p.tensor_in_buffer[p.buffer_hierarchy[r]]
+                    for tensor in tensors_list:
+                        tensor_capacity = 1
+                        if tensor == 'Inputs':
+                            R, S, P, Q, C, K, H, N = 1, 1, 1, 1, 1, 1, 1, 1
+                            for l in range(r+1):
+                                R *= spatial_tiles_list[k][l][0]
+                                S *= spatial_tiles_list[k][l][1]
+                                P *= spatial_tiles_list[k][l][2]
+                                Q *= spatial_tiles_list[k][l][3]
+                                C *= spatial_tiles_list[k][l][4]
+                                K *= spatial_tiles_list[k][l][5]
+                                H *= spatial_tiles_list[k][l][6]
+                                N *= spatial_tiles_list[k][l][7]
+                                R *= temporal_tiles_list[k][l][0]
+                                S *= temporal_tiles_list[k][l][1]
+                                P *= temporal_tiles_list[k][l][2]
+                                Q *= temporal_tiles_list[k][l][3]
+                                C *= temporal_tiles_list[k][l][4]
+                                K *= temporal_tiles_list[k][l][5]
+                                H *= temporal_tiles_list[k][l][6]
+                                N *= temporal_tiles_list[k][l][7]
+                            tensor_capacity = N*((P-1)*self.problems_list[k]['problem']['instance']['Wstride']+1+self.problems_list[k]['problem']['instance']['Wdilation']*(R-1))*((Q-1)*self.problems_list[k]['problem']['instance']['Hstride']+1+self.problems_list[k]['problem']['instance']['Hdilation']*(S-1))*C*H
+                          
+                        else:
+                            for l in range(r+1):
+                                for dim in self.tensor_dimensions[tensor]:
+                                    tensor_capacity *= spatial_tiles_list[k][l][dim]
+                                    tensor_capacity *= temporal_tiles_list[k][l][dim]
+                        buffer_capacity += tensor_capacity
+                    buffer_config.append(buffer_capacity)
+                all_configs.append([spatial_config, buffer_config])
+            # 对每个约束维度取所有矩阵的最大值（即最小硬件配置）
+            spatial_cols = zip(*[cfg[0] for cfg in all_configs])  # 按列分组
+            buffer_cols = zip(*[cfg[1] for cfg in all_configs])
+            mth_spatial = [get_nth_largest(col, m) for col in spatial_cols]
+            mth_buffer = [get_nth_largest(col, m) for col in buffer_cols]
+            mth_config = [mth_spatial, mth_buffer]
+            return mth_config
+        
+        def safe_ceil(x, eps=1e-6):
+            """安全向上取整，避免因浮点误差导致1.0000001被取为2"""
+            # 先四舍五入到eps精度（如1e-6），消除微小误差
+            x_rounded = np.around(x, decimals=3)  # 保留6位小数，可根据需要调整
+            # 若修正后的值与某个整数的差小于eps，则视为该整数
+            integer_part = np.floor(x_rounded)
+            if x_rounded - integer_part < eps:
+                return int(integer_part)
+            else:
+                # 确实需要向上取整的情况（如1.1 → 2）
+                return int(np.ceil(x_rounded))
+
+        def get_nth_largest(values, n):
+            """
+            获取列表中第n大的值（保留重复值）
+            :param values: 目标数值列表
+            :param n: 要获取的排名（1-based，如n=1是最大值，n=2是第2大）
+            :return: 第n大的值
+            """
+            if n < 1 or n > len(values):
+                raise ValueError(f"n必须在1到{len(values)}之间")
+            # 降序排序后取第n-1个索引
+            sorted_values = sorted(values, reverse=True)
+            return sorted_values[n-1]
+
+        
+        spatial_tiles_solution = solutions[0]
+        temporal_tiles_solution = solutions[1]
+        
+        buffer_capacity_solution = solutions[2]
+        spatial_capacity_solution = solutions[3]
+        
+        spatial_tiles_list = []
+        temporal_tiles_list = []
+        datas = []
+        for i in range(len(solutions[0])):
+            tile_matrix = np.array(temporal_tiles_solution[i])
+            # 用vectorize实现批量处理（效率较高）
+            safe_ceil_vec = np.vectorize(safe_ceil)
+            tile_matrix_int = safe_ceil_vec(tile_matrix).astype(int)
+            temporal_tiles_list.append(tile_matrix_int)
+            tile_matrix = np.array(spatial_tiles_solution[i])
+            # 用vectorize实现批量处理（效率较高）
+            safe_ceil_vec = np.vectorize(safe_ceil)
+            tile_matrix_int = safe_ceil_vec(tile_matrix).astype(int)
+            spatial_tiles_list.append(tile_matrix_int)
+            
+            # spatial_tiles_list.append(np.ceil(spatial_tiles_solution[i]).astype(int))
+            # temporal_tiles_list.append(np.ceil(temporal_tiles_solution[i]).astype(int))
+        buffer_capacity_list = []
+        spatial_capacity_list = []
+        for i in range(len(solutions[2])):
+            tile_matrix = np.array(buffer_capacity_solution[i])
+            # 用vectorize实现批量处理（效率较高）
+            safe_ceil_vec = np.vectorize(safe_ceil)
+            buffer_capacity_int = safe_ceil_vec(tile_matrix).astype(int)
+            buffer_capacity_list.append(buffer_capacity_int)
+            tile_matrix = np.array(spatial_capacity_solution[i])
+            # 用vectorize实现批量处理（效率较高）
+            safe_ceil_vec = np.vectorize(safe_ceil)
+            spatial_capacity_int = safe_ceil_vec(tile_matrix).astype(int)
+            spatial_capacity_list.append(spatial_capacity_int)
+
+        if m == 0:
+            config = [spatial_capacity_list, spatial_capacity_list[:-1]]
+        else:
+            config = mth_hardware_config(spatial_tiles_list, temporal_tiles_list, m)
+        
+        new_data = []
+        for i in range(len(solutions[0])):
+            new_data.append(self._integerize_with_staged_optimization_for_DNN())
+        return new_data, config
+
 
     def _integerize_with_staged_optimization5(self, solution, p, a):
         def calculate_remaining_capacity(data, fixed_rows):
@@ -2467,6 +2825,7 @@ class MappingExplorer:
             self.observation = utils.parse_timeloop_output(output_stats_path)
             values = self.judge()
             values_list.append(values)
+
         rewards = [sum(items) for items in zip(*values_list)]
         # except Exception as e:
         #     print(f"发生错误: {e}")
@@ -2475,7 +2834,7 @@ class MappingExplorer:
         # finally:
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
-        return rewards, values_list  
+        return rewards, values_list, mapping_list  
     
     def thread_fun_DNN(self, p):
         original_dir = os.getcwd()
@@ -4703,7 +5062,7 @@ class MappingExplorer:
     # 映射与硬件协同优化(多层)
     def run_parameters5(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
-        def crossover(parents, pop, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5):
+        def crossover(parents, pop, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, no_mutation, alpha=0.5):
             if len(parents) == 1:
                 for idx in range(len(pop)):
                     pop[idx] = copy.deepcopy(parents[0])
@@ -4712,7 +5071,7 @@ class MappingExplorer:
                     dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
                     mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
 
-                    dad.crossover(mom, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha)
+                    dad.crossover(mom, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, no_mutation, alpha)
                     pop[idx] = dad
                     if idx + 1 < len(pop):
                         pop[idx+1] = mom
@@ -4726,6 +5085,7 @@ class MappingExplorer:
         best_sol = None
         best_values = []
 
+      
         if self.accl_name == 'Simba':
             population = self.create_genome_for_parameters3(num_population)
         elif self.accl_name == 'Gemmini':
@@ -4741,6 +5101,7 @@ class MappingExplorer:
         best_tile_weights_scores = [-float('inf') for _ in range(len(self.problems_list))]
         best_buffer_temporal_weights = [np.random.randint(10, 100, size=row).astype(float) for _ in range(len(self.problems_list))]
         best_buffer_spatial_weights = [np.random.randint(10, 100, size=row).astype(float) for _ in range(len(self.problems_list))]
+        no_mutation = [False for _ in range(len(self.problems_list))]
         for g in range(num_generations):
             start_time = time.time()
             # alpha = adaptive_parameters(g, num_generations)
@@ -4762,12 +5123,12 @@ class MappingExplorer:
                 elite_fitness = copy.deepcopy(fitness[:(len(elite))])
 
                 
-                crossover(parents, population, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5)
+                crossover(parents, population, best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, no_mutation, alpha=0.5)
 
                 # 变异
                 for pop in population[num_elite:]:
                     # 选择一种主要变异策略
-                    pop.mutation(best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, alpha=0.5, generation=g, max_generations=num_generations)
+                    pop.mutation(best_spatial_tile_weights, best_temporal_tile_weights, best_buffer_temporal_weights, best_buffer_spatial_weights, no_mutation, alpha=0.5, generation=g, max_generations=num_generations)
                 
 
                 # 1. 更新种群（参数矩阵）thread_fun_pation长度一致
@@ -4777,6 +5138,7 @@ class MappingExplorer:
                 results = pool.map(self.thread_fun_hardware, population)
                 reward_list = [res[0] for res in results]
                 tile_value_list = [res[1] for res in results]
+                mapping_list = [res[2] for res in results]
                 for idx_prob in range(len(self.problems_list)):
                     current_tile_weights_scores = -float('inf')
                     current_temporal_tile_weights = None
@@ -4798,6 +5160,7 @@ class MappingExplorer:
                         best_buffer_temporal_weights[idx_prob] = current_buffer_temporal_weights
                         best_buffer_spatial_weights[idx_prob] = current_buffer_spatial_weights
 
+                
                 print(best_tile_weights_scores)
                 for i in range(len(population)):
                     reward =reward_list[i]
@@ -4819,12 +5182,18 @@ class MappingExplorer:
                     best_sol = copy.deepcopy(population[gen_best_idx])
                     best_values = copy.deepcopy(tile_value_list[gen_best_idx])
                 print(best_values)
+                print(no_mutation)
 
                 num_parents = int(num_population * parents_ratio)
                 num_parents = min(num_parents, len(population) - count_non_valid)
                 parents_ratio *= ratio_decay
 
-                
+                if g > 30:
+                    average = np.mean(best_values)
+                    for i in range(len(self.problems_list)):
+                        relative_error = abs(best_values[i][0] - best_tile_weights_scores[i]) / max(abs(best_tile_weights_scores[i]), 1e-8)
+                        if relative_error < 0.1 and average > best_values[i][0]:
+                            no_mutation[i] = True
                 
                 print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
        
@@ -5089,7 +5458,23 @@ class MappingExplorer:
             }
 
             param_order = ['spatial0', 'spatial1', 'spatial3', 'temporal0', 'temporal1', 'temporal2', 'temporal3']
+        elif self.accl_name == 'Simba':
+            param_candidates = {
+                'spatial0': [1],  
+                'spatial1': [8, 16, 32, 64, 128],  
+                'spatial2': [1], 
+                'spatial3': [1], 
+                'spatial4': [8, 16, 32, 64, 128], 
+                'spatial5': [1],        
+                'temporal0': [1, 2],      
+                'temporal1': [1024, 1536, 2048, 3072, 4096, 6096, 8096],      
+                'temporal2': [1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072],      
+                'temporal3': [1024, 2048, 4096, 8096, 16384, 32768, 65536],   
+                'temporal4': [1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072, 262144],   
+                'temporal5': [1],
+            }
 
+            param_order = ['spatial0', 'spatial1', 'spatial2', 'spatial3', 'spatial4', 'spatial5', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4', 'temporal5']
         random.seed(random_seed)
         np.random.seed(random_seed)
         
@@ -5109,10 +5494,15 @@ class MappingExplorer:
                 self.buffer_spatial_list = lst
                 self.buffer_temporal_list = sample_params[3:]
                 print(self.buffer_spatial_list)
+            elif self.accl_name == 'Simba':
+                self.buffer_spatial_list = sample_params[:6]
+                self.buffer_temporal_list = sample_params[6:]
+                print(self.buffer_spatial_list)
+                print(self.buffer_temporal_list)
             
             # 计算损失
             # current_loss = self.run_parameters6(num_population=20, num_generations=20)
-            current_loss = self.find_best_mapping(sample=200)
+            current_loss = self.find_best_mapping(sample=50)
             all_results.append((sample_params, current_loss))
             
             # 更新最优结果
@@ -5171,8 +5561,43 @@ class MappingExplorer:
                 Integer(0, len(search_candidates['temporal1'])-1, name='temporal1'),# 索引0-4
                 Integer(0, len(search_candidates['temporal2'])-1, name='temporal2'),# 索引0-4
             ]
-        else:
-            raise ValueError(f"不支持的加速器类型: {self.accl_name}")
+        elif self.accl_name == 'Simba':
+            fixed_params = {
+                'spatial0': 1,
+                'spatial2': 1,
+                'spatial3': 1,
+                'spatial5': 1,
+                'temporal5': 1,
+            }
+            
+            # 需要搜索的参数（多个候选值）
+            search_candidates = {
+                'spatial1': [8, 16, 32, 64, 128],  
+                'spatial4': [8, 16, 32, 64, 128], 
+                'temporal0': [1, 2],      
+                'temporal1': [1024, 1536, 2048, 3072, 4096, 6096, 8096],      
+                'temporal2': [1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072],      
+                'temporal3': [1024, 2048, 4096, 8096, 16384, 32768, 65536],   
+                'temporal4': [1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072, 262144],   
+            }
+            
+            # 搜索参数的顺序（与参数空间对应）
+            search_order = ['spatial1', 'spatial4', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4']
+            
+            # 原完整参数顺序（用于最终输出，与原代码一致）
+            full_param_order = ['spatial0', 'spatial1', 'spatial2', 'spatial3', 'spatial4', 'spatial5', 'temporal0', 'temporal1', 'temporal2', 'temporal3', 'temporal4', 'temporal5']
+            
+            # 定义贝叶斯优化的参数空间（只包含需要搜索的参数）
+            param_space = [
+                Integer(0, len(search_candidates['spatial1'])-1, name='spatial1'),  # 索引0-4
+                Integer(0, len(search_candidates['spatial4'])-1, name='spatial4'),  # 索引0-4
+                Integer(0, len(search_candidates['temporal0'])-1, name='temporal0'),# 索引0-1
+                Integer(0, len(search_candidates['temporal1'])-1, name='temporal1'),# 索引0-4
+                Integer(0, len(search_candidates['temporal2'])-1, name='temporal2'),# 索引0-4
+                Integer(0, len(search_candidates['temporal3'])-1, name='temporal3'),# 索引0-4
+                Integer(0, len(search_candidates['temporal4'])-1, name='temporal4'),# 索引0-4
+            ]
+            
         
         # 3. 存储所有采样结果
         all_results = []
@@ -5204,11 +5629,15 @@ class MappingExplorer:
                     full_params.append(search_params[param_name])
             
             # 步骤3：与原代码逻辑一致，构造空间和时间缓冲列表
-            self.buffer_spatial_list = full_params[0:4] 
-            self.buffer_temporal_list = full_params[4:]  # temporal0-temporal3
+            if self.accl_name == 'Gemmini':
+                self.buffer_spatial_list = full_params[0:4] 
+                self.buffer_temporal_list = full_params[4:]  # temporal0-temporal3
+            elif self.accl_name == 'Simba':
+                self.buffer_spatial_list = full_params[:6]
+                self.buffer_temporal_list = full_params[6:]
             
             # 步骤4：计算损失
-            current_loss = self.find_best_mapping(sample=200)
+            current_loss = self.find_best_mapping(sample=50)
             
             # 步骤5：保存结果（与原代码格式一致）
             all_results.append((full_params.copy(), current_loss))
