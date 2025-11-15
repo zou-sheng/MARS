@@ -1,14 +1,15 @@
 DRAM [ Weights:4096 (4096) Inputs:45088768 (45088768) Outputs:11008 (11008) ] 
 -----------------------------------------------------------------------------
-| for C in [0:4096)
+| for C in [0:2048)
 
-GlobalBuffer [ Inputs:11008 (11008) Outputs:11008 (11008) ] 
-InputBuffer [ Inputs:11008 (11008) ] 
-WeightBuffer [ Weights:1 (1) ] 
-------------------------------
+GlobalBuffer [ Inputs:22016 (22016) Outputs:11008 (11008) ] 
+-----------------------------------------------------------
 |   for P in [0:11008)
 
+InputBuffer [ Inputs:2 (2) ] 
+WeightBuffer [ Weights:2 (2) ] 
 AccumulationBuffer [ Outputs:1 (1) ] 
-Registers [ Weights:1 (1) ] 
+Registers [ Weights:2 (2) ] 
 ---------------------------
-|     << Compute >>
+|     for C in [0:2)
+|       << Compute >>

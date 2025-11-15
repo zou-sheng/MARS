@@ -1043,7 +1043,7 @@ class MappingExplorer:
 
             # 正方形阵列
             prob += spatial_capacity[2] == spatial_capacity[1]
-            # prob += spatial_capacity[2] == 5 #math.log2(112)
+            prob += spatial_capacity[2] == 6 #math.log2(112)
         # 定义目标函数：矩阵元素的加权和
         objective = 0
         for k in range(len(dimension_list)):
@@ -5188,12 +5188,12 @@ class MappingExplorer:
                 num_parents = min(num_parents, len(population) - count_non_valid)
                 parents_ratio *= ratio_decay
 
-                if g > 30:
-                    average = np.mean(best_values)
-                    for i in range(len(self.problems_list)):
-                        relative_error = abs(best_values[i][0] - best_tile_weights_scores[i]) / max(abs(best_tile_weights_scores[i]), 1e-8)
-                        if relative_error < 0.1 and average > best_values[i][0]:
-                            no_mutation[i] = True
+                # if g > 30:
+                #     average = np.mean(best_values)
+                #     for i in range(len(self.problems_list)):
+                #         relative_error = abs(best_values[i][0] - best_tile_weights_scores[i]) / max(abs(best_tile_weights_scores[i]), 1e-8)
+                #         if relative_error < 0.2 and average > best_values[i][0]:
+                #             no_mutation[i] = True
                 
                 print( "[Stage {}]Gen {}:  1st stage Reward: {}, Best reward: {}".format(stage_idx + 1, (g + 1), np.abs(prev_stage_value), np.abs(best_reward)))
        
@@ -5449,11 +5449,11 @@ class MappingExplorer:
         if self.accl_name == 'Gemmini':
             param_candidates = {
                 'spatial0': [1],  
-                'spatial1': [8, 16, 32, 64, 128],               
+                'spatial1': [112], #[8, 16, 32, 64, 128],               
                 'spatial3': [1],        
                 'temporal0': [1, 2],      
-                'temporal1': [1024, 1536, 2048, 3072, 4096],      
-                'temporal2': [4096, 8196, 16384, 32768, 65536],      
+                'temporal1': [2048], #[1024, 1536, 2048, 3072, 4096],      
+                'temporal2': [16384], #[4096, 8196, 16384, 32768, 65536],      
                 'temporal3': [1],
             }
 
@@ -5502,7 +5502,7 @@ class MappingExplorer:
             
             # 计算损失
             # current_loss = self.run_parameters6(num_population=20, num_generations=20)
-            current_loss = self.find_best_mapping(sample=50)
+            current_loss = self.find_best_mapping(sample=100)
             all_results.append((sample_params, current_loss))
             
             # 更新最优结果
