@@ -9,9 +9,9 @@ def extract_value_from_file(file_path):
         with open(file_path, 'r') as file:
             content = file.read()
             # 使用正则表达式查找Cycles行
-            match = re.search(r'Cycles:\s*(\d+)', content)
+            # match = re.search(r'Cycles:\s*(\d+)', content)
             # match = re.search(r'Energy:\s*(\d+\.\d+)', content)
-            # match = re.search(r'EDP\(J\*cycle\):\s*([\de.+]+)', content)
+            match = re.search(r'EDP\(J\*cycle\):\s*([\de.+]+)', content)
             if match:
                 return match.group(1)  # 返回捕获的数字部分
             else:
@@ -23,13 +23,12 @@ def extract_value_from_file(file_path):
 
 def main():
     # 配置参数
-    main_folder = "./report/MARS/TensorCore/obj_latency/deepbench_input1"  # 主文件夹路径
+    main_folder = "./report/Saturn/Simba/obj_EDP/resnet50_1_input1_all_DNN"  # 主文件夹路径
     target_file = "timeloop-model.stats.txt"  # 目标文件名
     output_excel = "extracted_cycles.xlsx"  # 输出Excel文件名
     
     # 存储提取的值和对应的子文件夹名
     results = []
-    
     # 遍历主文件夹下的所有一级子文件夹
     for first_level_folder in os.listdir(main_folder):
         first_level_path = os.path.join(main_folder, first_level_folder)

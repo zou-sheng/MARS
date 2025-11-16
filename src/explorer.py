@@ -53,11 +53,11 @@ class HardwareConfig:
         # self.mutate_buffer_temporal_order()
         # self.mutate_buffer_spatial_order()
 
-    def mutation_for_DNN(self, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5, generation=0, max_generations=100):
+    def mutation_for_DNN(self, best_spatial_tile_weights, best_temporal_tile_weights, no_mutation, alpha=0.5, generation=0, max_generations=100):
         # self.mutate_noc()
         # self.mutate_tensor_in_buffer()
-        self.mutate_temporal_tile_weights(best_temporal_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
-        self.mutate_spatial_tile_weights(best_spatial_tile_weights, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_temporal_tile_weights(best_temporal_tile_weights, no_mutation, alpha=alpha, generation=generation, max_generations=max_generations)
+        self.mutate_spatial_tile_weights(best_spatial_tile_weights, no_mutation, alpha=alpha, generation=generation, max_generations=max_generations)
         # self.mutate_buffer_temporal_weights(best_buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         # self.mutate_buffer_spatial_weights(best_buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
         # self.mutate_buffer_temporal_order()
@@ -73,7 +73,7 @@ class HardwareConfig:
         layer_num = len(self.temporal_tile_weights)
         for i in range(layer_num):
             if no_mutation[i] == True:
-                self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
+                self.temporal_tile_weights[i] = self.temporal_tile_weights[i]
                 continue
             if random.random() < 0.7:
                 self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
@@ -88,7 +88,7 @@ class HardwareConfig:
         layer_num = len(self.spatial_tile_weights)
         for i in range(layer_num):
             if no_mutation[i] == True:
-                self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
+                self.spatial_tile_weights[i] = self.spatial_tile_weights[i]
                 continue
             if random.random() < 0.7:
                 self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
@@ -199,8 +199,8 @@ class HardwareConfig:
         
     def crossover_2D(self, dad, mom, best_matrix, no_mutation, alpha=0.5):
         if no_mutation:
-            dad = best_matrix
-            mom = best_matrix
+            dad = dad
+            mom = mom
         elif random.random() < 0.3:
             dad = best_matrix
             mom = best_matrix
@@ -299,7 +299,7 @@ class HardwareConfig:
 
         # buffer_spatial_order
 
-    def crossover_for_DNN(self, other, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5):
+    def crossover_for_DNN(self, other, best_spatial_tile_weights, best_temporal_tile_weights, no_mutation, alpha=0.5):
         # NoC
 
         # tensor_in_buffer
@@ -307,11 +307,11 @@ class HardwareConfig:
         # temporal_tile_weights
         layer_num = len(self.temporal_tile_weights)
         for i in range(layer_num):
-            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i], best_temporal_tile_weights)
+            self.crossover_2D(self.temporal_tile_weights[i], other.temporal_tile_weights[i], best_temporal_tile_weights, no_mutation)
 
         # spatial_tile_weights
         for i in range(layer_num):
-            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i], best_spatial_tile_weights)
+            self.crossover_2D(self.spatial_tile_weights[i], other.spatial_tile_weights[i], best_spatial_tile_weights, no_mutation)
 
         # # buffer_temporal_weights
         # self.crossover_1D(self.buffer_temporal_weights, other.buffer_temporal_weights, best_buffer_temporal_weights)
@@ -5188,7 +5188,7 @@ class MappingExplorer:
                 num_parents = min(num_parents, len(population) - count_non_valid)
                 parents_ratio *= ratio_decay
 
-                # if g > 30:
+                # if g > 20:
                 #     average = np.mean(best_values)
                 #     for i in range(len(self.problems_list)):
                 #         relative_error = abs(best_values[i][0] - best_tile_weights_scores[i]) / max(abs(best_tile_weights_scores[i]), 1e-8)
@@ -5249,7 +5249,7 @@ class MappingExplorer:
     # 映射(多层)
     def run_parameters6(self, stage_idx=0, prev_stage_value=0, num_population=10, num_generations=100, elite_ratio=0.05,
                        parents_ratio=0.15, ratio_decay=1, num_finetune=1):
-        def crossover(parents, pop, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5):
+        def crossover(parents, pop, best_spatial_tile_weights, best_temporal_tile_weights, no_mutation, alpha=0.5):
             if len(parents) == 1:
                 for idx in range(len(pop)):
                     pop[idx] = copy.deepcopy(parents[0])
@@ -5258,7 +5258,7 @@ class MappingExplorer:
                     dad = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
                     mom = copy.deepcopy(parents[random.randint(0, len(parents)-1)])
 
-                    dad.crossover_for_DNN(mom, best_spatial_tile_weights, best_temporal_tile_weights, alpha)
+                    dad.crossover_for_DNN(mom, best_spatial_tile_weights, best_temporal_tile_weights, no_mutation, alpha)
                     pop[idx] = dad
                     if idx + 1 < len(pop):
                         pop[idx+1] = mom
@@ -5282,6 +5282,7 @@ class MappingExplorer:
         fitness = np.ones((num_population, len(self.fitness_obj)), float)
         num_parents = num_population
         row = len(population[0].buffer_hierarchy)
+        no_mutation = [False for _ in range(len(self.problems_list))]
         col = 8
         best_temporal_tile_weights = [np.random.uniform(low=1.0, high=100.0, size=(row, col)) for _ in range(len(self.problems_list))]
         best_spatial_tile_weights = [np.random.uniform(low=1.0, high=100.0, size=(row, col)) for _ in range(len(self.problems_list))]
@@ -5309,12 +5310,12 @@ class MappingExplorer:
                 elite_fitness = copy.deepcopy(fitness[:(len(elite))])
 
                 
-                crossover(parents, population, best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5)
+                crossover(parents, population, best_spatial_tile_weights, best_temporal_tile_weights, no_mutation, alpha=0.5)
 
                 # 变异
                 for pop in population[num_elite:]:
                     # 选择一种主要变异策略
-                    pop.mutation_for_DNN(best_spatial_tile_weights, best_temporal_tile_weights, alpha=0.5, generation=g, max_generations=num_generations)
+                    pop.mutation_for_DNN(best_spatial_tile_weights, best_temporal_tile_weights, no_mutation, alpha=0.5, generation=g, max_generations=num_generations)
                 
 
                 # 1. 更新种群（参数矩阵）thread_fun_pation长度一致
@@ -5346,6 +5347,7 @@ class MappingExplorer:
                         # best_buffer_spatial_weights[idx_prob] = current_buffer_spatial_weights
 
                 print(best_tile_weights_scores)
+                print(sum(best_tile_weights_scores))
                 for i in range(len(population)):
                     reward =reward_list[i]
                     if reward is None or any(np.array(reward) >= 0):
@@ -5445,11 +5447,11 @@ class MappingExplorer:
         return np.abs(gen_best)
         
 
-    def run_random(self, n_samples=50, random_seed=42):
+    def run_random(self, n_samples=1, random_seed=42):
         if self.accl_name == 'Gemmini':
             param_candidates = {
                 'spatial0': [1],  
-                'spatial1': [112], #[8, 16, 32, 64, 128],               
+                'spatial1': [32], #[8, 16, 32, 64, 128],               
                 'spatial3': [1],        
                 'temporal0': [1, 2],      
                 'temporal1': [2048], #[1024, 1536, 2048, 3072, 4096],      
@@ -5490,7 +5492,8 @@ class MappingExplorer:
             ]
             if self.accl_name == 'Gemmini':
                 lst = sample_params[0:3]
-                lst.insert(2, lst[1])
+                # lst.insert(2, lst[1])
+                lst.insert(2, 64)
                 self.buffer_spatial_list = lst
                 self.buffer_temporal_list = sample_params[3:]
                 print(self.buffer_spatial_list)
@@ -5501,8 +5504,8 @@ class MappingExplorer:
                 print(self.buffer_temporal_list)
             
             # 计算损失
-            # current_loss = self.run_parameters6(num_population=20, num_generations=20)
-            current_loss = self.find_best_mapping(sample=100)
+            current_loss = self.run_parameters6(num_population=20, num_generations=20)
+            # current_loss = self.find_best_mapping(sample=100)
             all_results.append((sample_params, current_loss))
             
             # 更新最优结果

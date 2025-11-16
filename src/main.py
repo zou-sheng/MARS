@@ -3,7 +3,7 @@ import yaml
 import os
 import pickle
 
-from explorer import MappingExplorer
+from explorer2 import MappingExplorer
 from datetime import datetime
 import json
 
