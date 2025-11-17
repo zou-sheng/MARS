@@ -75,7 +75,7 @@ class HardwareConfig:
             if no_mutation[i] == True:
                 self.temporal_tile_weights[i] = self.temporal_tile_weights[i]
                 continue
-            if random.random() < 0.7:
+            if random.random() < 0.3:
                 self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
             else:
                 if random.random() < 0.7:
@@ -90,7 +90,7 @@ class HardwareConfig:
             if no_mutation[i] == True:
                 self.spatial_tile_weights[i] = self.spatial_tile_weights[i]
                 continue
-            if random.random() < 0.7:
+            if random.random() < 0.3:
                 self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
             else:
                 if random.random() < 0.7:
@@ -334,7 +334,7 @@ class HardwareConfig:
 
 
 class MappingExplorer:
-    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, expanded_dict=None, parameter_dimension=2, weight_matrix=None, solver='lp', all_DNN=False):
+    def __init__(self, operator_instance, accelerator_dir, accelerator, mapper, type, version, report_dir, optim_obj, expanded_scope, weight_num, expanded_dict=None, parameter_dimension=2, weight_matrix=None, solver='lp', all_DNN=False):
         self.accl_name = accelerator
 
         if optim_obj == 'latency':
@@ -359,6 +359,7 @@ class MappingExplorer:
             self.operator_instance = operator_instance
             self.problems_list = None  # 明确初始化
 
+        self.weight_num = weight_num
         
         self.report_dir = report_dir 
         self.expanded_scope = expanded_scope
@@ -1046,15 +1047,16 @@ class MappingExplorer:
             prob += spatial_capacity[2] == 6 #math.log2(112)
         # 定义目标函数：矩阵元素的加权和
         objective = 0
+        num = len(p.spatial_tile_weights)
         for k in range(len(dimension_list)):
             for r in range(rows):
                 for c in range(cols):
-                    objective += spatial_tiles[k][r][c] * p.spatial_tile_weights[k%10][r][c]
+                    objective += spatial_tiles[k][r][c] * p.spatial_tile_weights[k%num][r][c]
 
         for k in range(len(dimension_list)):
             for r in range(rows):
                 for c in range(cols):
-                    objective += temporal_tiles[k][r][c] * p.temporal_tile_weights[k%10][r][c]
+                    objective += temporal_tiles[k][r][c] * p.temporal_tile_weights[k%num][r][c]
 
         # 不包含DRAM，所以是rows-1行
         for i in range(rows-1):
@@ -2556,7 +2558,7 @@ class MappingExplorer:
         for i in range(num_population):
             temporal_tile_weights = []
             spatial_tile_weights = []
-            for n in range(10): 
+            for n in range(self.weight_num): 
                 temporal_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
                 spatial_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
             buffer_temporal_weights = np.random.randint(10, 100, size=row).astype(float)
@@ -5148,8 +5150,8 @@ class MappingExplorer:
                     for idx_pop in range(len(population)):
                         if tile_value_list[idx_pop][idx_prob][0] > current_tile_weights_scores:
                             current_tile_weights_scores = tile_value_list[idx_pop][idx_prob][0]
-                            current_temporal_tile_weights = population[idx_pop].temporal_tile_weights[idx_prob%10]
-                            current_spatial_tile_weights = population[idx_pop].spatial_tile_weights[idx_prob%10]
+                            current_temporal_tile_weights = population[idx_pop].temporal_tile_weights[idx_prob%self.weight_num]
+                            current_spatial_tile_weights = population[idx_pop].spatial_tile_weights[idx_prob%self.weight_num]
                             current_buffer_temporal_weights = population[idx_pop].buffer_temporal_weights
                             current_buffer_spatial_weights = population[idx_pop].buffer_spatial_weights
 

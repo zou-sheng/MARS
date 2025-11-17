@@ -95,5 +95,40 @@ cd ./src
 # python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload llama2_7B --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN
 # python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload llama2_13B --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN
 # python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload llama2_34B --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN
-python main.py --optim_obj EDP --population 20 --epochs 20  --accelerator Simba --mapper Saturn --type arch --version v1 --workload resnet50 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN
+echo "-----------------------------------------------87"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 87
+echo "-----------------------------------------------80"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 80 
+echo "-----------------------------------------------70"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 70 
+echo "-----------------------------------------------60"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 60 
+echo "-----------------------------------------------50"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 50 
+echo "-----------------------------------------------40"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 40 
+echo "-----------------------------------------------30"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 30 
+echo "-----------------------------------------------20"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 20
+echo "-----------------------------------------------10"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 10
+echo "-----------------------------------------------5"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 5
+echo "-----------------------------------------------1"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 1
+echo "-----------------------------------------------50 --all_workload"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 50 --all_workload
+echo "-----------------------------------------------40 --all_workload"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 40 --all_workload 
+echo "-----------------------------------------------30 --all_workload"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 30 --all_workload 
+echo "-----------------------------------------------20 --all_workload"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 20 --all_workload
+echo "-----------------------------------------------10 --all_workload"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 10 --all_workload
+echo "-----------------------------------------------5 --all_workload"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 5 --all_workload
+echo "-----------------------------------------------1 --all_workload"
+python main.py --optim_obj EDP --population 20 --epochs 100  --accelerator Simba --mapper Saturn --type arch --version v1 --workload densenet161 --layer_id 0 --batch_size 1 --expanded_scope 0.2 --all_DNN --weight_num 1 --all_workload
 cd ..
