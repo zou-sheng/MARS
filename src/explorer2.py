@@ -75,7 +75,7 @@ class HardwareConfig:
             if no_mutation[i] == True:
                 self.temporal_tile_weights[i] = self.temporal_tile_weights[i]
                 continue
-            if random.random() < 0.3:
+            if random.random() < 0.7:
                 self.temporal_tile_weights[i] = best_temporal_tile_weights[i]
             else:
                 if random.random() < 0.7:
@@ -90,7 +90,7 @@ class HardwareConfig:
             if no_mutation[i] == True:
                 self.spatial_tile_weights[i] = self.spatial_tile_weights[i]
                 continue
-            if random.random() < 0.3:
+            if random.random() < 0.7:
                 self.spatial_tile_weights[i] = best_spatial_tile_weights[i]
             else:
                 if random.random() < 0.7:
@@ -100,14 +100,14 @@ class HardwareConfig:
                 self.shuffle_order(self.spatial_tile_weights[i], alpha=alpha)
 
     def mutate_buffer_temporal_weights(self, best_buffer_temporal_weights, alpha=0.5, generation=0, max_generations=100):
-        if random.random() < 0.3:
+        if random.random() < 0.7:
             self.buffer_temporal_weights = random.choice(best_buffer_temporal_weights)
         else:
             self.mutate_factor(self.buffer_temporal_weights, alpha=alpha, generation=generation, max_generations=max_generations)
             self.shuffle_order(self.buffer_temporal_weights)
 
     def mutate_buffer_spatial_weights(self, best_buffer_spatial_weights, alpha=0.5, generation=0, max_generations=100):
-        if random.random() < 0.3:
+        if random.random() < 0.7:
             self.buffer_spatial_weights = random.choice(best_buffer_spatial_weights)
         else:
             self.mutate_factor(self.buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
@@ -5518,7 +5518,7 @@ class MappingExplorer:
         
         return best_params, best_loss, all_results
 
-    def run_BO(self, n_samples=50, random_seed=42, n_initial_points=10):
+    def run_BO(self, n_samples=20, random_seed=42, n_initial_points=10):
         """
         贝叶斯优化版本的参数搜索（使用skopt库）- 修复Integer空间边界问题
         
@@ -5642,7 +5642,8 @@ class MappingExplorer:
                 self.buffer_temporal_list = full_params[6:]
             
             # 步骤4：计算损失
-            current_loss = self.find_best_mapping(sample=50)
+            # current_loss = self.find_best_mapping(sample=50)
+            current_loss = self.run_parameters6(num_population=20, num_generations=20)
             
             # 步骤5：保存结果（与原代码格式一致）
             all_results.append((full_params.copy(), current_loss))
