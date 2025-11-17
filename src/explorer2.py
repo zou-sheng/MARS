@@ -1033,10 +1033,10 @@ class MappingExplorer:
             prob += spatial_capacity[0] <= 0
             prob += spatial_capacity[0] >= 0
             # Accumulator
-            prob += spatial_capacity[1] <= 6
+            prob += spatial_capacity[1] <= 8
             prob += spatial_capacity[1] >= 2
             # Scratchpad
-            prob += spatial_capacity[2] <= 6
+            prob += spatial_capacity[2] <= 8
             prob += spatial_capacity[2] >= 2
             # DRAM
             prob += spatial_capacity[3] <= 0
@@ -1044,7 +1044,7 @@ class MappingExplorer:
 
             # 正方形阵列
             prob += spatial_capacity[2] == spatial_capacity[1]
-            prob += spatial_capacity[2] == 6 #math.log2(112)
+            prob += spatial_capacity[2] == 7 #math.log2(112)
         # 定义目标函数：矩阵元素的加权和
         objective = 0
         num = len(p.spatial_tile_weights)
@@ -2591,6 +2591,7 @@ class MappingExplorer:
         pop = []
         buffer_hierarchy = ['Registers', 'Accumulator', 'Scratchpad', 'DRAM']
         tensor_in_buffer = {'Registers': ['Weights'], 'Accumulator': ['Outputs'], 'Scratchpad': ['Inputs', 'Weights'], 'DRAM': ['Weights','Inputs','Outputs']}
+        # tensor_in_buffer = {'Registers': ['Weights'], 'Accumulator': ['Weights'], 'Scratchpad': ['Weights', 'Inputs', 'Outputs'], 'DRAM': ['Weights','Inputs','Outputs']}
         layer_num = len(self.problems_list)
         row = len(buffer_hierarchy)
         col = 8
@@ -5405,7 +5406,7 @@ class MappingExplorer:
             utils.store_yaml(f'{report_dir}/problem.yaml', problem)
             utils.store_yaml(f'{report_dir}/arch.yaml', arch)
             utils.run_timeloop('arch.yaml', 'problem.yaml', 'map.yaml', cwd=report_dir)
-
+            print(temp_mapping)
         # remainders = {}
         # outermost_idx = {}
         # # print(best_sol)
@@ -5449,15 +5450,15 @@ class MappingExplorer:
         return np.abs(gen_best)
         
 
-    def run_random(self, n_samples=1, random_seed=42):
+    def run_random(self, n_samples=20, random_seed=42):
         if self.accl_name == 'Gemmini':
             param_candidates = {
                 'spatial0': [1],  
-                'spatial1': [32], #[8, 16, 32, 64, 128],               
+                'spatial1': [8, 16, 32, 64, 128],               
                 'spatial3': [1],        
-                'temporal0': [1, 2],      
-                'temporal1': [2048], #[1024, 1536, 2048, 3072, 4096],      
-                'temporal2': [16384], #[4096, 8196, 16384, 32768, 65536],      
+                'temporal0': [1],      
+                'temporal1': [1024, 1536, 2048, 3072, 4096, 8096],      
+                'temporal2': [4096, 8196, 16384, 32768, 65536, 131072, 262144],      
                 'temporal3': [1],
             }
 
@@ -5465,16 +5466,16 @@ class MappingExplorer:
         elif self.accl_name == 'Simba':
             param_candidates = {
                 'spatial0': [1],  
-                'spatial1': [8, 16, 32, 64, 128],  
+                'spatial1': [8, 16, 32, 64, 128, 256],  
                 'spatial2': [1], 
                 'spatial3': [1], 
-                'spatial4': [8, 16, 32, 64, 128], 
+                'spatial4': [8, 16, 32, 64, 128, 256], 
                 'spatial5': [1],        
                 'temporal0': [1, 2],      
-                'temporal1': [1024, 1536, 2048, 3072, 4096, 6096, 8096],      
-                'temporal2': [1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072],      
-                'temporal3': [1024, 2048, 4096, 8096, 16384, 32768, 65536],   
-                'temporal4': [1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072, 262144],   
+                'temporal1': [4096], #[1024, 1536, 2048, 3072, 4096, 6096, 8096],      
+                'temporal2': [16384], #[1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072],      
+                'temporal3': [8096], #[1024, 2048, 4096, 8096, 16384, 32768, 65536],   
+                'temporal4': [65536], #[1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072, 262144],   
                 'temporal5': [1],
             }
 
@@ -5506,7 +5507,7 @@ class MappingExplorer:
                 print(self.buffer_temporal_list)
             
             # 计算损失
-            current_loss = self.run_parameters6(num_population=20, num_generations=20)
+            current_loss = self.run_parameters6(num_population=20, num_generations=50)
             # current_loss = self.find_best_mapping(sample=100)
             all_results.append((sample_params, current_loss))
             
@@ -5518,7 +5519,7 @@ class MappingExplorer:
         
         return best_params, best_loss, all_results
 
-    def run_BO(self, n_samples=20, random_seed=42, n_initial_points=10):
+    def run_BO(self, n_samples=10, random_seed=42, n_initial_points=5):
         """
         贝叶斯优化版本的参数搜索（使用skopt库）- 修复Integer空间边界问题
         
@@ -5547,10 +5548,10 @@ class MappingExplorer:
             
             # 需要搜索的参数（多个候选值）
             search_candidates = {
-                'spatial1': [8, 16, 32, 64, 128],
+                'spatial1': [1,128], #[8, 16, 32, 64, 128],
                 'temporal0': [1, 2],
-                'temporal1': [1024, 1536, 2048, 3072, 4096],
-                'temporal2': [4096, 8196, 16384, 32768, 65536],
+                'temporal1': [1024, 1536, 2048, 3072, 4096, 8096],
+                'temporal2': [4096, 8196, 16384, 32768, 65536, 131072, 262144],
             }
             
             # 搜索参数的顺序（与参数空间对应）
@@ -5577,8 +5578,8 @@ class MappingExplorer:
             
             # 需要搜索的参数（多个候选值）
             search_candidates = {
-                'spatial1': [8, 16, 32, 64, 128],  
-                'spatial4': [8, 16, 32, 64, 128], 
+                'spatial1': [8, 16, 32, 64, 128, 256],  
+                'spatial4': [8, 16, 32, 64, 128, 256], 
                 'temporal0': [1, 2],      
                 'temporal1': [1024, 1536, 2048, 3072, 4096, 6096, 8096],      
                 'temporal2': [1024, 2048, 4096, 8096, 16384, 32768, 65536, 131072],      
@@ -5643,7 +5644,7 @@ class MappingExplorer:
             
             # 步骤4：计算损失
             # current_loss = self.find_best_mapping(sample=50)
-            current_loss = self.run_parameters6(num_population=20, num_generations=20)
+            current_loss = self.run_parameters6(num_population=20, num_generations=50)
             
             # 步骤5：保存结果（与原代码格式一致）
             all_results.append((full_params.copy(), current_loss))

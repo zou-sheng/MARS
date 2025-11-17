@@ -1,5 +1,5 @@
 mapping:
-- factors: R=1 S=1 P=1 Q=1 C=1 K=2 H=1 N=1
+- factors: R=1 S=1 P=4096 Q=1 C=1 K=1 H=1 N=1
   permutation: RSPQCKHN
   target: Registers
   type: temporal
@@ -7,11 +7,11 @@ mapping:
   permutation: RSPQCKHN
   target: Accumulator
   type: spatial
-- factors: R=1 S=1 P=64 Q=1 C=1 K=1 H=1 N=1
+- factors: R=1 S=1 P=1 Q=1 C=1 K=13 H=1 N=1
   permutation: RSPQCKHN
   target: Accumulator
   type: temporal
-- factors: R=1 S=1 P=64 Q=1 C=1 K=1 H=1 N=1
+- factors: R=1 S=1 P=1 Q=1 C=64 K=1 H=1 N=1
   permutation: RSPQCKHN
   target: Scratchpad
   type: spatial
@@ -19,7 +19,7 @@ mapping:
   permutation: RSPQCKHN
   target: Scratchpad
   type: temporal
-- factors: R=1 S=1 P=1 Q=1 C=6656 K=52 H=1 N=1
+- factors: R=1 S=1 P=1 Q=1 C=104 K=8 H=1 N=1
   permutation: RSPQCKHN
   target: DRAM
   type: temporal
@@ -31,16 +31,16 @@ mapping:
   target: Registers
   type: datatype
 - bypass:
-  - Weights
   - Inputs
-  keep:
   - Outputs
+  keep:
+  - Weights
   target: Accumulator
   type: datatype
-- bypass:
-  - Outputs
+- bypass: []
   keep:
-  - Inputs
   - Weights
+  - Inputs
+  - Outputs
   target: Scratchpad
   type: datatype
