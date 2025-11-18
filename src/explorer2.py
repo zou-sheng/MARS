@@ -201,7 +201,7 @@ class HardwareConfig:
         if no_mutation:
             dad = dad
             mom = mom
-        elif random.random() < 0.3:
+        elif random.random() < 0.7:
             dad = best_matrix
             mom = best_matrix
         else:
@@ -983,13 +983,13 @@ class MappingExplorer:
             prob += buffer_capacity[1] <= 13
             prob += buffer_capacity[1] >= 10
             # WeightBuffer
-            prob += buffer_capacity[2] <= 17
+            prob += buffer_capacity[2] <= 16
             prob += buffer_capacity[2] >= 10
             # InputBuffer
             prob += buffer_capacity[3] <= 16
             prob += buffer_capacity[3] >= 10
             # GlobalBuffer
-            prob += buffer_capacity[4] <= 18
+            prob += buffer_capacity[4] <= 17
             prob += buffer_capacity[4] >= 10
             # DRAM
             prob += buffer_capacity[5] >= 0
@@ -999,8 +999,8 @@ class MappingExplorer:
             prob += spatial_capacity[0] <= 0
             prob += spatial_capacity[0] >= 0
             # AccumulationBuffer
-            prob += spatial_capacity[1] <= 7
-            prob += spatial_capacity[1] >= 3
+            prob += spatial_capacity[1] <= 10
+            prob += spatial_capacity[1] >= 0
             # WeightBuffer
             prob += spatial_capacity[2] <= 0
             prob += spatial_capacity[2] >= 0
@@ -1008,11 +1008,14 @@ class MappingExplorer:
             prob += spatial_capacity[3] <= 0
             prob += spatial_capacity[3] >= 0
             # GlobalBuffer
-            prob += spatial_capacity[4] <= 7
-            prob += spatial_capacity[4] >= 3
+            prob += spatial_capacity[4] <= 0
+            prob += spatial_capacity[4] >= 0
             # DRAM
             prob += spatial_capacity[5] <= 0
             prob += spatial_capacity[5] >= 0
+
+            prob += spatial_capacity[1] + spatial_capacity[2] + spatial_capacity[4] <= 10
+            
 
         elif self.accl_name == 'Gemmini':
             # buffer_capacity限制
@@ -1033,18 +1036,57 @@ class MappingExplorer:
             prob += spatial_capacity[0] <= 0
             prob += spatial_capacity[0] >= 0
             # Accumulator
-            prob += spatial_capacity[1] <= 8
+            prob += spatial_capacity[1] <= 7
             prob += spatial_capacity[1] >= 2
             # Scratchpad
-            prob += spatial_capacity[2] <= 8
+            prob += spatial_capacity[2] <= 7
             prob += spatial_capacity[2] >= 2
             # DRAM
             prob += spatial_capacity[3] <= 0
             prob += spatial_capacity[3] >= 0
 
             # 正方形阵列
-            prob += spatial_capacity[2] == spatial_capacity[1]
-            prob += spatial_capacity[2] == 7 #math.log2(112)
+            # prob += spatial_capacity[2] == spatial_capacity[1]
+            prob += spatial_capacity[2] == 6 #math.log2(112)
+        
+        elif self.accl_name == 'NEW':
+            # buffer_capacity限制
+            # Registers
+            prob += buffer_capacity[0] <= 0
+            prob += buffer_capacity[0] >= 0
+            # Input
+            prob += buffer_capacity[1] <= 14
+            prob += buffer_capacity[1] >= 10
+            # Accumulator
+            prob += buffer_capacity[2] <= 14
+            prob += buffer_capacity[2] >= 10
+            # Scratchpad
+            prob += buffer_capacity[3] <= 20
+            prob += buffer_capacity[3] >= 12
+            # DRAM
+            prob += buffer_capacity[4] >= 0
+
+            # spatial_capacity限制
+            # Registers
+            prob += spatial_capacity[0] <= 0
+            prob += spatial_capacity[0] >= 0
+            # Input
+            prob += spatial_capacity[1] <= 7
+            prob += spatial_capacity[1] >= 0
+            # Accumulator
+            prob += spatial_capacity[2] <= 4
+            prob += spatial_capacity[2] >= 4
+            # Scratchpad
+            prob += spatial_capacity[3] <= 3
+            prob += spatial_capacity[3] >= 3
+            # DRAM
+            prob += spatial_capacity[4] <= 0
+            prob += spatial_capacity[4] >= 0
+
+            # 正方形阵列
+            prob += spatial_capacity[2] + spatial_capacity[3] + spatial_capacity[1] == 14
+            # prob += spatial_capacity[1] == 7
+        
         # 定义目标函数：矩阵元素的加权和
         objective = 0
         num = len(p.spatial_tile_weights)
@@ -2606,6 +2648,28 @@ class MappingExplorer:
             p = HardwareConfig("Gemmini", buffer_hierarchy, 0, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights, buffer_spatial_weights)
             pop.append(p)
         return pop
+    
+    # NEW
+    def create_genome_for_NEW(self, num_population):
+        pop = []
+        buffer_hierarchy = ['Registers', 'InputBuffer', 'Accumulator', 'Scratchpad', 'DRAM']
+        tensor_in_buffer = {'Registers': ['Weights'], 'InputBuffer': ['Weights'], 'Accumulator': ['Outputs'], 'Scratchpad': ['Inputs', 'Weights'], 'DRAM': ['Weights','Inputs','Outputs']}
+        # tensor_in_buffer = {'Registers': ['Weights'], 'Accumulator': ['Weights'], 'Scratchpad': ['Weights', 'Inputs', 'Outputs'], 'DRAM': ['Weights','Inputs','Outputs']}
+        layer_num = len(self.problems_list)
+        row = len(buffer_hierarchy)
+        col = 8
+        for i in range(num_population):
+            temporal_tile_weights = []
+            spatial_tile_weights = []
+            for n in range(layer_num): 
+                temporal_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+                spatial_tile_weights.append(np.random.uniform(low=1.0, high=100.0, size=(row, col)))
+            buffer_temporal_weights = np.random.randint(10, 100, size=row).astype(float)
+            buffer_spatial_weights = np.random.randint(10, 100, size=row).astype(float)
+            p = HardwareConfig("NEW", buffer_hierarchy, 0, tensor_in_buffer, temporal_tile_weights, spatial_tile_weights, buffer_temporal_weights, buffer_spatial_weights)
+            pop.append(p)
+        return pop
+
 
     def create_genome_for_gemmini2(self, num_population, buffer_temporal_list, buffer_spatial_list):
         pop = []
@@ -5093,6 +5157,8 @@ class MappingExplorer:
             population = self.create_genome_for_parameters3(num_population)
         elif self.accl_name == 'Gemmini':
             population = self.create_genome_for_gemmini(num_population)
+        elif self.accl_name == 'NEW':
+            population = self.create_genome_for_NEW(num_population)
         # mapping, _ = self.generate_mapping(self.dimension, population[0])
         # exit()
         fitness = np.ones((num_population, len(self.fitness_obj)), float)

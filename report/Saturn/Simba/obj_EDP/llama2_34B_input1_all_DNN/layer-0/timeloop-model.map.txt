@@ -1,23 +1,18 @@
 DRAM [ Weights:44302336 (44302336) Inputs:27262976 (27262976) Outputs:27262976 (27262976) ] 
 -------------------------------------------------------------------------------------------
-| for K in [0:3)
-|   for P in [0:128)
+| for P in [0:410)
 
-GlobalBuffer [ Inputs:212992 (212992) Outputs:98304 (98304) ] 
--------------------------------------------------------------
-|     for K in [0:3,1) (Spatial-X)
-|       for C in [0:52) (Spatial-X)
+GlobalBuffer [ Inputs:66560 (66560) Outputs:66560 (66560) ] 
+InputBuffer [ Inputs:66560 (66560) ] 
+------------------------------------
+|   for K in [0:6656)
+|     for C in [0:6656)
 
-InputBuffer [ Inputs:4096 (4096) ] 
-WeightBuffer [ Weights:131072 (131072) ] 
-----------------------------------------
-|         for K in [0:1024,512)
+WeightBuffer [ Weights:1 (1) ] 
+------------------------------
+|       for P in [0:10,6) (Spatial-X)
 
-AccumulationBuffer [ Outputs:32 (32) ] 
---------------------------------------
-|           for P in [0:32)
-|             for C in [0:128) (Spatial-X)
-
+AccumulationBuffer [ Outputs:1 (1) ] 
 Registers [ Weights:1 (1) ] 
 ---------------------------
-|               << Compute >>
+|         << Compute >>
