@@ -23,7 +23,11 @@ def extract_value_from_file(file_path):
 
 def main():
     # 配置参数
+<<<<<<< HEAD
     main_folder = "./report/MARS/Simba_64x47/obj_EDP/resnet50_input1"  # 主文件夹路径
+=======
+    main_folder = "./report/MARS/GPU/obj_EDP/GCN_Citeseer_input1"  # 主文件夹路径
+>>>>>>> 8b3d4bd94df1fd186f19ef016efe4d103ee519b4
     target_file = "timeloop-model.stats.txt"  # 目标文件名
     output_excel = "extracted_cycles.xlsx"  # 输出Excel文件名
     

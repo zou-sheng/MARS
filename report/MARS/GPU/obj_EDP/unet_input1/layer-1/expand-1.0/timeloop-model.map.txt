@@ -1,22 +1,18 @@
 DRAM [ Weights:36864 (36864) Inputs:20939776 (20939776) Outputs:20793600 (20793600) ] 
 -------------------------------------------------------------------------------------
-| for C in [0:64)
-|   for P in [0:143)
-|     for S in [0:3)
-|       for R in [0:3)
+| for K in [0:64)
+|   for Q in [0:570)
+|     for S in [0:2)
 
-L2 [ Weights:64 (64) Inputs:2280 (2280) ] 
------------------------------------------
-|         for K in [0:64,1)
-|           for Q in [0:570,1)
-|             for P in [0:4,2)
-
-L1 [ Outputs:36480 (36480) ] 
-----------------------------
-|               for K in [0:7) (Spatial-X)
-|                 for Q in [0:570) (Spatial-X)
+L2 [ Weights:384 (384) Inputs:73216 (73216) ] 
+L1 [ Outputs:570 (570) ] 
+------------------------
+|       for P in [0:64)
+|         for C in [0:64) (Spatial-X)
+|           for P in [0:9,3) (Spatial-X)
+|             for S in [0:2,1) (Spatial-X)
+|               for R in [0:3) (Spatial-X)
 
 Registers [ Inputs:1 (1) ] 
 --------------------------
-|                   for K in [0:10,4)
-|                     << Compute >>
+|                 << Compute >>
