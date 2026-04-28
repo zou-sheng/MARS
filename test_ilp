@@ -1,0 +1,200 @@
+import math
+from pulp import LpProblem, LpMaximize, LpVariable, LpInteger, LpBinary, PULP_CBC_CMD, value, lpSum
+
+# ==========================================
+# 1. 模拟你的类结构和数据 (Mock Classes)
+# ==========================================
+
+class MockP:
+    """模拟输入参数对象 p"""
+    def __init__(self):
+        # 模拟存储层级: 0:Reg, 1:Acc, 2:SP, 3:DRAM
+        self.buffer_hierarchy = ['Registers', 'Accumulator', 'Scratchpad', 'DRAM']
+        
+        # 模拟每个层级存储的 Tensor 类型
+        # 假设: Reg存输出(O), Acc存输入(I)和权重(W), SP存I, W, O, DRAM存I, W, O
+        self.tensor_in_buffer = {
+            'Registers': ['O'],
+            'Accumulator': ['I', 'W'],       # K=2，触发 Big-M 逻辑
+            'Scratchpad': ['I', 'W', 'O'],   # K=3，触发 Big-M 逻辑
+            'DRAM': ['I', 'W', 'O']
+        }
+        
+        # 模拟权重矩阵 (用于目标函数)
+        # 形状: [Workload_Count][Rows][Cols]
+        self.spatial_tile_weights = [[[1 for _ in range(8)] for _ in range(4)] for _ in range(1)]
+        self.temporal_tile_weights = [[[1 for _ in range(8)] for _ in range(4)] for _ in range(1)]
+        self.buffer_spatial_weights = [0.1, 0.1, 0.1, 0]
+        self.buffer_temporal_weights = [0.1, 0.1, 0.1, 0]
+
+class MockSelf:
+    """模拟包含该函数的类实例 self"""
+    def __init__(self):
+        self.accl_name = 'Gemmini' # 测试 Gemmini 配置
+        # 模拟 Tensor 到维度索引的映射 (R,S,P,Q,C,K,H,N) -> 索引 0-7
+        # 假设 I->[C,H,N], W->[C,K,R,S], O->[P,Q,K] (仅为示例)
+        self.tensor_dimensions = {
+            'I': [4, 6, 7], # C, H, N
+            'W': [4, 5, 0, 1], # C, K, R, S
+            'O': [5, 2, 3] # K, P, Q
+        }
+
+    # 这里放你提供的函数
+    def HM_ilpsolver_all_DNN(self, dimension_list, p):
+        rows = len(p.buffer_hierarchy)
+        cols = 8 # 问题维度R, S, P, Q, C, K, H, N
+
+        # 创建一个最大化问题
+        prob = LpProblem("Matrix_Mapping_Problem", LpMaximize)
+
+        # 创建矩阵变量
+        spatial_tiles = [[[LpVariable(f"st_{i}_{j}_{k}", lowBound=0, cat=LpInteger) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles = [[[LpVariable(f"tt_{i}_{j}_{k}", lowBound=0, cat=LpInteger) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        
+        buffer_capacity = [LpVariable(f"bc_{i}", lowBound=0, cat=LpInteger) for i in range(rows)]
+        spatial_capacity = [LpVariable(f"sc_{i}", lowBound=0, cat=LpInteger) for i in range(rows)]
+        
+        # --- 硬件约束 (仅保留 Gemmini 用于测试) ---
+        if self.accl_name == 'Gemmini':
+            prob += buffer_capacity[0] <= 1; prob += buffer_capacity[0] >= 0
+            prob += buffer_capacity[1] <= 14; prob += buffer_capacity[1] >= 10
+            prob += buffer_capacity[2] <= 20; prob += buffer_capacity[2] >= 12
+            prob += buffer_capacity[3] >= 0
+
+            prob += spatial_capacity[0] <= 0; prob += spatial_capacity[0] >= 0
+            prob += spatial_capacity[1] <= 7; prob += spatial_capacity[1] >= 2
+            prob += spatial_capacity[2] <= 7; prob += spatial_capacity[2] >= 2
+            prob += spatial_capacity[3] <= 0; prob += spatial_capacity[3] >= 0
+            prob += spatial_capacity[2] == 6 
+
+        # --- 目标函数 ---
+        objective = 0
+        num = len(p.spatial_tile_weights)
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                for c in range(cols):
+                    objective += spatial_tiles[k][r][c] * p.spatial_tile_weights[k%num][r][c]
+                    objective += temporal_tiles[k][r][c] * p.temporal_tile_weights[k%num][r][c]
+        for i in range(rows-1):
+            objective += spatial_capacity[i] * p.buffer_spatial_weights[i]
+            objective += buffer_capacity[i] * p.buffer_temporal_weights[i]
+        prob += objective
+        
+        # --- 核心修改：存储容量约束 (Big-M) ---
+        for k in range(len(dimension_list)):
+            for r in range(len(p.buffer_hierarchy)-1):
+                buf_capacity = 0
+                tensors_list = p.tensor_in_buffer[p.buffer_hierarchy[r]]
+                K = len(tensors_list)
+                
+                if K == 1:
+                    tensor = tensors_list[0]
+                    for i in range(r+1):
+                        for dim in self.tensor_dimensions[tensor]:
+                            buf_capacity += temporal_tiles[k][i][dim] + spatial_tiles[k][i][dim]
+                    prob += buf_capacity <= buffer_capacity[r]
+                    
+                elif K > 1:
+                    # Big-M Logic
+                    L_sum = LpVariable(f"L_sum_k{k}_r{r}", cat=LpInteger)
+                    z_vars = [LpVariable(f"z_k{k}_r{r}_t{t}", cat=LpBinary) for t in range(K)]
+                    
+                    log_volumes = []
+                    for idx, tensor in enumerate(tensors_list):
+                        vol = 0
+                        for i in range(r+1):
+                            for dim in self.tensor_dimensions[tensor]:
+                                vol += temporal_tiles[k][i][dim] + spatial_tiles[k][i][dim]
+                        log_volumes.append(vol)
+                        prob += L_sum >= log_volumes[idx]
+                    
+                    M = 100 
+                    logK = math.log2(K)
+                    
+                    for idx in range(K):
+                        prob += L_sum <= log_volumes[idx] + M * (1 - z_vars[idx]) + logK
+                    prob += sum(z_vars) == 1
+                    prob += L_sum <= buffer_capacity[r]
+
+        # --- 并行容量约束 ---
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                sp_capacity = 0
+                for c in range(cols):
+                    sp_capacity += spatial_tiles[k][r][c]
+                prob += sp_capacity <= spatial_capacity[r]
+
+        # --- 维度约束 ---
+        for k in range(len(dimension_list)):
+            for c in range(cols):
+                # 防止 log2(0) 错误，加一个小量
+                dim_val = dimension_list[k][c]
+                if dim_val == 0: continue 
+                
+                log_dim = math.log2(dim_val)
+                
+                for r in range(rows):
+                    prob += temporal_tiles[k][r][c] <= log_dim
+                    prob += spatial_tiles[k][r][c] <= log_dim
+                
+                temporal_sum = sum(temporal_tiles[k][r][c] for r in range(rows))
+                spatial_sum = sum(spatial_tiles[k][r][c] for r in range(rows))
+                prob += temporal_sum + spatial_sum == log_dim
+
+        # 求解
+        prob.solve(PULP_CBC_CMD(msg=0, timeLimit=30)) # 设置30秒超时
+        
+        if prob.status != 1:
+            print("⚠️ 求解未成功，状态:", prob.status)
+            return None, None
+
+        # 结果提取
+        spatial_tiles_solution = [[[2**spatial_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles_solution = [[[2**temporal_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        
+        buffer_capacity_solution = [2**buffer_capacity[i].value() for i in range(rows)]
+        spatial_capacity_solution = [2**spatial_capacity[i].value() for i in range(rows)]
+        
+        solutions = [spatial_tiles_solution, temporal_tiles_solution, buffer_capacity_solution, spatial_capacity_solution]
+        
+        # 模拟后续处理函数（这里直接返回，不做处理）
+        return solutions, {}
+
+# ==========================================
+# 2. 主测试程序
+# ==========================================
+
+def main():
+    print("初始化模拟环境...")
+    mock_self = MockSelf()
+    mock_p = MockP()
+    
+    # 定义一个简单的测试维度列表
+    # 模拟一个卷积层: [R=3, S=3, P=56, Q=56, C=3, K=32, H=224, N=1]
+    # 注意：这里使用 2 的幂次是为了方便 ILP 求解 (log2 是整数)
+    # R=4, S=4, P=64, Q=64, C=4, K=32, H=224(非2幂), N=1
+    # 为了测试顺利，我们强制使用 2的幂次:
+    test_dims = [
+        [4, 4, 64, 64, 4, 32, 128, 1] 
+    ]
+    
+    print("开始求解...")
+    try:
+        solutions, config = mock_self.HM_ilpsolver_all_DNN(test_dims, mock_p)
+        
+        if solutions:
+            print("\n✅ 求解成功！部分结果如下：")
+            # 打印第一个 Workload 的 Accumulator (层级1) 的容量
+            print(f"Accumulator Buffer Capacity (Log): {solutions[2][1]} (Physical: {solutions[2][1]})")
+            print(f"Scratchpad Buffer Capacity (Log): {solutions[2][2]} (Physical: {solutions[2][2]})")
+            
+            # 打印第一个维度的 Tiling
+            print(f"Spatial Tile (K=0, R=0, C=0): {solutions[0][0][0][0]}")
+            
+    except Exception as e:
+        print(f"❌ 运行出错: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
