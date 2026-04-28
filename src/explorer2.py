@@ -63,11 +63,28 @@ class HardwareConfig:
         # self.mutate_buffer_temporal_order()
         # self.mutate_buffer_spatial_order()
 
-    def mutate_noc(self):
-        pass
+    def mutate_noc(self, alpha=0.5):
+        noc_candidate_set = [1,2,4,8,16,32,64,128]
+        
+        # 遍历当前的 NoC 配置
+        for i in range(len(self.noc_bandwidth)):
+            if random.random() < alpha: # alpha 是变异概率
+                self.noc_bandwidth[i] = random.choice(noc_candidate_set)
 
-    def mutate_tensor_in_buffer(self):
-        pass
+    def mutate_tensor_in_buffer(self, alpha=0.5):
+        valid_data_types = self.valid_data_types 
+    
+        # 遍历每一级存储器的配置
+        for buffer_level in self.tensor_in_buffer:
+            # 遍历该层级当前存储的数据类型
+            # 注意：论文 Table II 中定义 p_l 为 "Set of data types stored in the l-th level"
+            for tensor_type in buffer_level.stored_tensors:
+                if random.random() < alpha:
+                    # 策略：从预定义的合法数据类型集中随机选择一个新类型 (Data Type Replacement)
+                    # 论文原文: "The data type allocation set p_l is randomly modified (only valid data types from the predefined set are selected)"
+                    new_tensor_type = random.choice(valid_data_types)
+                    buffer_level.stored_tensors.remove(tensor_type)
+                    buffer_level.stored_tensors.add(new_tensor_type)
 
     def mutate_temporal_tile_weights(self, best_temporal_tile_weights, no_mutation, alpha=0.5, generation=0, max_generations=100):
         layer_num = len(self.temporal_tile_weights)
@@ -113,11 +130,23 @@ class HardwareConfig:
             self.mutate_factor(self.buffer_spatial_weights, alpha=alpha, generation=generation, max_generations=max_generations)
             self.shuffle_order(self.buffer_spatial_weights)
 
-    def mutate_buffer_temporal_order(self):
-        pass
+    def mutate_buffer_temporal_order(self, alpha=0.5):
+        for loop_order in self.buffer_temporal_orders:
+            if random.random() < alpha:
+                # 策略：随机交换两个循环维度的位置 (Random swap operations)
+                # 论文原文: "Random swap operations are performed on a specific row π_l^t ... to explore new mapping combinations"
+                if len(loop_order) > 1:
+                    idx1, idx2 = random.sample(range(len(loop_order)), 2)
+                    # 交换位置
+                    loop_order[idx1], loop_order[idx2] = loop_order[idx2], loop_order[idx1]
 
-    def mutate_buffer_spatial_order(self):
-        pass
+    def mutate_buffer_spatial_order(self, alpha=0.5):
+        for spatial_order in self.buffer_spatial_orders:
+            if random.random() < alpha:
+                # 采用与时间顺序相同的变异逻辑：随机交换
+                if len(spatial_order) > 1:
+                    idx1, idx2 = random.sample(range(len(spatial_order)), 2)
+                    spatial_order[idx1], spatial_order[idx2] = spatial_order[idx2], spatial_order[idx1]
 
     def gaussian_mutation(self, arr, alpha=0.5, generation=0, max_generations=100, sigma_base=0.2):
         """
@@ -1124,6 +1153,230 @@ class MappingExplorer:
                 prob += buf_capacity <= len(tensors_list)*(buffer_capacity[r] - math.log2(len(tensors_list)))
 
             
+        # 并行容量约束
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                sp_capacity = 0
+                for c in range(cols):
+                    sp_capacity += spatial_tiles[k][r][c]
+                prob += sp_capacity <= spatial_capacity[r]
+
+        # 维度约束
+        for k in range(len(dimension_list)):
+            for c in range(cols):
+                temporal_sum = sum(temporal_tiles[k][r][c] for r in range(rows))
+                spatial_sum = sum(spatial_tiles[k][r][c] for r in range(rows))
+                col_sum = temporal_sum + spatial_sum
+                for r in range(rows):
+                    prob += temporal_tiles[k][r][c] <= math.log2(dimension_list[k][c])
+                    prob += spatial_tiles[k][r][c] <= math.log2(dimension_list[k][c])
+                prob += col_sum == math.log2(dimension_list[k][c])
+
+        prob.solve(PULP_CBC_CMD(msg=0))
+        # print(prob)
+        
+        spatial_tiles_solution = [[[2**spatial_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles_solution = [[[2**temporal_tiles[k][i][j].value() for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        
+        buffer_capacity_solution = [2**buffer_capacity[i].value() for i in range(rows)]
+        spatial_capacity_solution = [2**spatial_capacity[i].value() for i in range(rows)]
+        solutions = [spatial_tiles_solution, temporal_tiles_solution, buffer_capacity_solution, spatial_capacity_solution]
+        # print(solution)
+        # print("time1: ", time.time()-start_time)
+        # 映射优先的调整
+        solutions, config = self._integerize_with_staged_optimization_with_config_all_DNN(solutions, p)
+        # print("time2: ", time.time()-start_time)
+        
+        return solutions, config
+
+        # 对于多层
+    def HM_ilpsolver_all_DNN(self, dimension_list, p):
+        rows = len(p.buffer_hierarchy)
+        cols = 8 # 问题维度R, S, P, Q, C, K, H, N
+
+        # 创建一个最大化问题
+        prob = LpProblem("Matrix_Mapping_Problem", LpMaximize)
+
+        # 创建矩阵变量，每个元素是一个非负的连续变量
+        spatial_tiles = [[[LpVariable(f"st_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        temporal_tiles = [[[LpVariable(f"tt_{i}_{j}_{k}", lowBound=0) for j in range(cols)] for i in range(rows)] for k in range(len(dimension_list))]
+        
+        buffer_capacity = [LpVariable(f"bc_{i}", lowBound=0) for i in range(rows)]
+        spatial_capacity = [LpVariable(f"sc_{i}", lowBound=0) for i in range(rows)]
+        
+        if self.accl_name == "Simba":
+            # buffer_capacity限制
+            # Registers
+            prob += buffer_capacity[0] <= 1
+            prob += buffer_capacity[0] >= 0
+            # AccumulationBuffer
+            prob += buffer_capacity[1] <= 13
+            prob += buffer_capacity[1] >= 10
+            # WeightBuffer
+            prob += buffer_capacity[2] <= 16
+            prob += buffer_capacity[2] >= 10
+            # InputBuffer
+            prob += buffer_capacity[3] <= 16
+            prob += buffer_capacity[3] >= 10
+            # GlobalBuffer
+            prob += buffer_capacity[4] <= 17
+            prob += buffer_capacity[4] >= 10
+            # DRAM
+            prob += buffer_capacity[5] >= 0
+
+            # spatial_capacity限制
+            # Registers
+            prob += spatial_capacity[0] <= 0
+            prob += spatial_capacity[0] >= 0
+            # AccumulationBuffer
+            prob += spatial_capacity[1] <= 10
+            prob += spatial_capacity[1] >= 0
+            # WeightBuffer
+            prob += spatial_capacity[2] <= 0
+            prob += spatial_capacity[2] >= 0
+            # InputBuffer
+            prob += spatial_capacity[3] <= 0
+            prob += spatial_capacity[3] >= 0
+            # GlobalBuffer
+            prob += spatial_capacity[4] <= 0
+            prob += spatial_capacity[4] >= 0
+            # DRAM
+            prob += spatial_capacity[5] <= 0
+            prob += spatial_capacity[5] >= 0
+
+            prob += spatial_capacity[1] + spatial_capacity[2] + spatial_capacity[4] <= 10
+            
+
+        elif self.accl_name == 'Gemmini':
+            # buffer_capacity限制
+            # Registers
+            prob += buffer_capacity[0] <= 1
+            prob += buffer_capacity[0] >= 0
+            # Accumulator
+            prob += buffer_capacity[1] <= 14
+            prob += buffer_capacity[1] >= 10
+            # Scratchpad
+            prob += buffer_capacity[2] <= 20
+            prob += buffer_capacity[2] >= 12
+            # DRAM
+            prob += buffer_capacity[3] >= 0
+
+            # spatial_capacity限制
+            # Registers
+            prob += spatial_capacity[0] <= 0
+            prob += spatial_capacity[0] >= 0
+            # Accumulator
+            prob += spatial_capacity[1] <= 7
+            prob += spatial_capacity[1] >= 2
+            # Scratchpad
+            prob += spatial_capacity[2] <= 7
+            prob += spatial_capacity[2] >= 2
+            # DRAM
+            prob += spatial_capacity[3] <= 0
+            prob += spatial_capacity[3] >= 0
+
+            # 正方形阵列
+            # prob += spatial_capacity[2] == spatial_capacity[1]
+            prob += spatial_capacity[2] == 6 #math.log2(112)
+        
+        elif self.accl_name == 'NEW':
+            # buffer_capacity限制
+            # Registers
+            prob += buffer_capacity[0] <= 0
+            prob += buffer_capacity[0] >= 0
+            # Input
+            prob += buffer_capacity[1] <= 14
+            prob += buffer_capacity[1] >= 10
+            # Accumulator
+            prob += buffer_capacity[2] <= 14
+            prob += buffer_capacity[2] >= 10
+            # Scratchpad
+            prob += buffer_capacity[3] <= 20
+            prob += buffer_capacity[3] >= 12
+            # DRAM
+            prob += buffer_capacity[4] >= 0
+
+            # spatial_capacity限制
+            # Registers
+            prob += spatial_capacity[0] <= 0
+            prob += spatial_capacity[0] >= 0
+            # Input
+            prob += spatial_capacity[1] <= 7
+            prob += spatial_capacity[1] >= 0
+            # Accumulator
+            prob += spatial_capacity[2] <= 4
+            prob += spatial_capacity[2] >= 4
+            # Scratchpad
+            prob += spatial_capacity[3] <= 3
+            prob += spatial_capacity[3] >= 3
+            # DRAM
+            prob += spatial_capacity[4] <= 0
+            prob += spatial_capacity[4] >= 0
+
+            # 正方形阵列
+            prob += spatial_capacity[2] + spatial_capacity[3] + spatial_capacity[1] == 14
+            # prob += spatial_capacity[1] == 7
+        
+        # 定义目标函数：矩阵元素的加权和
+        objective = 0
+        num = len(p.spatial_tile_weights)
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                for c in range(cols):
+                    objective += spatial_tiles[k][r][c] * p.spatial_tile_weights[k%num][r][c]
+
+        for k in range(len(dimension_list)):
+            for r in range(rows):
+                for c in range(cols):
+                    objective += temporal_tiles[k][r][c] * p.temporal_tile_weights[k%num][r][c]
+
+        # 不包含DRAM，所以是rows-1行
+        for i in range(rows-1):
+            objective += spatial_capacity[i] * p.buffer_spatial_weights[i]
+
+        for i in range(rows-1):
+            objective += buffer_capacity[i] * p.buffer_temporal_weights[i]
+
+        prob += objective
+        
+        # 除DRAM外每一个存储层次的存储容量约束
+        for k in range(len(dimension_list)):
+            # 去掉DRAM
+            for r in range(len(p.buffer_hierarchy)-1):
+                buf_capacity = 0
+                tensors_list = p.tensor_in_buffer[p.buffer_hierarchy[r]]
+                K = len(tensors_list) # 当前 Buffer 存储的数据类型数量
+                
+                if K == 1:
+                    # Case 1: 只有一个数据类型，约束是线性的 (论文公式 3)
+                    tensor = tensors_list[0]
+                    for i in range(r+1): # 注意：这里的 i 可能代表 sub-hierarchy，根据你的逻辑调整
+                        for dim in self.tensor_dimensions[tensor]:
+                            buf_capacity += temporal_tiles[k][i][dim]
+                            buf_capacity += spatial_tiles[k][i][dim]
+                    prob += buf_capacity <= buffer_capacity[r]
+                    
+                else:
+                    L_sum = LpVariable(f"L_sum_k{k}_r{r}", cat=LpInteger) # 或 LpContinuous，视需求而定
+                    z_vars = [LpVariable(f"z_k{k}_r{r}_t{t}", cat=LpBinary) for t in range(K)]
+                    
+                    # 3. 计算每个 Tensor 的 Log-Volume，并建立约束
+                    log_volumes = []
+                    for idx, tensor in enumerate(tensors_list):
+                        vol = 0
+                        for i in range(r+1):
+                            for dim in self.tensor_dimensions[tensor]:
+                                vol += temporal_tiles[k][i][dim] + spatial_tiles[k][i][dim]
+                        log_volumes.append(vol)
+                        prob += L_sum >= log_volumes[idx]
+                    M = 100 
+                    logK = math.log2(K)
+                    
+                    for idx in range(K):
+                        prob += L_sum <= log_volumes[idx] + M * (1 - z_vars[idx]) + logK
+                    prob += sum(z_vars) == 1
+                    prob += L_sum <= buffer_capacity[r]
+
         # 并行容量约束
         for k in range(len(dimension_list)):
             for r in range(rows):
